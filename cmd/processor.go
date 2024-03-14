@@ -5,18 +5,16 @@ import (
 	"encoding/json"
 	"sync"
 
-	"github.com/idprm/go-linkit-tsel/src/config"
-	"github.com/idprm/go-linkit-tsel/src/domain/entity"
-	"github.com/idprm/go-linkit-tsel/src/domain/repository"
-	"github.com/idprm/go-linkit-tsel/src/handler"
-	"github.com/idprm/go-linkit-tsel/src/logger"
-	"github.com/idprm/go-linkit-tsel/src/services"
+	"github.com/idprm/go-linkit-tsel/internal/domain/entity"
+	"github.com/idprm/go-linkit-tsel/internal/domain/repository"
+	"github.com/idprm/go-linkit-tsel/internal/handler"
+	"github.com/idprm/go-linkit-tsel/internal/logger"
+	"github.com/idprm/go-linkit-tsel/internal/services"
 	"github.com/redis/go-redis/v9"
 	"github.com/wiliehidayat87/rmqp"
 )
 
 type Processor struct {
-	cfg    *config.Secret
 	db     *sql.DB
 	rmpq   rmqp.AMQP
 	rdb    *redis.Client
@@ -24,14 +22,12 @@ type Processor struct {
 }
 
 func NewProcessor(
-	cfg *config.Secret,
 	db *sql.DB,
 	rmpq rmqp.AMQP,
 	rdb *redis.Client,
 	logger *logger.Logger,
 ) *Processor {
 	return &Processor{
-		cfg:    cfg,
 		db:     db,
 		rmpq:   rmpq,
 		rdb:    rdb,
@@ -49,8 +45,6 @@ func (p *Processor) MO(wg *sync.WaitGroup, message []byte) {
 	 * -. Save Sub
 	 * -/ Save Transaction
 	 */
-	campaignRepo := repository.NewCampaignRepository(p.db)
-	campaignService := services.NewCampaignService(campaignRepo)
 	blacklistRepo := repository.NewBlacklistRepository(p.db)
 	blacklistService := services.NewBlacklistService(blacklistRepo)
 	serviceRepo := repository.NewServiceRepository(p.db)
@@ -71,10 +65,8 @@ func (p *Processor) MO(wg *sync.WaitGroup, message []byte) {
 	reqMO := entity.NewReqMOParams(req.SMS, req.Adn, req.Msisdn, req.Channel)
 
 	h := handler.NewMOHandler(
-		p.cfg,
 		p.rmpq,
 		p.logger,
-		campaignService,
 		blacklistService,
 		serviceService,
 		verifyService,
@@ -138,7 +130,6 @@ func (p *Processor) Renewal(wg *sync.WaitGroup, message []byte) {
 	json.Unmarshal(message, &sub)
 
 	h := handler.NewRenewalHandler(
-		p.cfg,
 		p.rmpq,
 		p.logger,
 		sub,
@@ -171,7 +162,15 @@ func (p *Processor) RetryFp(wg *sync.WaitGroup, message []byte) {
 	var sub *entity.Subscription
 	json.Unmarshal(message, &sub)
 
-	h := handler.NewRetryHandler(p.cfg, p.rmpq, p.logger, sub, serviceService, contentService, subscriptionService, transactionService)
+	h := handler.NewRetryHandler(
+		p.rmpq,
+		p.logger,
+		sub,
+		serviceService,
+		contentService,
+		subscriptionService,
+		transactionService,
+	)
 
 	h.Firstpush()
 
@@ -195,7 +194,15 @@ func (p *Processor) RetryDp(wg *sync.WaitGroup, message []byte) {
 	var sub *entity.Subscription
 	json.Unmarshal(message, &sub)
 
-	h := handler.NewRetryHandler(p.cfg, p.rmpq, p.logger, sub, serviceService, contentService, subscriptionService, transactionService)
+	h := handler.NewRetryHandler(
+		p.rmpq,
+		p.logger,
+		sub,
+		serviceService,
+		contentService,
+		subscriptionService,
+		transactionService,
+	)
 
 	h.Dailypush()
 
@@ -219,7 +226,15 @@ func (p *Processor) RetryInsuff(wg *sync.WaitGroup, message []byte) {
 	var sub *entity.Subscription
 	json.Unmarshal(message, &sub)
 
-	h := handler.NewRetryHandler(p.cfg, p.rmpq, p.logger, sub, serviceService, contentService, subscriptionService, transactionService)
+	h := handler.NewRetryHandler(
+		p.rmpq,
+		p.logger,
+		sub,
+		serviceService,
+		contentService,
+		subscriptionService,
+		transactionService,
+	)
 
 	if sub.IsFirstpush() {
 		if sub.IsRetryAtToday() {
@@ -238,7 +253,7 @@ func (p *Processor) Notif(wg *sync.WaitGroup, message []byte) {
 	var req *entity.ReqNotifParams
 	json.Unmarshal(message, &req)
 
-	h := handler.NewNotifHandler(p.cfg, p.logger, req)
+	h := handler.NewNotifHandler(p.logger, req)
 
 	if req.IsSub() {
 		h.Sub()
@@ -259,7 +274,7 @@ func (p *Processor) PostbackMO(wg *sync.WaitGroup, message []byte) {
 	var req *entity.ReqPostbackParams
 	json.Unmarshal(message, &req)
 
-	h := handler.NewPostbackHandler(p.cfg, p.logger, req)
+	h := handler.NewPostbackHandler(p.logger, req)
 
 	if req.IsMO() {
 		if req.Verify.IsSam() {
@@ -318,7 +333,7 @@ func (p *Processor) PostbackMT(wg *sync.WaitGroup, message []byte) {
 	var req *entity.ReqPostbackParams
 	json.Unmarshal(message, &req)
 
-	h := handler.NewPostbackHandler(p.cfg, p.logger, req)
+	h := handler.NewPostbackHandler(p.logger, req)
 
 	/**
 	 * Renewal & Retry Dailypush

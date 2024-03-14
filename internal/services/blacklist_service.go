@@ -1,6 +1,6 @@
 package services
 
-import "github.com/idprm/go-linkit-tsel/src/domain/repository"
+import "github.com/idprm/go-linkit-tsel/internal/domain/repository"
 
 type BlacklistService struct {
 	blacklistRepo repository.IBlacklistRepository

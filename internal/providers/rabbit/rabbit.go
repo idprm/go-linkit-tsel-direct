@@ -6,7 +6,14 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/idprm/go-linkit-tsel/internal/utils"
 	"github.com/idprm/go-linkit-tsel/internal/utils/auth_utils"
+)
+
+var (
+	RMQ_URL  string = utils.GetEnv("RMQ_URL")
+	RMQ_USER string = utils.GetEnv("RMQ_USER")
+	RMQ_PASS string = utils.GetEnv("RMQ_PASS")
 )
 
 type RabbitMQ struct {
@@ -17,8 +24,8 @@ func NewRabbitMQ() *RabbitMQ {
 }
 
 func (p *RabbitMQ) Queue(name string) ([]byte, error) {
-	req, err := http.NewRequest("GET", p.cfg.GetUrlRabbitMq()+name, nil)
-	req.Header.Add("Authorization", "Basic "+auth_utils.BasicAuth(p.cfg.Rmq.User, p.cfg.Rmq.Pass))
+	req, err := http.NewRequest("GET", RMQ_URL+name, nil)
+	req.Header.Add("Authorization", "Basic "+auth_utils.BasicAuth(RMQ_USER, RMQ_PASS))
 
 	if err != nil {
 		return nil, errors.New(err.Error())
@@ -50,8 +57,8 @@ func (p *RabbitMQ) Queue(name string) ([]byte, error) {
 }
 
 func (p *RabbitMQ) Purge(name string) ([]byte, error) {
-	req, err := http.NewRequest("DELETE", p.cfg.GetUrlRabbitMq()+name+"/contents", nil)
-	req.Header.Add("Authorization", "Basic "+auth_utils.BasicAuth(p.cfg.Rmq.User, p.cfg.Rmq.Pass))
+	req, err := http.NewRequest("DELETE", RMQ_URL+name+"/contents", nil)
+	req.Header.Add("Authorization", "Basic "+auth_utils.BasicAuth(RMQ_USER, RMQ_PASS))
 
 	if err != nil {
 		return nil, errors.New(err.Error())

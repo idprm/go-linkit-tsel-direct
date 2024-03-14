@@ -12,6 +12,7 @@ import (
 	"github.com/idprm/go-linkit-tsel/internal/logger"
 	"github.com/idprm/go-linkit-tsel/internal/providers/telco"
 	"github.com/idprm/go-linkit-tsel/internal/services"
+	"github.com/idprm/go-linkit-tsel/internal/utils"
 	"github.com/idprm/go-linkit-tsel/internal/utils/response_utils"
 	"github.com/mileusna/useragent"
 	"github.com/sirupsen/logrus"
@@ -45,26 +46,30 @@ func NewIncomingHandler(
 	}
 }
 
+var (
+	APP_HOST string = utils.GetEnv("APP_HOST")
+)
+
 const (
-	RMQ_DATATYPE           = "application/json"
-	RMQ_MOEXCHANGE         = "E_MO"
-	RMQ_MOQUEUE            = "Q_MO"
-	RMQ_NOTIFEXCHANGE      = "E_NOTIF"
-	RMQ_NOTIFQUEUE         = "Q_NOTIF"
-	RMQ_POSTBACKMOEXCHANGE = "E_POSTBACK_MO"
-	RMQ_POSTBACKMOQUEUE    = "Q_POSTBACK_MO"
-	RMQ_POSTBACKMTEXCHANGE = "E_POSTBACK_MT"
-	RMQ_POSTBACKMTQUEUE    = "Q_POSTBACK_MT"
-	MT_FIRSTPUSH           = "FIRSTPUSH"
-	MT_RENEWAL             = "RENEWAL"
-	MT_UNSUB               = "UNSUB"
-	STATUS_SUCCESS         = "SUCCESS"
-	STATUS_FAILED          = "FAILED"
-	SUBJECT_FIRSTPUSH      = "FIRSTPUSH"
-	SUBJECT_RENEWAL        = "RENEWAL"
-	SUBJECT_UNSUB          = "UNSUB"
-	SUBJECT_RETRY          = "RETRY"
-	SUBJECT_PURGE          = "PURGE"
+	RMQ_DATATYPE           string = "application/json"
+	RMQ_MOEXCHANGE         string = "E_MO"
+	RMQ_MOQUEUE            string = "Q_MO"
+	RMQ_NOTIFEXCHANGE      string = "E_NOTIF"
+	RMQ_NOTIFQUEUE         string = "Q_NOTIF"
+	RMQ_POSTBACKMOEXCHANGE string = "E_POSTBACK_MO"
+	RMQ_POSTBACKMOQUEUE    string = "Q_POSTBACK_MO"
+	RMQ_POSTBACKMTEXCHANGE string = "E_POSTBACK_MT"
+	RMQ_POSTBACKMTQUEUE    string = "Q_POSTBACK_MT"
+	MT_FIRSTPUSH           string = "FIRSTPUSH"
+	MT_RENEWAL             string = "RENEWAL"
+	MT_UNSUB               string = "UNSUB"
+	STATUS_SUCCESS         string = "SUCCESS"
+	STATUS_FAILED          string = "FAILED"
+	SUBJECT_FIRSTPUSH      string = "FIRSTPUSH"
+	SUBJECT_RENEWAL        string = "RENEWAL"
+	SUBJECT_UNSUB          string = "UNSUB"
+	SUBJECT_RETRY          string = "RETRY"
+	SUBJECT_PURGE          string = "PURGE"
 )
 
 var validate = validator.New()
@@ -86,55 +91,55 @@ func ValidateStruct(data interface{}) []*entity.ErrorResponse {
 
 func (h *IncomingHandler) CloudPlaySubPage(c *fiber.Ctx) error {
 	return c.Render("cloudplay/sub", fiber.Map{
-		"host": h.cfg.App.Host,
+		"host": APP_HOST,
 	})
 }
 
 func (h *IncomingHandler) GalaysSubPage(c *fiber.Ctx) error {
 	return c.Render("galays/sub", fiber.Map{
-		"host": h.cfg.App.Host,
+		"host": APP_HOST,
 	})
 }
 
 func (h *IncomingHandler) CloudPlaySub1Page(c *fiber.Ctx) error {
 	return c.Render("cloudplay/sub1", fiber.Map{
-		"host": h.cfg.App.Host,
+		"host": APP_HOST,
 	})
 }
 
 func (h *IncomingHandler) GalaysSub1Page(c *fiber.Ctx) error {
 	return c.Render("galays/sub1", fiber.Map{
-		"host": h.cfg.App.Host,
+		"host": APP_HOST,
 	})
 }
 
 func (h *IncomingHandler) CloudPlaySub2Page(c *fiber.Ctx) error {
 	return c.Render("cloudplay/sub2", fiber.Map{
-		"host": h.cfg.App.Host,
+		"host": APP_HOST,
 	})
 }
 
 func (h *IncomingHandler) CloudPlaySub3Page(c *fiber.Ctx) error {
 	return c.Render("cloudplay/sub3", fiber.Map{
-		"host": h.cfg.App.Host,
+		"host": APP_HOST,
 	})
 }
 
 func (h *IncomingHandler) CloudPlaySub4Page(c *fiber.Ctx) error {
 	return c.Render("cloudplay/sub4", fiber.Map{
-		"host": h.cfg.App.Host,
+		"host": APP_HOST,
 	})
 }
 
 func (h *IncomingHandler) CloudPlayUnsubPage(c *fiber.Ctx) error {
 	return c.Render("cloudplay/unsub", fiber.Map{
-		"host": h.cfg.App.Host,
+		"host": APP_HOST,
 	})
 }
 
 func (h *IncomingHandler) GalaysUnsubPage(c *fiber.Ctx) error {
 	return c.Render("galays/unsub", fiber.Map{
-		"host": h.cfg.App.Host,
+		"host": APP_HOST,
 	})
 }
 
@@ -171,7 +176,7 @@ func (h *IncomingHandler) CloudPlayCampaign(c *fiber.Ctx) error {
 		})
 	}
 
-	telco := telco.NewTelco(h.cfg, h.logger, sub, service, content)
+	telco := telco.NewTelco(h.logger, sub, service, content)
 	redirect, token, err := telco.WebOptInOTP()
 	if err != nil {
 		duration := time.Since(start).Milliseconds()
@@ -272,7 +277,7 @@ func (h *IncomingHandler) GalaysCampaign(c *fiber.Ctx) error {
 		})
 	}
 
-	telco := telco.NewTelco(h.cfg, h.logger, sub, service, content)
+	telco := telco.NewTelco(h.logger, sub, service, content)
 	redirect, token, err := telco.WebOptInOTP()
 	if err != nil {
 		duration := time.Since(start).Milliseconds()
@@ -374,7 +379,7 @@ func (h *IncomingHandler) CloudPlayCampaignBillable(c *fiber.Ctx) error {
 		})
 	}
 
-	telco := telco.NewTelco(h.cfg, h.logger, sub, service, content)
+	telco := telco.NewTelco(h.logger, sub, service, content)
 	redirect, token, err := telco.WebOptInOTP()
 	if err != nil {
 		duration := time.Since(start).Milliseconds()
@@ -475,7 +480,7 @@ func (h *IncomingHandler) GalaysCampaignBillable(c *fiber.Ctx) error {
 		})
 	}
 
-	telco := telco.NewTelco(h.cfg, h.logger, sub, service, content)
+	telco := telco.NewTelco(h.logger, sub, service, content)
 	redirect, token, err := telco.WebOptInOTP()
 	if err != nil {
 		duration := time.Since(start).Milliseconds()
@@ -576,7 +581,7 @@ func (h *IncomingHandler) CampaignTool(c *fiber.Ctx) error {
 		})
 	}
 
-	telco := telco.NewTelco(h.cfg, h.logger, sub, service, content)
+	telco := telco.NewTelco(h.logger, sub, service, content)
 	redirect, token, err := telco.WebOptInOTP()
 	if err != nil {
 		duration := time.Since(start).Milliseconds()
@@ -676,7 +681,7 @@ func (h *IncomingHandler) CloudPlaySub1CampaignPage(c *fiber.Ctx) error {
 		})
 	}
 
-	telco := telco.NewTelco(h.cfg, h.logger, sub, service, content)
+	telco := telco.NewTelco(h.logger, sub, service, content)
 	redirect, token, err := telco.WebOptInOTP()
 	if err != nil {
 		duration := time.Since(start).Milliseconds()
@@ -781,7 +786,7 @@ func (h *IncomingHandler) GalaysSub1CampaignPage(c *fiber.Ctx) error {
 		})
 	}
 
-	telco := telco.NewTelco(h.cfg, h.logger, sub, service, content)
+	telco := telco.NewTelco(h.logger, sub, service, content)
 	redirect, token, err := telco.WebOptInOTP()
 	if err != nil {
 		duration := time.Since(start).Milliseconds()
@@ -882,7 +887,7 @@ func (h *IncomingHandler) CloudPlaySub2CampaignPage(c *fiber.Ctx) error {
 		})
 	}
 
-	telco := telco.NewTelco(h.cfg, h.logger, sub, service, content)
+	telco := telco.NewTelco(h.logger, sub, service, content)
 	redirect, token, err := telco.WebOptInOTP()
 	if err != nil {
 		duration := time.Since(start).Milliseconds()
@@ -985,7 +990,7 @@ func (h *IncomingHandler) CloudPlaySub3CampaignPage(c *fiber.Ctx) error {
 		})
 	}
 
-	telco := telco.NewTelco(h.cfg, h.logger, sub, service, content)
+	telco := telco.NewTelco(h.logger, sub, service, content)
 	redirect, token, err := telco.WebOptInOTP()
 	if err != nil {
 		duration := time.Since(start).Milliseconds()
@@ -1089,7 +1094,7 @@ func (h *IncomingHandler) CloudPlaySub4CampaignPage(c *fiber.Ctx) error {
 		})
 	}
 
-	telco := telco.NewTelco(h.cfg, h.logger, sub, service, content)
+	telco := telco.NewTelco(h.logger, sub, service, content)
 	redirect, token, err := telco.WebOptInOTP()
 	if err != nil {
 		duration := time.Since(start).Milliseconds()
@@ -1192,7 +1197,7 @@ func (h *IncomingHandler) CampaignToolDynamic(c *fiber.Ctx) error {
 		})
 	}
 
-	telco := telco.NewTelco(h.cfg, h.logger, sub, service, content)
+	telco := telco.NewTelco(h.logger, sub, service, content)
 	redirect, token, err := telco.WebOptInOTP()
 	if err != nil {
 		duration := time.Since(start).Milliseconds()
@@ -1297,7 +1302,7 @@ func (h *IncomingHandler) CampaignDirect(c *fiber.Ctx) error {
 		req.SetIpAddress(c.Get("X-Forwarded-For"))
 	}
 
-	telco := telco.NewTelco(h.cfg, h.logger, &entity.Subscription{}, service, &entity.Content{})
+	telco := telco.NewTelco(h.logger, &entity.Subscription{}, service, &entity.Content{})
 	redirect, token, err := telco.WebOptInOTP()
 	if err != nil {
 		duration := time.Since(start).Milliseconds()
@@ -1393,7 +1398,7 @@ func (h *IncomingHandler) OptIn(c *fiber.Ctx) error {
 		})
 	}
 
-	telco := telco.NewTelco(h.cfg, h.logger, sub, service, content)
+	telco := telco.NewTelco(h.logger, sub, service, content)
 	redirect, token, err := telco.WebOptInOTP()
 	if err != nil {
 		duration := time.Since(start).Milliseconds()
@@ -1492,7 +1497,7 @@ func (h *IncomingHandler) CallbackUrl(c *fiber.Ctx) error {
 		}).Error("PAGE_SUCCESS")
 
 		return c.Render("success", fiber.Map{
-			"host": h.cfg.App.Host,
+			"host": APP_HOST,
 		})
 	}
 
@@ -1507,7 +1512,7 @@ func (h *IncomingHandler) CallbackUrl(c *fiber.Ctx) error {
 
 	if !h.serviceService.CheckService(verify.GetService()) {
 		return c.Render("success", fiber.Map{
-			"host": h.cfg.App.Host,
+			"host": APP_HOST,
 		})
 	}
 	service, _ := h.serviceService.GetServiceByCode(verify.GetService())
@@ -1578,13 +1583,13 @@ func (h *IncomingHandler) MessageOriginated(c *fiber.Ctx) error {
 
 func (h *IncomingHandler) Success(c *fiber.Ctx) error {
 	return c.Render("success", fiber.Map{
-		"host": h.cfg.App.Host,
+		"host": APP_HOST,
 	})
 }
 
 func (h *IncomingHandler) Cancel(c *fiber.Ctx) error {
 	return c.Render("cancel", fiber.Map{
-		"host": h.cfg.App.Host,
+		"host": APP_HOST,
 	})
 }
 

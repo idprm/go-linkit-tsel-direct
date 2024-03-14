@@ -8,15 +8,12 @@ import (
 	"os"
 	"time"
 
-	"github.com/idprm/go-linkit-tsel/src/config"
-	"github.com/idprm/go-linkit-tsel/src/datasource/pgsql/db"
-	"github.com/idprm/go-linkit-tsel/src/datasource/rabbitmq"
-	"github.com/idprm/go-linkit-tsel/src/domain/entity"
-	"github.com/idprm/go-linkit-tsel/src/domain/repository"
-	"github.com/idprm/go-linkit-tsel/src/logger"
-	"github.com/idprm/go-linkit-tsel/src/providers/arpu"
-	"github.com/idprm/go-linkit-tsel/src/providers/rabbit"
-	"github.com/idprm/go-linkit-tsel/src/services"
+	"github.com/idprm/go-linkit-tsel/internal/domain/entity"
+	"github.com/idprm/go-linkit-tsel/internal/domain/repository"
+	"github.com/idprm/go-linkit-tsel/internal/logger"
+	"github.com/idprm/go-linkit-tsel/internal/providers/arpu"
+	"github.com/idprm/go-linkit-tsel/internal/providers/rabbit"
+	"github.com/idprm/go-linkit-tsel/internal/services"
 	"github.com/spf13/cobra"
 	"github.com/wiliehidayat87/rmqp"
 )
@@ -27,27 +24,22 @@ var publisherRenewalCmd = &cobra.Command{
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
 		/**
-		 * LOAD CONFIG
+		 * connect pgsql
 		 */
-		cfg, err := config.LoadSecret("secret.yaml")
+		db, err := connectPgsql()
 		if err != nil {
 			panic(err)
 		}
 
 		/**
-		 * SETUP PGSQL
+		 * connect rabbitmq
 		 */
-		db := db.InitDB(cfg)
-
-		/**
-		 * SETUP RMQ
-		 */
-		queue := rabbitmq.InitQueue(cfg)
+		rmq := connectRabbitMq()
 
 		/**
 		 * SETUP CHANNEL
 		 */
-		queue.SetUpChannel(RMQ_EXCHANGETYPE, true, RMQ_RENEWALEXCHANGE, true, RMQ_RENEWALQUEUE)
+		rmq.SetUpChannel(RMQ_EXCHANGETYPE, true, RMQ_RENEWALEXCHANGE, true, RMQ_RENEWALQUEUE)
 
 		/**
 		 * Looping schedule
@@ -60,22 +52,22 @@ var publisherRenewalCmd = &cobra.Command{
 			scheduleRepo := repository.NewScheduleRepository(db)
 			scheduleService := services.NewScheduleService(scheduleRepo)
 
-			if scheduleService.GetUnlocked("RENEWAL", timeNow) {
+			if scheduleService.GetUnlocked(ACT_RENEWAL, timeNow) {
 
-				scheduleService.UpdateSchedule(false, "RENEWAL")
+				scheduleService.UpdateSchedule(false, ACT_RENEWAL)
 
 				go func() {
-					populateRenewal(db, queue)
+					populateRenewal(db, rmq)
 				}()
 			}
 
-			if scheduleService.GetLocked("RENEWAL", timeNow) {
-				scheduleService.UpdateSchedule(true, "RENEWAL")
+			if scheduleService.GetLocked(ACT_RENEWAL, timeNow) {
+				scheduleService.UpdateSchedule(true, ACT_RENEWAL)
 
 				/**
 				** Purge queue retry if populate renewal start
 				**/
-				p := rabbit.NewRabbitMQ(cfg)
+				p := rabbit.NewRabbitMQ()
 				p.Purge(RMQ_RETRYINSUFFQUEUE)
 			}
 
@@ -91,27 +83,22 @@ var publisherRetryFpCmd = &cobra.Command{
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
 		/**
-		 * LOAD CONFIG
+		 * connect pgsql
 		 */
-		cfg, err := config.LoadSecret("secret.yaml")
+		db, err := connectPgsql()
 		if err != nil {
 			panic(err)
 		}
 
 		/**
-		 * SETUP PGSQL
+		 * connect rabbitmq
 		 */
-		db := db.InitDB(cfg)
-
-		/**
-		 * SETUP RMQ
-		 */
-		queue := rabbitmq.InitQueue(cfg)
+		rmq := connectRabbitMq()
 
 		/**
 		 * SETUP CHANNEL
 		 */
-		queue.SetUpChannel(RMQ_EXCHANGETYPE, true, RMQ_RETRYFPEXCHANGE, true, RMQ_RETRYFPQUEUE)
+		rmq.SetUpChannel(RMQ_EXCHANGETYPE, true, RMQ_RETRYFPEXCHANGE, true, RMQ_RETRYFPQUEUE)
 
 		/**
 		 * Looping schedule
@@ -123,20 +110,20 @@ var publisherRetryFpCmd = &cobra.Command{
 			/**
 			** Populate retry if queue message is zero or 0
 			**/
-			p := rabbit.NewRabbitMQ(cfg)
+			p := rabbit.NewRabbitMQ()
 
-			rmq, err := p.Queue(RMQ_RETRYFPQUEUE)
+			q, err := p.Queue(RMQ_RETRYFPQUEUE)
 			if err != nil {
 				log.Println(err)
 			}
 
 			var res *entity.RabbitMQResponse
-			json.Unmarshal(rmq, &res)
+			json.Unmarshal(q, &res)
 
 			// if queue is empty
 			if !res.IsRunning() {
 				go func() {
-					populateRetryFp(db, queue)
+					populateRetryFp(db, rmq)
 				}()
 			}
 
@@ -153,27 +140,22 @@ var publisherRetryDpCmd = &cobra.Command{
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
 		/**
-		 * LOAD CONFIG
+		 * connect pgsql
 		 */
-		cfg, err := config.LoadSecret("secret.yaml")
+		db, err := connectPgsql()
 		if err != nil {
 			panic(err)
 		}
 
 		/**
-		 * SETUP PGSQL
+		 * connect rabbitmq
 		 */
-		db := db.InitDB(cfg)
-
-		/**
-		 * SETUP RMQ
-		 */
-		queue := rabbitmq.InitQueue(cfg)
+		rmq := connectRabbitMq()
 
 		/**
 		 * SETUP CHANNEL
 		 */
-		queue.SetUpChannel(RMQ_EXCHANGETYPE, true, RMQ_RETRYDPEXCHANGE, true, RMQ_RETRYDPQUEUE)
+		rmq.SetUpChannel(RMQ_EXCHANGETYPE, true, RMQ_RETRYDPEXCHANGE, true, RMQ_RETRYDPQUEUE)
 
 		/**
 		 * Looping schedule
@@ -185,20 +167,20 @@ var publisherRetryDpCmd = &cobra.Command{
 			/**
 			** Populate retry if queue message is zero or 0
 			**/
-			p := rabbit.NewRabbitMQ(cfg)
+			p := rabbit.NewRabbitMQ()
 
-			rmq, err := p.Queue(RMQ_RETRYDPQUEUE)
+			q, err := p.Queue(RMQ_RETRYDPQUEUE)
 			if err != nil {
 				log.Println(err)
 			}
 
 			var res *entity.RabbitMQResponse
-			json.Unmarshal(rmq, &res)
+			json.Unmarshal(q, &res)
 
 			// if queue is empty
 			if !res.IsRunning() {
 				go func() {
-					populateRetryDp(db, queue)
+					populateRetryDp(db, rmq)
 				}()
 			}
 
@@ -215,27 +197,22 @@ var publisherRetryInsuffCmd = &cobra.Command{
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
 		/**
-		 * LOAD CONFIG
+		 * connect pgsql
 		 */
-		cfg, err := config.LoadSecret("secret.yaml")
+		db, err := connectPgsql()
 		if err != nil {
 			panic(err)
 		}
 
 		/**
-		 * SETUP PGSQL
+		 * connect rabbitmq
 		 */
-		db := db.InitDB(cfg)
-
-		/**
-		 * SETUP RMQ
-		 */
-		queue := rabbitmq.InitQueue(cfg)
+		rmq := connectRabbitMq()
 
 		/**
 		 * SETUP CHANNEL
 		 */
-		queue.SetUpChannel(RMQ_EXCHANGETYPE, true, RMQ_RETRYINSUFFEXCHANGE, true, RMQ_RETRYINSUFFQUEUE)
+		rmq.SetUpChannel(RMQ_EXCHANGETYPE, true, RMQ_RETRYINSUFFEXCHANGE, true, RMQ_RETRYINSUFFQUEUE)
 
 		/**
 		 * Looping schedule
@@ -248,17 +225,17 @@ var publisherRetryInsuffCmd = &cobra.Command{
 			scheduleRepo := repository.NewScheduleRepository(db)
 			scheduleService := services.NewScheduleService(scheduleRepo)
 
-			if scheduleService.GetUnlocked("RETRY_INSUFF", timeNow) {
+			if scheduleService.GetUnlocked(ACT_RETRY_INSUFF, timeNow) {
 
-				scheduleService.UpdateSchedule(false, "RETRY_INSUFF")
+				scheduleService.UpdateSchedule(false, ACT_RETRY_INSUFF)
 
 				go func() {
-					populateRetryInsuff(db, queue)
+					populateRetryInsuff(db, rmq)
 				}()
 			}
 
-			if scheduleService.GetLocked("RETRY_INSUFF", timeNow) {
-				scheduleService.UpdateSchedule(true, "RETRY_INSUFF")
+			if scheduleService.GetLocked(ACT_RETRY_INSUFF, timeNow) {
+				scheduleService.UpdateSchedule(true, ACT_RETRY_INSUFF)
 			}
 
 			time.Sleep(timeDuration * time.Minute)
@@ -274,17 +251,12 @@ var publisherCSVCmd = &cobra.Command{
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
 		/**
-		 * LOAD CONFIG
+		 * connect pgsql
 		 */
-		cfg, err := config.LoadSecret("secret.yaml")
+		db, err := connectPgsql()
 		if err != nil {
 			panic(err)
 		}
-
-		/**
-		 * SETUP PGSQL
-		 */
-		db := db.InitDB(cfg)
 
 		/**
 		 * Looping schedule
@@ -297,17 +269,17 @@ var publisherCSVCmd = &cobra.Command{
 			scheduleRepo := repository.NewScheduleRepository(db)
 			scheduleService := services.NewScheduleService(scheduleRepo)
 
-			if scheduleService.GetUnlocked("CSV", timeNow) {
+			if scheduleService.GetUnlocked(ACT_CSV, timeNow) {
 
-				scheduleService.UpdateSchedule(false, "CSV")
+				scheduleService.UpdateSchedule(false, ACT_CSV)
 
 				go func() {
-					populateCSV(cfg, db)
+					populateCSV(db)
 				}()
 			}
 
-			if scheduleService.GetLocked("CSV", timeNow) {
-				scheduleService.UpdateSchedule(true, "CSV")
+			if scheduleService.GetLocked(ACT_CSV, timeNow) {
+				scheduleService.UpdateSchedule(true, ACT_CSV)
 			}
 
 			time.Sleep(timeDuration * time.Minute)
@@ -439,7 +411,7 @@ func populateRetryInsuff(db *sql.DB, queue rmqp.AMQP) {
 	}
 }
 
-func populateCSV(cfg *config.Secret, db *sql.DB) {
+func populateCSV(db *sql.DB) {
 	subscriptionRepo := repository.NewSubscriptionRepository(db)
 	subscriptionService := services.NewSubscriptionService(subscriptionRepo)
 	transactionRepo := repository.NewTransactionRepository(db)
@@ -535,10 +507,10 @@ func populateCSV(cfg *config.Secret, db *sql.DB) {
 	/**
 	 * SETUP LOG
 	 */
-	logger := logger.NewLogger(cfg)
+	logger := logger.NewLogger()
 
-	arp := arpu.NewArpu(cfg, logger)
+	arp := arpu.NewArpu(logger)
 
-	arp.UploadCSV(cfg.Arpu.UrlSub, "./logs/csv/subscriptions_id_telkomsel_cloudplay.csv")
-	arp.UploadCSV(cfg.Arpu.UrlTrans, "./logs/csv/transactions_id_telkomsel_cloudplay.csv")
+	arp.UploadCSV(ARPU_URL_SUB, "./logs/csv/subscriptions_id_telkomsel_cloudplay.csv")
+	arp.UploadCSV(ARPU_URL_TRANS, "./logs/csv/transactions_id_telkomsel_cloudplay.csv")
 }

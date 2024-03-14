@@ -10,22 +10,25 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/idprm/go-linkit-tsel/src/config"
-	"github.com/idprm/go-linkit-tsel/src/logger"
+	"github.com/idprm/go-linkit-tsel/internal/logger"
+	"github.com/idprm/go-linkit-tsel/internal/utils"
 	"github.com/sirupsen/logrus"
 )
 
+var (
+	ARPU_USERNAME string = utils.GetEnv("ARPU_USERNAME")
+	ARPU_PASSWORD string = utils.GetEnv("ARPU_PASSWORD")
+	ARPU_TOKEN    string = utils.GetEnv("ARPU_TOKEN")
+)
+
 type Arpu struct {
-	cfg    *config.Secret
 	logger *logger.Logger
 }
 
 func NewArpu(
-	cfg *config.Secret,
 	logger *logger.Logger,
 ) *Arpu {
 	return &Arpu{
-		cfg:    cfg,
 		logger: logger,
 	}
 }
@@ -83,8 +86,8 @@ func (a *Arpu) fileUploadRequest(uri, paramName, path string) (*http.Request, er
 	req, err := http.NewRequest("POST", uri, body)
 
 	req.Header.Set("Content-Type", writer.FormDataContentType())
-	req.SetBasicAuth(a.cfg.Arpu.Username, a.cfg.Arpu.Password)
-	req.Header.Add("Bearer", a.cfg.Arpu.Token)
+	req.SetBasicAuth(ARPU_USERNAME, ARPU_PASSWORD)
+	req.Header.Add("Bearer", ARPU_TOKEN)
 
 	return req, err
 }

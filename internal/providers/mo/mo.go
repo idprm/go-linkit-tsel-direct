@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/idprm/go-linkit-tsel/src/domain/entity"
+	"github.com/idprm/go-linkit-tsel/internal/domain/entity"
 )
 
 func HitMO(r entity.ReqSub) ([]byte, error) {

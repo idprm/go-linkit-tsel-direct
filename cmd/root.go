@@ -52,7 +52,10 @@ const (
 	RMQ_POSTBACKMTQUEUE     string = "Q_POSTBACK_MT"
 	MT_FIRSTPUSH            string = "MT_FIRSTPUSH"
 	ACT_RENEWAL             string = "RENEWAL"
-	ACT_RETRY               string = "RETRY"
+	ACT_RETRY_FP            string = "RETRY_FP"
+	ACT_RETRY_DP            string = "RETRY_DP"
+	ACT_RETRY_INSUFF        string = "RETRY_INSUFF"
+	ACT_CSV                 string = "CSV"
 )
 
 var (
