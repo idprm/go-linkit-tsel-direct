@@ -1,0 +1,544 @@
+package cmd
+
+import (
+	"database/sql"
+	"encoding/csv"
+	"encoding/json"
+	"log"
+	"os"
+	"time"
+
+	"github.com/idprm/go-linkit-tsel/src/config"
+	"github.com/idprm/go-linkit-tsel/src/datasource/pgsql/db"
+	"github.com/idprm/go-linkit-tsel/src/datasource/rabbitmq"
+	"github.com/idprm/go-linkit-tsel/src/domain/entity"
+	"github.com/idprm/go-linkit-tsel/src/domain/repository"
+	"github.com/idprm/go-linkit-tsel/src/logger"
+	"github.com/idprm/go-linkit-tsel/src/providers/arpu"
+	"github.com/idprm/go-linkit-tsel/src/providers/rabbit"
+	"github.com/idprm/go-linkit-tsel/src/services"
+	"github.com/spf13/cobra"
+	"github.com/wiliehidayat87/rmqp"
+)
+
+var publisherRenewalCmd = &cobra.Command{
+	Use:   "publisher_renewal",
+	Short: "Renewal CLI",
+	Long:  ``,
+	Run: func(cmd *cobra.Command, args []string) {
+		/**
+		 * LOAD CONFIG
+		 */
+		cfg, err := config.LoadSecret("secret.yaml")
+		if err != nil {
+			panic(err)
+		}
+
+		/**
+		 * SETUP PGSQL
+		 */
+		db := db.InitDB(cfg)
+
+		/**
+		 * SETUP RMQ
+		 */
+		queue := rabbitmq.InitQueue(cfg)
+
+		/**
+		 * SETUP CHANNEL
+		 */
+		queue.SetUpChannel(RMQ_EXCHANGETYPE, true, RMQ_RENEWALEXCHANGE, true, RMQ_RENEWALQUEUE)
+
+		/**
+		 * Looping schedule
+		 */
+		timeDuration := time.Duration(1)
+
+		for {
+			timeNow := time.Now().Format("15:04")
+
+			scheduleRepo := repository.NewScheduleRepository(db)
+			scheduleService := services.NewScheduleService(scheduleRepo)
+
+			if scheduleService.GetUnlocked("RENEWAL", timeNow) {
+
+				scheduleService.UpdateSchedule(false, "RENEWAL")
+
+				go func() {
+					populateRenewal(db, queue)
+				}()
+			}
+
+			if scheduleService.GetLocked("RENEWAL", timeNow) {
+				scheduleService.UpdateSchedule(true, "RENEWAL")
+
+				/**
+				** Purge queue retry if populate renewal start
+				**/
+				p := rabbit.NewRabbitMQ(cfg)
+				p.Purge(RMQ_RETRYINSUFFQUEUE)
+			}
+
+			time.Sleep(timeDuration * time.Minute)
+
+		}
+	},
+}
+
+var publisherRetryFpCmd = &cobra.Command{
+	Use:   "publisher_retry_fp",
+	Short: "Publisher Retry Firstpush CLI",
+	Long:  ``,
+	Run: func(cmd *cobra.Command, args []string) {
+		/**
+		 * LOAD CONFIG
+		 */
+		cfg, err := config.LoadSecret("secret.yaml")
+		if err != nil {
+			panic(err)
+		}
+
+		/**
+		 * SETUP PGSQL
+		 */
+		db := db.InitDB(cfg)
+
+		/**
+		 * SETUP RMQ
+		 */
+		queue := rabbitmq.InitQueue(cfg)
+
+		/**
+		 * SETUP CHANNEL
+		 */
+		queue.SetUpChannel(RMQ_EXCHANGETYPE, true, RMQ_RETRYFPEXCHANGE, true, RMQ_RETRYFPQUEUE)
+
+		/**
+		 * Looping schedule
+		 */
+		timeDuration := time.Duration(1)
+
+		for {
+
+			/**
+			** Populate retry if queue message is zero or 0
+			**/
+			p := rabbit.NewRabbitMQ(cfg)
+
+			rmq, err := p.Queue(RMQ_RETRYFPQUEUE)
+			if err != nil {
+				log.Println(err)
+			}
+
+			var res *entity.RabbitMQResponse
+			json.Unmarshal(rmq, &res)
+
+			// if queue is empty
+			if !res.IsRunning() {
+				go func() {
+					populateRetryFp(db, queue)
+				}()
+			}
+
+			time.Sleep(timeDuration * time.Minute)
+
+		}
+
+	},
+}
+
+var publisherRetryDpCmd = &cobra.Command{
+	Use:   "publisher_retry_dp",
+	Short: "Publisher Retry Dailypush CLI",
+	Long:  ``,
+	Run: func(cmd *cobra.Command, args []string) {
+		/**
+		 * LOAD CONFIG
+		 */
+		cfg, err := config.LoadSecret("secret.yaml")
+		if err != nil {
+			panic(err)
+		}
+
+		/**
+		 * SETUP PGSQL
+		 */
+		db := db.InitDB(cfg)
+
+		/**
+		 * SETUP RMQ
+		 */
+		queue := rabbitmq.InitQueue(cfg)
+
+		/**
+		 * SETUP CHANNEL
+		 */
+		queue.SetUpChannel(RMQ_EXCHANGETYPE, true, RMQ_RETRYDPEXCHANGE, true, RMQ_RETRYDPQUEUE)
+
+		/**
+		 * Looping schedule
+		 */
+		timeDuration := time.Duration(1)
+
+		for {
+
+			/**
+			** Populate retry if queue message is zero or 0
+			**/
+			p := rabbit.NewRabbitMQ(cfg)
+
+			rmq, err := p.Queue(RMQ_RETRYDPQUEUE)
+			if err != nil {
+				log.Println(err)
+			}
+
+			var res *entity.RabbitMQResponse
+			json.Unmarshal(rmq, &res)
+
+			// if queue is empty
+			if !res.IsRunning() {
+				go func() {
+					populateRetryDp(db, queue)
+				}()
+			}
+
+			time.Sleep(timeDuration * time.Minute)
+
+		}
+
+	},
+}
+
+var publisherRetryInsuffCmd = &cobra.Command{
+	Use:   "publisher_retry_insuff",
+	Short: "Publisher Retry Insuff CLI",
+	Long:  ``,
+	Run: func(cmd *cobra.Command, args []string) {
+		/**
+		 * LOAD CONFIG
+		 */
+		cfg, err := config.LoadSecret("secret.yaml")
+		if err != nil {
+			panic(err)
+		}
+
+		/**
+		 * SETUP PGSQL
+		 */
+		db := db.InitDB(cfg)
+
+		/**
+		 * SETUP RMQ
+		 */
+		queue := rabbitmq.InitQueue(cfg)
+
+		/**
+		 * SETUP CHANNEL
+		 */
+		queue.SetUpChannel(RMQ_EXCHANGETYPE, true, RMQ_RETRYINSUFFEXCHANGE, true, RMQ_RETRYINSUFFQUEUE)
+
+		/**
+		 * Looping schedule
+		 */
+		timeDuration := time.Duration(1)
+
+		for {
+			timeNow := time.Now().Format("15:04")
+
+			scheduleRepo := repository.NewScheduleRepository(db)
+			scheduleService := services.NewScheduleService(scheduleRepo)
+
+			if scheduleService.GetUnlocked("RETRY_INSUFF", timeNow) {
+
+				scheduleService.UpdateSchedule(false, "RETRY_INSUFF")
+
+				go func() {
+					populateRetryInsuff(db, queue)
+				}()
+			}
+
+			if scheduleService.GetLocked("RETRY_INSUFF", timeNow) {
+				scheduleService.UpdateSchedule(true, "RETRY_INSUFF")
+			}
+
+			time.Sleep(timeDuration * time.Minute)
+
+		}
+
+	},
+}
+
+var publisherCSVCmd = &cobra.Command{
+	Use:   "publisher_csv",
+	Short: "CSV CLI",
+	Long:  ``,
+	Run: func(cmd *cobra.Command, args []string) {
+		/**
+		 * LOAD CONFIG
+		 */
+		cfg, err := config.LoadSecret("secret.yaml")
+		if err != nil {
+			panic(err)
+		}
+
+		/**
+		 * SETUP PGSQL
+		 */
+		db := db.InitDB(cfg)
+
+		/**
+		 * Looping schedule
+		 */
+		timeDuration := time.Duration(1)
+
+		for {
+			timeNow := time.Now().Format("15:04")
+
+			scheduleRepo := repository.NewScheduleRepository(db)
+			scheduleService := services.NewScheduleService(scheduleRepo)
+
+			if scheduleService.GetUnlocked("CSV", timeNow) {
+
+				scheduleService.UpdateSchedule(false, "CSV")
+
+				go func() {
+					populateCSV(cfg, db)
+				}()
+			}
+
+			if scheduleService.GetLocked("CSV", timeNow) {
+				scheduleService.UpdateSchedule(true, "CSV")
+			}
+
+			time.Sleep(timeDuration * time.Minute)
+		}
+
+	},
+}
+
+func populateRenewal(db *sql.DB, queue rmqp.AMQP) {
+	subscriptionRepo := repository.NewSubscriptionRepository(db)
+	subscriptionService := services.NewSubscriptionService(subscriptionRepo)
+
+	subs := subscriptionService.RenewalSubscription()
+	for _, s := range *subs {
+		var sub entity.Subscription
+
+		sub.ID = s.ID
+		sub.ServiceID = s.ServiceID
+		sub.Msisdn = s.Msisdn
+		sub.Channel = s.Channel
+		sub.Adnet = s.Adnet
+		sub.LatestKeyword = s.LatestKeyword
+		sub.LatestSubject = s.LatestSubject
+		sub.LatestPIN = s.LatestPIN
+		sub.IpAddress = s.IpAddress
+		sub.AffSub = s.AffSub
+		sub.CampKeyword = s.CampKeyword
+		sub.CampSubKeyword = s.CampSubKeyword
+		sub.CreatedAt = s.CreatedAt
+
+		json, _ := json.Marshal(sub)
+
+		queue.IntegratePublish(RMQ_RENEWALEXCHANGE, RMQ_RENEWALQUEUE, RMQ_DATATYPE, "", string(json))
+
+		time.Sleep(100 * time.Microsecond)
+	}
+}
+
+func populateRetryFp(db *sql.DB, queue rmqp.AMQP) {
+	subscriptionRepo := repository.NewSubscriptionRepository(db)
+	subscriptionService := services.NewSubscriptionService(subscriptionRepo)
+
+	subs := subscriptionService.RetryFpSubscription()
+
+	for _, s := range *subs {
+		var sub entity.Subscription
+
+		sub.ID = s.ID
+		sub.ServiceID = s.ServiceID
+		sub.Msisdn = s.Msisdn
+		sub.Channel = s.Channel
+		sub.Adnet = s.Adnet
+		sub.LatestKeyword = s.LatestKeyword
+		sub.LatestSubject = s.LatestSubject
+		sub.LatestPIN = s.LatestPIN
+		sub.IpAddress = s.IpAddress
+		sub.AffSub = s.AffSub
+		sub.CampKeyword = s.CampKeyword
+		sub.CampSubKeyword = s.CampSubKeyword
+		sub.RetryAt = s.RetryAt
+		sub.CreatedAt = s.CreatedAt
+
+		json, _ := json.Marshal(sub)
+		queue.IntegratePublish(RMQ_RETRYFPEXCHANGE, RMQ_RETRYFPQUEUE, RMQ_DATATYPE, "", string(json))
+
+		time.Sleep(100 * time.Microsecond)
+	}
+}
+
+func populateRetryDp(db *sql.DB, queue rmqp.AMQP) {
+	subscriptionRepo := repository.NewSubscriptionRepository(db)
+	subscriptionService := services.NewSubscriptionService(subscriptionRepo)
+
+	subs := subscriptionService.RetryDpSubscription()
+
+	for _, s := range *subs {
+		var sub entity.Subscription
+
+		sub.ID = s.ID
+		sub.ServiceID = s.ServiceID
+		sub.Msisdn = s.Msisdn
+		sub.Channel = s.Channel
+		sub.Adnet = s.Adnet
+		sub.LatestKeyword = s.LatestKeyword
+		sub.LatestSubject = s.LatestSubject
+		sub.LatestPIN = s.LatestPIN
+		sub.IpAddress = s.IpAddress
+		sub.AffSub = s.AffSub
+		sub.CampKeyword = s.CampKeyword
+		sub.CampSubKeyword = s.CampSubKeyword
+		sub.RetryAt = s.RetryAt
+		sub.CreatedAt = s.CreatedAt
+
+		json, _ := json.Marshal(sub)
+		queue.IntegratePublish(RMQ_RETRYDPEXCHANGE, RMQ_RETRYDPQUEUE, RMQ_DATATYPE, "", string(json))
+
+		time.Sleep(100 * time.Microsecond)
+	}
+}
+
+func populateRetryInsuff(db *sql.DB, queue rmqp.AMQP) {
+	subscriptionRepo := repository.NewSubscriptionRepository(db)
+	subscriptionService := services.NewSubscriptionService(subscriptionRepo)
+
+	subs := subscriptionService.RetryInsuffSubscription()
+
+	for _, s := range *subs {
+		var sub entity.Subscription
+
+		sub.ID = s.ID
+		sub.ServiceID = s.ServiceID
+		sub.Msisdn = s.Msisdn
+		sub.Channel = s.Channel
+		sub.Adnet = s.Adnet
+		sub.LatestKeyword = s.LatestKeyword
+		sub.LatestSubject = s.LatestSubject
+		sub.LatestPIN = s.LatestPIN
+		sub.IpAddress = s.IpAddress
+		sub.AffSub = s.AffSub
+		sub.CampKeyword = s.CampKeyword
+		sub.CampSubKeyword = s.CampSubKeyword
+		sub.RetryAt = s.RetryAt
+		sub.CreatedAt = s.CreatedAt
+
+		json, _ := json.Marshal(sub)
+		queue.IntegratePublish(RMQ_RETRYINSUFFEXCHANGE, RMQ_RETRYINSUFFQUEUE, RMQ_DATATYPE, "", string(json))
+
+		time.Sleep(100 * time.Microsecond)
+	}
+}
+
+func populateCSV(cfg *config.Secret, db *sql.DB) {
+	subscriptionRepo := repository.NewSubscriptionRepository(db)
+	subscriptionService := services.NewSubscriptionService(subscriptionRepo)
+	transactionRepo := repository.NewTransactionRepository(db)
+	transactionService := services.NewTransactionService(transactionRepo)
+
+	subRecords, err := subscriptionService.SelectSubcriptionToCSV()
+	if err != nil {
+		log.Fatalf("error load table subscriptions: %s", err)
+	}
+	transRecords, err := transactionService.SelectTransactionToCSV()
+	if err != nil {
+		log.Fatalf("error load table transactions: %s", err)
+	}
+
+	// delete file
+	os.Remove("./logs/csv/subscriptions_id_telkomsel_cloudplay.csv")
+
+	subCsv, err := os.Create("./logs/csv/subscriptions_id_telkomsel_cloudplay.csv")
+	if err != nil {
+		log.Fatalf("failed creating file: %s", err)
+	}
+
+	defer subCsv.Close()
+	subW := csv.NewWriter(subCsv)
+	defer subW.Flush()
+
+	subsHeaders := []string{
+		"country", "operator", "service", "source", "msisdn",
+		"status", "cycle", "adnet", "revenue", "subs_date",
+		"renewal_date", "freemium_end_date", "unsubs_from", "unsubs_date",
+		"service_price", "currency", "profile_status", "publisher",
+		"trxid", "pixel", "handset", "browser", "attempt_charging",
+		"success_billing",
+	}
+	subW.Write(subsHeaders)
+
+	var subsData [][]string
+	for _, r := range *subRecords {
+		row := []string{
+			r.Country, r.Operator, r.Service, r.Source, r.Msisdn,
+			r.LatestSubject, r.Cycle, r.Adnet, r.Revenue, r.SubsDate.String,
+			r.RenewalDate.String, r.FreemiumEndDate, r.UnsubsFrom, r.UnsubsDate.String,
+			r.ServicePrice, r.Currency, r.ProfileStatus, r.Publisher,
+			r.Trxid, r.Pixel, r.Handset, r.Browser, r.AttemptCharging,
+			r.SuccessBilling,
+		}
+		subsData = append(subsData, row)
+	}
+
+	err = subW.WriteAll(subsData) // calls Flush internally
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// delete file
+	os.Remove("./logs/transactions_id_telkomsel_cloudplay.csv")
+
+	transCsv, err := os.Create("./logs/csv/transactions_id_telkomsel_cloudplay.csv")
+	if err != nil {
+		log.Fatalf("failed creating file: %s", err)
+	}
+
+	defer transCsv.Close()
+	transW := csv.NewWriter(transCsv)
+	defer transW.Flush()
+
+	transHeaders := []string{
+		"country", "operator", "service", "source", "msisdn",
+		"event", "event_date", "cycle", "revenue", "charge_date",
+		"currency", "publisher", "handset",
+		"browser", "trxid", "telco_api_url", "telco_api_response",
+		"sms_content", "status_sms",
+	}
+	transW.Write(transHeaders)
+
+	var transData [][]string
+	for _, r := range *transRecords {
+		row := []string{
+			r.Country, r.Operator, r.Service, r.Source, r.Msisdn,
+			r.Event, r.EventDate.String, r.Cycle, r.Revenue, r.ChargeDate.String,
+			r.Currency, r.Publisher, r.Handset,
+			r.Browser, r.TrxId, r.TelcoApiUrl, r.TelcoApiResponse,
+			r.SmsContent, r.StatusSms,
+		}
+		transData = append(transData, row)
+	}
+
+	err = transW.WriteAll(transData) // calls Flush internally
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	/**
+	 * SETUP LOG
+	 */
+	logger := logger.NewLogger(cfg)
+
+	arp := arpu.NewArpu(cfg, logger)
+
+	arp.UploadCSV(cfg.Arpu.UrlSub, "./logs/csv/subscriptions_id_telkomsel_cloudplay.csv")
+	arp.UploadCSV(cfg.Arpu.UrlTrans, "./logs/csv/transactions_id_telkomsel_cloudplay.csv")
+}

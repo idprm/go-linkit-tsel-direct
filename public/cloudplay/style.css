@@ -1,0 +1,154 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Teko:wght@500&display=swap');
+
+body {
+    font-family: 'arial', sans-serif;
+}
+
+.box-wrapper {
+    max-width: 576px;
+}
+
+.title {
+    font-family: 'Teko', sans-serif;
+    font-size: 1.65rem;
+    line-height: 1.85rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.button-wrapper {
+    width: 100%;
+}
+
+.banner {
+    position: relative;
+    background-image: url('img/bg-game.jpg');
+    background-size: auto;
+    animation-name: animate-bg;
+    animation-timing-function: linear;
+    animation-duration: 2000s;
+    animation-iteration-count: infinite;
+    animation-direction: normal;
+}
+.banner img {
+    position: relative;
+    z-index: 9;
+}
+.banner::after {
+    content: '';
+    background-color: rgba(243, 207, 207, 0.75);
+    display: block;
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    top: 0;
+}
+
+.button {
+    letter-spacing: 1px;
+    font-size: 1.25rem;
+    line-height: 1.5;
+    color: white;
+    background-color: #06C592;
+    border: 2px solid white;
+    width: 75%;
+    margin-left: auto;
+    margin-right: auto;
+    border-radius: 0.5rem;
+    position: relative;
+    font-weight: bold;
+    overflow: hidden;
+}
+.button:hover,
+.button:focus {
+    color: white;
+}
+.button::before {
+    content: '';
+    position: absolute;
+    height: 100%;
+    width: 45px;
+    display: inline-block;
+    background-image: url('img/arrow-right.gif');
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-position: left center;
+    left: 0.5rem;
+    transform: translateY(-50%);
+    top: 50%;
+    opacity: 0.25;
+}
+.button::after {
+    content: '';
+    position: absolute;
+    height: 100%;
+    width: 45px;
+    display: inline-block;
+    background-image: url('img/arrow-left.gif');
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-position: right center;
+    right: 0.5rem;
+    transform: translateY(-50%);
+    top: 50%;
+    opacity: 0.25;
+}
+.button-light {
+    width: 30px;
+    height: 200px;
+    position: absolute;
+    left: -20px;
+    top: 0;
+    margin-top: -20px;
+    background: white;
+    opacity: 0.6;
+    filter: blur(20px);
+    animation: blur 2s infinite;
+    animation-delay: 0s;
+    transform-origin: top;
+}
+
+.info,
+.term {
+    font-size: 0.75rem;
+    line-height: 1.5;
+    opacity: 0.8;
+}
+
+@keyframes animate-bg {
+	100% {background-position: 100000px 0}
+}
+@-webkit-keyframes animate-bg {
+	100% {background-position: 100000px 0}
+}
+@-moz-keyframes animate-bg {
+	100% {background-position: 100000px 0}
+}
+@-o-keyframes animate-bg {
+	100% {background-position: 100000px 0}
+}
+
+@keyframes blur {
+    from {
+        transform: translate(0) rotate(45deg);
+    }
+    to {
+        transform: translateX(370px) rotate(45deg);
+    }
+}
+
+@media only screen and (max-width: 414px) {
+    .button {
+        font-size: 1.125rem;
+    }
+}
+
+@media only screen and (max-width: 385px) {
+    .button {
+        width: 100%;
+        font-size: 1.125rem;
+    }
+}
