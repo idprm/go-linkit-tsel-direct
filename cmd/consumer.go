@@ -10,11 +10,10 @@ import (
 )
 
 var consumerMOCmd = &cobra.Command{
-	Use:   "consumer_mo",
+	Use:   "mo",
 	Short: "Consumer MO Service CLI",
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
-
 		/**
 		 * connect pgsql
 		 */
@@ -82,7 +81,7 @@ var consumerMOCmd = &cobra.Command{
 }
 
 var consumerRenewalCmd = &cobra.Command{
-	Use:   "consumer_renewal",
+	Use:   "renewal",
 	Short: "Consumer Renewal Service CLI",
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
@@ -154,7 +153,7 @@ var consumerRenewalCmd = &cobra.Command{
 }
 
 var consumerRetryFpCmd = &cobra.Command{
-	Use:   "consumer_retry_fp",
+	Use:   "retry_fp",
 	Short: "Consumer Retry Firstpush Service CLI",
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
@@ -226,7 +225,7 @@ var consumerRetryFpCmd = &cobra.Command{
 }
 
 var consumerRetryDpCmd = &cobra.Command{
-	Use:   "consumer_retry_dp",
+	Use:   "retry_dp",
 	Short: "Consumer Retry Dailypush Service CLI",
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
@@ -298,7 +297,7 @@ var consumerRetryDpCmd = &cobra.Command{
 }
 
 var consumerRetryInsuffCmd = &cobra.Command{
-	Use:   "consumer_retry_insuff",
+	Use:   "retry_insuff",
 	Short: "Consumer Retry Insuff Service CLI",
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
@@ -370,7 +369,7 @@ var consumerRetryInsuffCmd = &cobra.Command{
 }
 
 var consumerNotifCmd = &cobra.Command{
-	Use:   "consumer_notif",
+	Use:   "notif",
 	Short: "Consumer Notif Service CLI",
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
@@ -431,7 +430,7 @@ var consumerNotifCmd = &cobra.Command{
 }
 
 var consumerPostbackMOCmd = &cobra.Command{
-	Use:   "consumer_postback_mo",
+	Use:   "postback_mo",
 	Short: "Consumer Postback MO Service CLI",
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
@@ -492,7 +491,7 @@ var consumerPostbackMOCmd = &cobra.Command{
 }
 
 var consumerPostbackMTCmd = &cobra.Command{
-	Use:   "consumer_postback_mt",
+	Use:   "postback_mt",
 	Short: "Consumer Postback MT Service CLI",
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {

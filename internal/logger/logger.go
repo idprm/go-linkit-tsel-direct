@@ -6,11 +6,12 @@ import (
 	"os"
 	"time"
 
+	"github.com/idprm/go-linkit-tsel/internal/utils"
 	"github.com/sirupsen/logrus"
 )
 
-const (
-	LOG_PATH string = "LOG_PATH"
+var (
+	LOG_PATH string = utils.GetEnv("LOG_PATH")
 )
 
 type Logger struct {

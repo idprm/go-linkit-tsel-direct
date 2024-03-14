@@ -19,7 +19,7 @@ import (
 )
 
 var publisherRenewalCmd = &cobra.Command{
-	Use:   "publisher_renewal",
+	Use:   "pub_renewal",
 	Short: "Renewal CLI",
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
@@ -78,7 +78,7 @@ var publisherRenewalCmd = &cobra.Command{
 }
 
 var publisherRetryFpCmd = &cobra.Command{
-	Use:   "publisher_retry_fp",
+	Use:   "pub_retry_fp",
 	Short: "Publisher Retry Firstpush CLI",
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
@@ -135,7 +135,7 @@ var publisherRetryFpCmd = &cobra.Command{
 }
 
 var publisherRetryDpCmd = &cobra.Command{
-	Use:   "publisher_retry_dp",
+	Use:   "pub_retry_dp",
 	Short: "Publisher Retry Dailypush CLI",
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
@@ -192,7 +192,7 @@ var publisherRetryDpCmd = &cobra.Command{
 }
 
 var publisherRetryInsuffCmd = &cobra.Command{
-	Use:   "publisher_retry_insuff",
+	Use:   "pub_retry_insuff",
 	Short: "Publisher Retry Insuff CLI",
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
@@ -246,7 +246,7 @@ var publisherRetryInsuffCmd = &cobra.Command{
 }
 
 var publisherCSVCmd = &cobra.Command{
-	Use:   "publisher_csv",
+	Use:   "pub_csv",
 	Short: "CSV CLI",
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
