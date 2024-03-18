@@ -60,6 +60,7 @@ func mapUrls(db *sql.DB, rmpq rmqp.AMQP, rdb *redis.Client, logger *logger.Logge
 	 * Routes Landing Page SUB & UNSUB
 	 */
 	router.Get("camp/:service", incomingHandler.CampaignDirect)
+	router.Get("camptool", incomingHandler.CampaignTool)
 
 	router.Post("cloudplay", incomingHandler.OptIn)
 	router.Post("galays", incomingHandler.OptIn)
