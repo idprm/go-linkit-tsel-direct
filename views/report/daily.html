@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Report Daily Firstpush & Renewal per Status</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            clifford: '#da373d',
+          }
+        }
+      }
+    }
+  </script>
+</head>
+
+<body>
+  <div class="container mx-auto max-w-screen-md h-screen">
+    <div class="">
+      <h1 class="text-xl text-center font-bold">Daily Report per STATUS</h1>
+      <div class="relative rounded-xl overflow-auto">
+        <div class="shadow-sm overflow-hidden my-4">
+          <table class="border-collapse table-fixed w-full border-separate border-spacing-1 border border-slate-400">
+            <thead>
+              <tr>
+                <th class="border border-slate-300">DATE</th>
+                <th class="border border-slate-300">SERVICE</th>
+                <th class="border border-slate-300">SUBJECT</th>
+                <th class="border border-slate-300">STATUS</th>
+                <th class="border border-slate-300">COUNT</th>
+                <th class="border border-slate-300">REVENUE</th>
+              </tr>
+            </thead>
+            <tbody>
+              {{range .transactions}}
+              <tr>
+                <td class="text-center border border-slate-300">{{ .CreatedAt.Format "2006-01-02" }}</td>
+                <td class="text-center border border-slate-300">{{ .ServiceID }}</td>
+                <td class="text-center border border-slate-300">{{ .Subject }}</td>
+                <td class="text-center border border-slate-300">{{ .Status }}</td>
+                <td class="text-right border border-slate-300">{{ .Msisdn }}</td>
+                <td class="text-right border border-slate-300">{{ .PIN }}</td>
+              </tr>
+              {{end}}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+
+</html>

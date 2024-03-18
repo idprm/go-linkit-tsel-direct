@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Report Daily Firstpush & Renewal per Status</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            clifford: '#da373d',
+          }
+        }
+      }
+    }
+  </script>
+</head>
+
+<body>
+  <div class="container mx-auto max-w-screen-md h-screen">
+    <div class="">
+      <canvas id="chart_revenue"></canvas>
+    </div>
+    <div class="">
+      <canvas id="chart_mo"></canvas>
+    </div>
+    <div class="">
+      <canvas id="chart_renewal"></canvas>
+    </div>
+  </div>
+</body>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  const ctxRevenue = document.getElementById('chart_revenue');
+  const ctxMo = document.getElementById('chart_mo');
+  const ctxRenewal = document.getElementById('chart_renewal');
+
+  new Chart(ctxRevenue, {
+    type: 'line',
+    data: {
+      labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+      datasets: [{
+        label: 'REVENUE',
+        data: [12, 19, 3, 5, 2, 3],
+        borderWidth: 1
+      }]
+    },
+    options: {
+      scales: {
+        y: {
+          beginAtZero: true
+        }
+      }
+    }
+  });
+
+  // label: 'TOTAL FIRSTPUSH',
+  // data: [1101 + 4394, 969 + 3732, 651 + 2730, 647 + 2567, 681 + 2737, 419 + 1935],
+  new Chart(ctxMo, {
+    type: 'bar',
+    data: {
+      labels: ['2023-09-30'],
+      datasets: [
+        {
+          label: 'SUCCESS',
+          data: [1101],
+          backgroundColor: 'rgba(54, 162, 235, 0.2)',
+          stack: 'Stack 0',
+        },
+        {
+          label: 'FAILED',
+          data: [4394],
+          backgroundColor: 'rgba(255, 99, 132, 0.2)',
+          stack: 'Stack 1',
+        },
+      ]
+    },
+    options: {
+      plugins: {
+        title: {
+          display: true,
+          text: 'TOTAL FIRSTPUSH'
+        },
+      },
+      responsive: true,
+      interaction: {
+        intersect: false,
+      },
+      scales: {
+        x: {
+          stacked: true,
+        },
+        y: {
+          stacked: true
+        }
+      }
+    }
+  });
+
+  new Chart(ctxRenewal, {
+    type: 'bar',
+    data: {
+      labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+      datasets: [{
+        label: 'TOTAL RENEWAL',
+        data: [12, 19, 3, 5, 2, 3],
+        borderWidth: 1
+      }]
+    },
+    options: {
+      scales: {
+        y: {
+          beginAtZero: true
+        }
+      }
+    }
+  });
+</script>
+
+</html>

@@ -4,6 +4,8 @@ RUN apk --no-cache add tzdata
 
 RUN apk --update add ca-certificates
 
+LABEL author="Indra Pramana"
+
 RUN mkdir -p /logs/csv
 
 WORKDIR /app

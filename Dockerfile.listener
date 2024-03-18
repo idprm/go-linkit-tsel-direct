@@ -4,6 +4,10 @@ RUN apk --no-cache add tzdata
 
 RUN apk --update add ca-certificates
 
+LABEL author="Indra Pramana"
+
+RUN mkdir -p /public
+RUN mkdir -p /views
 RUN mkdir -p /logs/http
 RUN mkdir -p /logs/traffic
 
@@ -22,6 +26,9 @@ COPY --from=golang /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 COPY --from=golang /etc/passwd /etc/passwd
 COPY --from=golang /etc/group /etc/group
 COPY --from=golang /bin/sh /bin/sh
+
+COPY /public /public
+COPY /views /views
 
 COPY --from=golang /linkit-tsel-direct .
 

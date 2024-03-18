@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="static/galays/css/mdb.min.css">
+  <link rel="stylesheet" href="static/galays/css/style.css">
+  <link rel="stylesheet" href="https://vngemezz.exmp.app/static/icon/bootstrap-icons.css">
+  <title>Galays</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+</head>
+
+<body>
+  <div class="box mx-auto">
+    <div class="banner">
+        <img src="static/galays/img/banner-galays.jpg" class="img-fluid" alt="">
+    </div>
+  </div>
+  <section class="section" style="background-position-y: 215px;">
+    <div class="container-fluid box">
+      <div class="card shadow-custom text-dark mb-4">
+          <div class="card-body content">
+              <h3 class="title">
+                  Anda akan berlangganan Games GALAYS.
+              </h3>
+              <a href="#" id="subscribe" class="btn button btn-lg w-100 btn-danger">
+                Mainkan Sekarang!
+              </a>
+          </div>
+      </div>
+      <div class="term">
+        <p class="mb-0">Galays adalah layanan berlangganan. Anda akan dikenakan biaya Rp. 3.300/SMS, 1 SMS/3
+            hari pada tagihan ponsel Anda dan akan diperbarui secara otomatis.
+            Untuk membatalkan, ketik UNREG GALAYS kirim ke 97770. Dengan klik tombol, Anda telah setuju dengan
+            syarat dan ketemtuan</p>
+    </div>
+  </div>
+  </section>
+
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"
+    integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+  <script src="static/cloudplay/js/mdb.min.js"></script>
+  <script>
+    $(document).ready(function () {
+
+      var ip = "";
+      $.getJSON("https://api.ipify.org/?format=json", function (e) {
+        ip = e.ip;
+      });
+
+      var getUrlParameter = function getUrlParameter(sParam) {
+        var sPageURL = window.location.search.substring(1),
+          sURLVariables = sPageURL.split('&'),
+          sParameterName,
+          i;
+
+        for (i = 0; i < sURLVariables.length; i++) {
+          sParameterName = sURLVariables[i].split('=');
+
+          if (sParameterName[0] === sParam) {
+            return sParameterName[1] === undefined ? true : decodeURIComponent(sParameterName[1]);
+          }
+        }
+        return "";
+      };
+
+      $('#subscribe').click(function (event) {
+        event.preventDefault();
+
+        $('#loading').show();
+        // disable button
+        $("#subscribe").attr("disabled", true);
+
+
+        var keyword = "";
+        var sub_keyword = "";
+        var adnet = "";
+        var pubid = "";
+        var aff_sub = "";
+
+        keyword = getUrlParameter("keyword");
+        sub_keyword = getUrlParameter("sub_keyword");
+        adnet = getUrlParameter('ad');
+        pubid = getUrlParameter('pubid');
+        aff_sub = getUrlParameter('aff_sub');
+
+        $.ajax({
+          type: 'POST',
+          url: '/galays',
+          data: JSON.stringify({
+            service: "GALAYS1",
+            keyword: keyword,
+            sub_keyword: sub_keyword,
+            adnet: adnet,
+            pubid: pubid,
+            aff_sub: aff_sub,
+          }),
+          dataType: 'json',
+          contentType: "application/json; charset=utf-8",
+          success: function (json) {
+            if (json.error == false) {
+              window.location.href = json.redirect;
+            }
+            $('#loading').hide();
+          },
+          error: function () {
+            // enable button
+            $("#subscribe").removeAttr("disabled");
+            $('#loading').hide();
+          }
+        });
+
+      })
+    })
+  </script>
+</body>
+
+</html>

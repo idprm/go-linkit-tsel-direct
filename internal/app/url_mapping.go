@@ -11,12 +11,23 @@ import (
 	"github.com/idprm/go-linkit-tsel/internal/handler"
 	"github.com/idprm/go-linkit-tsel/internal/logger"
 	"github.com/idprm/go-linkit-tsel/internal/services"
+	"github.com/idprm/go-linkit-tsel/internal/utils"
 	"github.com/redis/go-redis/v9"
 	"github.com/wiliehidayat87/rmqp"
 )
 
+var (
+	PUBLIC_PATH string = utils.GetEnv("PUBLIC_PATH")
+)
+
 func mapUrls(db *sql.DB, rmpq rmqp.AMQP, rdb *redis.Client, logger *logger.Logger) *fiber.App {
-	engine := html.New("./views", ".html")
+
+	path, err := os.Getwd()
+	if err != nil {
+		panic(err)
+	}
+
+	engine := html.New(path+"/views", ".html")
 	/**
 	 * Init Fiber
 	 */
@@ -29,12 +40,7 @@ func mapUrls(db *sql.DB, rmpq rmqp.AMQP, rdb *redis.Client, logger *logger.Logge
 	 */
 	router.Use(cors.New())
 
-	path, err := os.Getwd()
-	if err != nil {
-		panic(err)
-	}
-
-	router.Static("/static", path+"/public")
+	router.Static("/static", path+"/"+PUBLIC_PATH)
 
 	serviceRepo := repository.NewServiceRepository(db)
 	serviceService := services.NewServiceService(serviceRepo)
