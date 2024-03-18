@@ -51,11 +51,17 @@ func (p *Portal) Subscription() ([]byte, error) {
 		q.Add("package", "1")
 		q.Add("event", "reg")
 	}
-	if p.service.IsGupi() || p.service.IsMplus() {
+	if p.service.IsGupi() {
 		q.Add("msisdn", p.subscription.Msisdn)
 		q.Add("pin", p.pin)
 		q.Add("package", "daily")
 	}
+	if p.service.IsMplus() {
+		q.Add("msisdn", p.subscription.Msisdn)
+		q.Add("pin", p.pin)
+		q.Add("package", "1")
+	}
+
 	q.Add("status", p.status)
 	q.Add("time", time.Now().String())
 
@@ -188,11 +194,17 @@ func (p *Portal) Renewal() ([]byte, error) {
 		q.Add("password", p.pin)
 		q.Add("package", "1")
 	}
-	if p.service.IsGupi() || p.service.IsMplus() {
+	if p.service.IsGupi() {
 		q.Add("msisdn", p.subscription.Msisdn)
 		q.Add("pin", p.pin)
 		q.Add("package", "daily")
 	}
+	if p.service.IsMplus() {
+		q.Add("msisdn", p.subscription.Msisdn)
+		q.Add("pin", p.pin)
+		q.Add("package", "1")
+	}
+
 	q.Add("status", p.status)
 	req, err := http.NewRequest("GET", p.service.UrlNotifRenewal+"?"+q.Encode(), nil)
 

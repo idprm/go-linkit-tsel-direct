@@ -19,6 +19,10 @@ import (
 	"github.com/wiliehidayat87/rmqp"
 )
 
+var (
+	APP_URL string = utils.GetEnv("APP_URL")
+)
+
 type IncomingHandler struct {
 	logger              *logger.Logger
 	message             rmqp.AMQP
@@ -45,10 +49,6 @@ func NewIncomingHandler(
 		transactionService:  transactionService,
 	}
 }
-
-var (
-	APP_HOST string = utils.GetEnv("APP_HOST")
-)
 
 const (
 	RMQ_DATATYPE           string = "application/json"
@@ -91,55 +91,55 @@ func ValidateStruct(data interface{}) []*entity.ErrorResponse {
 
 func (h *IncomingHandler) CloudPlaySubPage(c *fiber.Ctx) error {
 	return c.Render("cloudplay/sub", fiber.Map{
-		"host": APP_HOST,
+		"host": APP_URL,
 	})
 }
 
 func (h *IncomingHandler) GalaysSubPage(c *fiber.Ctx) error {
 	return c.Render("galays/sub", fiber.Map{
-		"host": APP_HOST,
+		"host": APP_URL,
 	})
 }
 
 func (h *IncomingHandler) CloudPlaySub1Page(c *fiber.Ctx) error {
 	return c.Render("cloudplay/sub1", fiber.Map{
-		"host": APP_HOST,
+		"host": APP_URL,
 	})
 }
 
 func (h *IncomingHandler) GalaysSub1Page(c *fiber.Ctx) error {
 	return c.Render("galays/sub1", fiber.Map{
-		"host": APP_HOST,
+		"host": APP_URL,
 	})
 }
 
 func (h *IncomingHandler) CloudPlaySub2Page(c *fiber.Ctx) error {
 	return c.Render("cloudplay/sub2", fiber.Map{
-		"host": APP_HOST,
+		"host": APP_URL,
 	})
 }
 
 func (h *IncomingHandler) CloudPlaySub3Page(c *fiber.Ctx) error {
 	return c.Render("cloudplay/sub3", fiber.Map{
-		"host": APP_HOST,
+		"host": APP_URL,
 	})
 }
 
 func (h *IncomingHandler) CloudPlaySub4Page(c *fiber.Ctx) error {
 	return c.Render("cloudplay/sub4", fiber.Map{
-		"host": APP_HOST,
+		"host": APP_URL,
 	})
 }
 
 func (h *IncomingHandler) CloudPlayUnsubPage(c *fiber.Ctx) error {
 	return c.Render("cloudplay/unsub", fiber.Map{
-		"host": APP_HOST,
+		"host": APP_URL,
 	})
 }
 
 func (h *IncomingHandler) GalaysUnsubPage(c *fiber.Ctx) error {
 	return c.Render("galays/unsub", fiber.Map{
-		"host": APP_HOST,
+		"host": APP_URL,
 	})
 }
 
@@ -1497,7 +1497,7 @@ func (h *IncomingHandler) CallbackUrl(c *fiber.Ctx) error {
 		}).Error("PAGE_SUCCESS")
 
 		return c.Render("success", fiber.Map{
-			"host": APP_HOST,
+			"host": APP_URL,
 		})
 	}
 
@@ -1512,7 +1512,7 @@ func (h *IncomingHandler) CallbackUrl(c *fiber.Ctx) error {
 
 	if !h.serviceService.CheckService(verify.GetService()) {
 		return c.Render("success", fiber.Map{
-			"host": APP_HOST,
+			"host": APP_URL,
 		})
 	}
 	service, _ := h.serviceService.GetServiceByCode(verify.GetService())
@@ -1583,13 +1583,13 @@ func (h *IncomingHandler) MessageOriginated(c *fiber.Ctx) error {
 
 func (h *IncomingHandler) Success(c *fiber.Ctx) error {
 	return c.Render("success", fiber.Map{
-		"host": APP_HOST,
+		"host": APP_URL,
 	})
 }
 
 func (h *IncomingHandler) Cancel(c *fiber.Ctx) error {
 	return c.Render("cancel", fiber.Map{
-		"host": APP_HOST,
+		"host": APP_URL,
 	})
 }
 
