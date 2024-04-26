@@ -412,6 +412,10 @@ func populateRetryInsuff(db *sql.DB, queue rmqp.AMQP) {
 }
 
 func populateCSV(db *sql.DB) {
+
+	fileNameSubs := "/logs/csv/subscriptions_id_telkomsel_cloudplay.csv"
+	fileNameTrans := "/logs/csv/transactions_id_telkomsel_cloudplay.csv"
+
 	subscriptionRepo := repository.NewSubscriptionRepository(db)
 	subscriptionService := services.NewSubscriptionService(subscriptionRepo)
 	transactionRepo := repository.NewTransactionRepository(db)
@@ -427,9 +431,9 @@ func populateCSV(db *sql.DB) {
 	}
 
 	// delete file
-	os.Remove("/logs/csv/subscriptions_id_telkomsel_cloudplay.csv")
+	os.Remove(fileNameSubs)
 
-	subCsv, err := os.Create("/logs/csv/subscriptions_id_telkomsel_cloudplay.csv")
+	subCsv, err := os.Create(fileNameSubs)
 	if err != nil {
 		log.Fatalf("failed creating file: %s", err)
 	}
@@ -467,9 +471,9 @@ func populateCSV(db *sql.DB) {
 	}
 
 	// delete file
-	os.Remove("/logs/csv/transactions_id_telkomsel_cloudplay.csv")
+	os.Remove(fileNameTrans)
 
-	transCsv, err := os.Create("/logs/csv/transactions_id_telkomsel_cloudplay.csv")
+	transCsv, err := os.Create(fileNameTrans)
 	if err != nil {
 		log.Fatalf("failed creating file: %s", err)
 	}
@@ -511,6 +515,6 @@ func populateCSV(db *sql.DB) {
 
 	arp := arpu.NewArpu(logger)
 
-	arp.UploadCSV(ARPU_URL_SUB, "/logs/csv/subscriptions_id_telkomsel_cloudplay.csv")
-	arp.UploadCSV(ARPU_URL_TRANS, "/logs/csv/transactions_id_telkomsel_cloudplay.csv")
+	arp.UploadCSV(ARPU_URL_SUB, fileNameSubs)
+	arp.UploadCSV(ARPU_URL_TRANS, fileNameTrans)
 }

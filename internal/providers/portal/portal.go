@@ -51,15 +51,17 @@ func (p *Portal) Subscription() ([]byte, error) {
 		q.Add("package", "1")
 		q.Add("event", "reg")
 	}
+
 	if p.service.IsGupi() {
 		q.Add("msisdn", p.subscription.Msisdn)
 		q.Add("pin", p.pin)
 		q.Add("package", "daily")
 	}
+
 	if p.service.IsMplus() {
 		q.Add("msisdn", p.subscription.Msisdn)
 		q.Add("pin", p.pin)
-		q.Add("package", "1")
+		q.Add("package", p.service.GetPackage())
 	}
 
 	q.Add("status", p.status)
@@ -202,7 +204,7 @@ func (p *Portal) Renewal() ([]byte, error) {
 	if p.service.IsMplus() {
 		q.Add("msisdn", p.subscription.Msisdn)
 		q.Add("pin", p.pin)
-		q.Add("package", "1")
+		q.Add("package", p.service.GetPackage())
 	}
 
 	q.Add("status", p.status)

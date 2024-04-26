@@ -87,7 +87,7 @@ func (v *Verify) IsSam() bool {
 }
 
 func (v *Verify) IsYlc() bool {
-	return strings.ToUpper(v.CampSubKeyword) == "YLC"
+	return strings.ToUpper(v.CampSubKeyword) == "YLC" || strings.ToUpper(v.CampSubKeyword) == "YL2"
 }
 
 func (v *Verify) IsBng() bool {
@@ -104,4 +104,8 @@ func (v *Verify) IsRdr() bool {
 
 func (v *Verify) IsV2Test() bool {
 	return strings.ToUpper(v.CampSubKeyword) == "V2TEST"
+}
+
+func (v *Verify) IsPlw() bool {
+	return strings.ToUpper(v.CampSubKeyword) == "PLW"
 }

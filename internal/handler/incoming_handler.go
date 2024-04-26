@@ -143,6 +143,12 @@ func (h *IncomingHandler) GalaysUnsubPage(c *fiber.Ctx) error {
 	})
 }
 
+func (h *IncomingHandler) CloudPlayTermPage(c *fiber.Ctx) error {
+	return c.Render("cloudplay/term", fiber.Map{
+		"host": APP_URL,
+	})
+}
+
 func (h *IncomingHandler) CloudPlayCampaign(c *fiber.Ctx) error {
 	l := h.logger.Init("traffic", true)
 
@@ -204,7 +210,7 @@ func (h *IncomingHandler) CloudPlayCampaign(c *fiber.Ctx) error {
 	err = h.verifyService.SetVerify(
 		&entity.Verify{
 			Token:          strings.TrimSpace(token),
-			Service:        "CLOUDPLAY",
+			Service:        service.GetCode(),
 			Adnet:          req.GetAdnet(),
 			PubID:          req.GetPubId(),
 			AffSub:         req.GetAffSub(),
@@ -306,7 +312,7 @@ func (h *IncomingHandler) GalaysCampaign(c *fiber.Ctx) error {
 	err = h.verifyService.SetVerify(
 		&entity.Verify{
 			Token:          strings.TrimSpace(token),
-			Service:        "CLOUDPLAY",
+			Service:        service.GetCode(),
 			Adnet:          req.GetAdnet(),
 			PubID:          req.GetPubId(),
 			AffSub:         req.GetAffSub(),
@@ -407,7 +413,7 @@ func (h *IncomingHandler) CloudPlayCampaignBillable(c *fiber.Ctx) error {
 	// insert token & params campaign
 	err = h.verifyService.SetVerify(&entity.Verify{
 		Token:          strings.TrimSpace(token),
-		Service:        "CLOUDPLAY",
+		Service:        service.GetCode(),
 		Adnet:          req.GetAdnet(),
 		PubID:          req.GetPubId(),
 		AffSub:         req.GetAffSub(),
@@ -509,7 +515,7 @@ func (h *IncomingHandler) GalaysCampaignBillable(c *fiber.Ctx) error {
 	err = h.verifyService.SetVerify(
 		&entity.Verify{
 			Token:          strings.TrimSpace(token),
-			Service:        "GALAYS",
+			Service:        service.GetCode(),
 			Adnet:          req.GetAdnet(),
 			PubID:          req.GetPubId(),
 			AffSub:         req.GetAffSub(),
@@ -603,7 +609,7 @@ func (h *IncomingHandler) CampaignTool(c *fiber.Ctx) error {
 	err = h.verifyService.SetVerify(
 		&entity.Verify{
 			Token:          strings.TrimSpace(token),
-			Service:        req.GetService(),
+			Service:        service.GetCode(),
 			Adnet:          req.GetAdnet(),
 			PubID:          req.GetPubId(),
 			AffSub:         req.GetAffSub(),
@@ -712,7 +718,7 @@ func (h *IncomingHandler) CloudPlaySub1CampaignPage(c *fiber.Ctx) error {
 	err = h.verifyService.SetVerify(
 		&entity.Verify{
 			Token:          strings.TrimSpace(token),
-			Service:        "CLOUDPLAY1",
+			Service:        service.GetCode(),
 			Adnet:          req.GetAdnet(),
 			PubID:          req.GetPubId(),
 			AffSub:         req.GetAffSub(),
@@ -815,7 +821,7 @@ func (h *IncomingHandler) GalaysSub1CampaignPage(c *fiber.Ctx) error {
 	err = h.verifyService.SetVerify(
 		&entity.Verify{
 			Token:          strings.TrimSpace(token),
-			Service:        "GALAYS1",
+			Service:        service.GetCode(),
 			Adnet:          req.GetAdnet(),
 			PubID:          req.GetPubId(),
 			AffSub:         req.GetAffSub(),
@@ -1021,7 +1027,7 @@ func (h *IncomingHandler) CloudPlaySub3CampaignPage(c *fiber.Ctx) error {
 	err = h.verifyService.SetVerify(
 		&entity.Verify{
 			Token:          strings.TrimSpace(token),
-			Service:        "CLOUDPLAY3",
+			Service:        service.GetCode(),
 			Adnet:          req.GetAdnet(),
 			PubID:          req.GetPubId(),
 			AffSub:         req.GetAffSub(),
@@ -1123,7 +1129,7 @@ func (h *IncomingHandler) CloudPlaySub4CampaignPage(c *fiber.Ctx) error {
 	err = h.verifyService.SetVerify(
 		&entity.Verify{
 			Token:          strings.TrimSpace(token),
-			Service:        "CLOUDPLAY4",
+			Service:        service.GetCode(),
 			Adnet:          req.GetAdnet(),
 			PubID:          req.GetPubId(),
 			AffSub:         req.GetAffSub(),
@@ -1282,18 +1288,22 @@ func (h *IncomingHandler) CampaignDirect(c *fiber.Ctx) error {
 	}
 
 	if !h.serviceService.CheckService(strings.ToUpper(c.Params("service"))) {
-		return c.Status(fiber.StatusBadGateway).JSON(fiber.Map{
-			"error":   true,
-			"message": "Service Unavailable",
-		})
+		return c.Status(fiber.StatusBadGateway).JSON(
+			fiber.Map{
+				"error":   true,
+				"message": "Service Unavailable",
+			},
+		)
 	}
 
 	service, err := h.serviceService.GetServiceByCode(strings.ToUpper(c.Params("service")))
 	if err != nil {
-		return c.Status(fiber.StatusBadGateway).JSON(fiber.Map{
-			"error":   true,
-			"message": "Failed",
-		})
+		return c.Status(fiber.StatusBadGateway).JSON(
+			fiber.Map{
+				"error":   true,
+				"message": "Failed",
+			},
+		)
 	}
 
 	if c.Get("Cf-Connecting-Ip") != "" {
@@ -1325,7 +1335,7 @@ func (h *IncomingHandler) CampaignDirect(c *fiber.Ctx) error {
 	err = h.verifyService.SetVerify(
 		&entity.Verify{
 			Token:          strings.TrimSpace(token),
-			Service:        strings.ToUpper(c.Params("service")),
+			Service:        service.GetCode(),
 			Adnet:          req.GetAdnet(),
 			PubID:          req.GetPubId(),
 			AffSub:         req.GetAffSub(),

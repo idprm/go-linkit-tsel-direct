@@ -65,6 +65,8 @@ func mapUrls(db *sql.DB, rmpq rmqp.AMQP, rdb *redis.Client, logger *logger.Logge
 	router.Post("cloudplay", incomingHandler.OptIn)
 	router.Post("galays", incomingHandler.OptIn)
 
+	router.Get("cloudplay/term", incomingHandler.CloudPlayTermPage)
+
 	router.Get("cloudplay", incomingHandler.CloudPlaySubPage)
 	router.Get("cloudplay/camp", incomingHandler.CloudPlayCampaign)
 	router.Get("cloudplay/campbill", incomingHandler.CloudPlayCampaignBillable)

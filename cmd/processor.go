@@ -287,9 +287,21 @@ func (p *Processor) PostbackMO(wg *sync.WaitGroup, message []byte) {
 		if req.Verify.IsFs() {
 			h.FsMO()
 		}
+
+		if req.Verify.IsPlw() {
+			h.PlwMO()
+		}
+
 		// non billable
 		if !req.Verify.GetIsBillable() {
-			if !req.Verify.IsSam() && !req.Verify.IsYlc() && !req.Verify.IsBng() && !req.Verify.IsFs() && !req.Verify.IsRdr() && !req.Verify.IsV2Test() {
+			if !req.Verify.IsSam() &&
+				!req.Verify.IsYlc() &&
+				!req.Verify.IsBng() &&
+				!req.Verify.IsFs() &&
+				!req.Verify.IsRdr() &&
+				!req.Verify.IsPlw() &&
+				!req.Verify.IsV2Test() {
+
 				h.Postback()
 			}
 		}
@@ -302,6 +314,10 @@ func (p *Processor) PostbackMO(wg *sync.WaitGroup, message []byte) {
 	if req.IsMOUnsub() {
 		if req.Subscription.IsSAM() {
 			h.SamMOUnsub()
+		}
+
+		if req.Subscription.IsPlw() {
+			h.PlwMOUnsub()
 		}
 	}
 
@@ -324,6 +340,10 @@ func (p *Processor) PostbackMO(wg *sync.WaitGroup, message []byte) {
 		if req.Verify.IsFs() {
 			h.FsDN(req.Status)
 		}
+
+		if req.Verify.IsPlw() {
+			h.PlwDN(req.Status)
+		}
 	}
 
 	wg.Done()
@@ -345,9 +365,8 @@ func (p *Processor) PostbackMT(wg *sync.WaitGroup, message []byte) {
 		if req.Subscription.IsFs() {
 			h.FsDN(req.Status)
 		}
-
-		if req.Subscription.IsYLC() {
-			h.YlcMT(req.AffSub)
+		if req.Subscription.IsPlw() {
+			h.PlwDN(req.Status)
 		}
 	}
 
@@ -358,11 +377,16 @@ func (p *Processor) PostbackMT(wg *sync.WaitGroup, message []byte) {
 		if req.Subscription.IsSAM() {
 			h.SamDN(req.Status)
 		}
-		if req.Subscription.IsYLC() {
-			h.YlcMT(req.AffSub)
+		if req.GetIsSuccess() {
+			if req.Subscription.IsYLC() {
+				h.YlcMT(req.AffSub)
+			}
 		}
 		if req.Subscription.IsFs() {
 			h.FsDN(req.Status)
+		}
+		if req.Subscription.IsPlw() {
+			h.PlwDN(req.Status)
 		}
 	}
 

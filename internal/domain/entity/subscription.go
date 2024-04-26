@@ -78,7 +78,7 @@ func (s *Subscription) IsSAM() bool {
 }
 
 func (s *Subscription) IsYLC() bool {
-	return s.GetCampSubKeyword() == "YLC"
+	return s.GetCampSubKeyword() == "YLC" || s.GetCampSubKeyword() == "YL2"
 }
 
 func (s *Subscription) IsBng() bool {
@@ -91,6 +91,10 @@ func (s *Subscription) IsFs() bool {
 
 func (s *Subscription) IsRdr() bool {
 	return s.GetCampSubKeyword() == "RDR"
+}
+
+func (s *Subscription) IsPlw() bool {
+	return s.GetCampSubKeyword() == "PLW"
 }
 
 func (s *Subscription) GetAdnet() string {

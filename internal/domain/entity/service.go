@@ -1,5 +1,7 @@
 package entity
 
+import "strconv"
+
 type Service struct {
 	ID                  int     `json:"id"`
 	Category            string  `json:"category"`
@@ -25,6 +27,8 @@ type Service struct {
 	UrlPostbackYlcMT    string  `json:"url_postback_ylc_mt"`
 	UrlPostbackFsMO     string  `json:"url_postback_fs_mo"`
 	UrlPostbackFsDN     string  `json:"url_postback_fs_dn"`
+	UrlPostbackPlwMO    string  `json:"url_postback_plw_mo"`
+	UrlPostbackPlwDN    string  `json:"url_postback_plw_dn"`
 }
 
 func (s *Service) GetID() int {
@@ -44,7 +48,7 @@ func (s *Service) GetName() string {
 }
 
 func (s *Service) GetPackage() string {
-	return s.Package
+	return strconv.Itoa(s.RenewalDay)
 }
 
 func (s *Service) GetPrice() float64 {
@@ -121,6 +125,14 @@ func (s *Service) GetUrlPostbackFsMO() string {
 
 func (s *Service) GetUrlPostbackFsDN() string {
 	return s.UrlPostbackFsDN
+}
+
+func (s *Service) GetUrlPostbackPlwMO() string {
+	return s.UrlPostbackPlwMO
+}
+
+func (s *Service) GetUrlPostbackPlwDN() string {
+	return s.UrlPostbackPlwDN
 }
 
 func (s *Service) IsCloudplay() bool {

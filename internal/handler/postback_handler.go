@@ -70,3 +70,18 @@ func (h *PostbackHandler) PbV2Test() {
 	p := postback.NewPostback(h.logger, h.req.Subscription, h.req.Service, h.req.Verify.IsCampTool)
 	p.SendTestV2()
 }
+
+func (h *PostbackHandler) PlwMO() {
+	p := postback.NewPostback(h.logger, h.req.Subscription, h.req.Service, false)
+	p.PlwMO()
+}
+
+func (h *PostbackHandler) PlwMOUnsub() {
+	p := postback.NewPostback(h.logger, h.req.Subscription, h.req.Service, false)
+	p.PlwMOUnsub()
+}
+
+func (h *PostbackHandler) PlwDN(status string) {
+	p := postback.NewPostback(h.logger, h.req.Subscription, h.req.Service, false)
+	p.PlwDN(status)
+}

@@ -451,6 +451,10 @@ func (e *ReqPostbackParams) IsMTDailypush() bool {
 	return e.Action == "MT_DAILYPUSH"
 }
 
+func (e *ReqPostbackParams) GetIsSuccess() bool {
+	return e.Status == "SUCCESS"
+}
+
 var formatDate = "2006-01-02T15:04:05Z07:00"
 
 type SubscriptionToCSV struct {
