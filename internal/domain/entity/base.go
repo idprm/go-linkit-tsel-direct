@@ -263,6 +263,10 @@ func (r *CampaignToolsRequest) IsRdr() bool {
 	return r.GetSubKeyword() == "RDR"
 }
 
+func (r *CampaignToolsRequest) IsStar() bool {
+	return r.GetSubKeyword() == "STAR"
+}
+
 type CampaignToolsResponse struct {
 	StatusCode int    `json:"status_code" xml:"status_code"`
 	Token      string `json:"token" xml:"token"`

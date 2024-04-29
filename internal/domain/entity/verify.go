@@ -109,3 +109,7 @@ func (v *Verify) IsV2Test() bool {
 func (v *Verify) IsPlw() bool {
 	return strings.ToUpper(v.CampSubKeyword) == "PLW"
 }
+
+func (v *Verify) IsStar() bool {
+	return strings.ToUpper(v.CampSubKeyword) == "STAR"
+}

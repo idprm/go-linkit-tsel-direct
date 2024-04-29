@@ -85,3 +85,8 @@ func (h *PostbackHandler) PlwDN(status string) {
 	p := postback.NewPostback(h.logger, h.req.Subscription, h.req.Service, false)
 	p.PlwDN(status)
 }
+
+func (h *PostbackHandler) StarMO() {
+	p := postback.NewPostback(h.logger, h.req.Subscription, h.req.Service, false)
+	p.StarMO()
+}

@@ -936,6 +936,67 @@ func (p *Postback) PlwDN(status string) ([]byte, error) {
 	return body, nil
 }
 
+/**
+ * Message Originated (STAR)
+ */
+
+func (p *Postback) StarMO() ([]byte, error) {
+	l := p.logger.Init("pb", true)
+
+	start := time.Now()
+	trxId := uuid_utils.GenerateTrxId()
+
+	q := url.Values{}
+	q.Add("cid", p.subscription.GetAffSub())
+
+	req, err := http.NewRequest("GET", p.service.GetUrlPostbackStarMO()+"?"+q.Encode(), nil)
+	if err != nil {
+		return nil, errors.New(err.Error())
+	}
+
+	tr := &http.Transport{
+		MaxIdleConns:       30,
+		IdleConnTimeout:    10 * time.Second,
+		DisableCompression: true,
+	}
+
+	client := &http.Client{
+		Timeout:   10 * time.Second,
+		Transport: tr,
+	}
+
+	p.logger.Writer(req)
+	l.WithFields(logrus.Fields{
+		"msisdn":  p.subscription.GetMsisdn(),
+		"request": p.service.UrlPostbackStarMO + "?" + q.Encode(),
+		"trx_id":  trxId,
+	}).Info("POSTBACK_STAR_MO")
+
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, errors.New(err.Error())
+	}
+
+	defer resp.Body.Close()
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, errors.New(err.Error())
+	}
+
+	duration := time.Since(start).Milliseconds()
+	p.logger.Writer(string(body))
+	l.WithFields(logrus.Fields{
+		"msisdn":      p.subscription.GetMsisdn(),
+		"response":    string(body),
+		"trx_id":      trxId,
+		"duration":    duration,
+		"status_code": resp.StatusCode,
+		"status_text": http.StatusText(resp.StatusCode),
+	}).Info("POSTBACK_STAR_MO")
+
+	return body, nil
+}
+
 func (p *Postback) ManualHit(reqUrl string) ([]byte, error) {
 	l := p.logger.Init("pb", true)
 
