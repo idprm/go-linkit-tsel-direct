@@ -13,33 +13,33 @@ jobs:
       matrix:
         include:
           - dockerfile: ./Dockerfile.listener
-            image: ${{ secrets.DOCKER_USERNAME }}/linkit-tsel-direct-listener-service
+            image: idprm/linkit-tsel-direct-listener-service
           - dockerfile: ./Dockerfile.mo
-            image: ${{ secrets.DOCKER_USERNAME }}/linkit-tsel-direct-mo-service
+            image: idprm/linkit-tsel-direct-mo-service
           - dockerfile: ./Dockerfile.pback_mo
-            image: ${{ secrets.DOCKER_USERNAME }}/linkit-tsel-direct-postback-mo-service
+            image: idprm/linkit-tsel-direct-postback-mo-service
           - dockerfile: ./Dockerfile.pback_mt
-            image: ${{ secrets.DOCKER_USERNAME }}/linkit-tsel-direct-postback-mt-service
+            image: idprm/linkit-tsel-direct-postback-mt-service
           - dockerfile: ./Dockerfile.pub_csv
-            image: ${{ secrets.DOCKER_USERNAME }}/linkit-tsel-direct-pub-csv-service
+            image: idprm/linkit-tsel-direct-pub-csv-service
           - dockerfile: ./Dockerfile.pub_renewal
-            image: ${{ secrets.DOCKER_USERNAME }}/linkit-tsel-direct-pub-renewal-service
+            image: idprm/linkit-tsel-direct-pub-renewal-service
           - dockerfile: ./Dockerfile.pub_retry_dp
-            image: ${{ secrets.DOCKER_USERNAME }}/linkit-tsel-direct-pub-retry-dp-service
+            image: idprm/linkit-tsel-direct-pub-retry-dp-service
           - dockerfile: ./Dockerfile.pub_retry_fp
-            image: ${{ secrets.DOCKER_USERNAME }}/linkit-tsel-direct-pub-retry-fp-service
+            image: idprm/linkit-tsel-direct-pub-retry-fp-service
           - dockerfile: ./Dockerfile.pub_retry_insuff
-            image: ${{ secrets.DOCKER_USERNAME }}/linkit-tsel-direct-pub-retry-insuff-service
+            image: idprm/linkit-tsel-direct-pub-retry-insuff-service
           - dockerfile: ./Dockerfile.renewal
-            image: ${{ secrets.DOCKER_USERNAME }}/linkit-tsel-direct-renewal-service
+            image: idprm/linkit-tsel-direct-renewal-service
           - dockerfile: ./Dockerfile.retry_dp
-            image: ${{ secrets.DOCKER_USERNAME }}/linkit-tsel-direct-retry-dp-service
+            image: idprm/linkit-tsel-direct-retry-dp-service
           - dockerfile: ./Dockerfile.retry_fp
-            image: ${{ secrets.DOCKER_USERNAME }}/linkit-tsel-direct-retry-fp-service
+            image: idprm/linkit-tsel-direct-retry-fp-service
           - dockerfile: ./Dockerfile.retry_insuff
-            image: ${{ secrets.DOCKER_USERNAME }}/linkit-tsel-direct-retry-insuff-service
+            image: idprm/linkit-tsel-direct-retry-insuff-service
           - dockerfile: ./Dockerfile.notif
-            image: ${{ secrets.DOCKER_USERNAME }}/linkit-tsel-direct-notif-service
+            image: idprm/linkit-tsel-direct-notif-service
 
     permissions:
       contents: read
