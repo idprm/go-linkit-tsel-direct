@@ -71,6 +71,10 @@ func (t *Telco) Token() ([]byte, error) {
 	q.Add("programid", t.service.GetProgramId())
 	q.Add("sid", t.service.GetSid())
 
+	if t.service.IsGupi() || t.service.IsMplus() {
+		q.Add("par", "1")
+	}
+
 	req.URL.RawQuery = q.Encode()
 
 	timeStamp := strconv.Itoa(int(time.Now().Unix()))
