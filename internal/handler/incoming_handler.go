@@ -398,10 +398,13 @@ func (h *IncomingHandler) CloudPlayCampaignBillable(c *fiber.Ctx) error {
 			"browser":      ua.Name,
 			"device":       ua.Device,
 		}).Error("NO_REDIRECT")
-		return c.Status(fiber.StatusBadGateway).JSON(fiber.Map{
-			"error":   true,
-			"message": "Failed",
-		})
+
+		return c.Status(fiber.StatusBadGateway).JSON(
+			fiber.Map{
+				"error":   true,
+				"message": "Failed",
+			},
+		)
 	}
 
 	if c.Get("Cf-Connecting-Ip") != "" {

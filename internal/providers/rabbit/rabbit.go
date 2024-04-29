@@ -23,8 +23,12 @@ func NewRabbitMQ() *RabbitMQ {
 	return &RabbitMQ{}
 }
 
+func (p *RabbitMQ) GetUrlRabbitMq() string {
+	return RMQ_URL + "/api/queues/%2F/"
+}
+
 func (p *RabbitMQ) Queue(name string) ([]byte, error) {
-	req, err := http.NewRequest("GET", RMQ_URL+name, nil)
+	req, err := http.NewRequest("GET", p.GetUrlRabbitMq()+name, nil)
 	req.Header.Add("Authorization", "Basic "+auth_utils.BasicAuth(RMQ_USER, RMQ_PASS))
 
 	if err != nil {
@@ -57,7 +61,7 @@ func (p *RabbitMQ) Queue(name string) ([]byte, error) {
 }
 
 func (p *RabbitMQ) Purge(name string) ([]byte, error) {
-	req, err := http.NewRequest("DELETE", RMQ_URL+name+"/contents", nil)
+	req, err := http.NewRequest("DELETE", p.GetUrlRabbitMq()+name+"/contents", nil)
 	req.Header.Add("Authorization", "Basic "+auth_utils.BasicAuth(RMQ_USER, RMQ_PASS))
 
 	if err != nil {
