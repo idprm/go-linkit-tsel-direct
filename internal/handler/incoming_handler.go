@@ -1577,15 +1577,17 @@ func (h *IncomingHandler) MessageOriginated(c *fiber.Ctx) error {
 				"request": req,
 				"error":   err.Error(),
 			}).Error("MO_COMBINE")
+		} else {
+			l.WithFields(logrus.Fields{
+				"request":    req,
+				"verify":     verify,
+				"ip_address": verify.GetIpAddress(),
+				"os":         verify.GetOS(),
+				"browser":    verify.GetBrowser(),
+				"device":     "",
+			}).Info("MO_COMBINE")
 		}
-		l.WithFields(logrus.Fields{
-			"request":    req,
-			"verify":     verify,
-			"ip_address": verify.GetIpAddress(),
-			"os":         verify.GetOS(),
-			"browser":    verify.GetBrowser(),
-			"device":     "",
-		}).Info("MO_COMBINE")
+
 	}
 
 	return c.Status(fiber.StatusOK).JSON(entity.ResponseMO{
