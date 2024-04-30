@@ -26,7 +26,7 @@ func NewVerifyRepository(rdb *redis.Client) *VerifyRepository {
 
 func (r *VerifyRepository) Set(t *entity.Verify) error {
 	verify, _ := json.Marshal(t)
-	err := r.rdb.Set(context.TODO(), t.GetToken(), string(verify), 48*time.Hour).Err()
+	err := r.rdb.Set(context.TODO(), t.GetToken(), string(verify), 25*time.Hour).Err()
 	if err != nil {
 		return err
 	}

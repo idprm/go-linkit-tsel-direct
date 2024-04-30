@@ -186,7 +186,6 @@ func (h *RetryHandler) Dailypush() {
 		trxId := uuid_utils.GenerateTrxId()
 
 		if response_utils.ParseStatus(string(resp)) {
-			service, _ := h.serviceService.GetServiceId(h.sub.GetServiceId())
 
 			subSuccess := &entity.Subscription{
 				ServiceID:          h.sub.GetServiceId(),
