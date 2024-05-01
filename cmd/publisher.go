@@ -412,6 +412,12 @@ func populateRetryInsuff(db *sql.DB, queue rmqp.AMQP) {
 }
 
 func populateCSV(db *sql.DB) {
+	/**
+	 * SETUP LOG
+	 */
+	logger := logger.NewLogger()
+
+	arp := arpu.NewArpu(logger)
 
 	fileNameSubs := "/logs/csv/subscriptions_id_telkomsel_cloudplay.csv"
 	fileNameTrans := "/logs/csv/transactions_id_telkomsel_cloudplay.csv"
@@ -425,12 +431,8 @@ func populateCSV(db *sql.DB) {
 	if err != nil {
 		log.Fatalf("error load table subscriptions: %s", err)
 	}
-	transRecords, err := transactionService.SelectTransactionToCSV()
-	if err != nil {
-		log.Fatalf("error load table transactions: %s", err)
-	}
 
-	// delete file
+	// delete file sub csv
 	os.Remove(fileNameSubs)
 
 	subCsv, err := os.Create(fileNameSubs)
@@ -470,7 +472,15 @@ func populateCSV(db *sql.DB) {
 		log.Fatal(err)
 	}
 
-	// delete file
+	// upload file csv
+	arp.UploadCSV(ARPU_URL_SUB, fileNameSubs)
+
+	transRecords, err := transactionService.SelectTransactionToCSV()
+	if err != nil {
+		log.Fatalf("error load table transactions: %s", err)
+	}
+
+	// delete file trans csv
 	os.Remove(fileNameTrans)
 
 	transCsv, err := os.Create(fileNameTrans)
@@ -508,13 +518,5 @@ func populateCSV(db *sql.DB) {
 		log.Fatal(err)
 	}
 
-	/**
-	 * SETUP LOG
-	 */
-	logger := logger.NewLogger()
-
-	arp := arpu.NewArpu(logger)
-
-	arp.UploadCSV(ARPU_URL_SUB, fileNameSubs)
 	arp.UploadCSV(ARPU_URL_TRANS, fileNameTrans)
 }
