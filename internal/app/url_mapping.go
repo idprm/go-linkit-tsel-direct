@@ -2,10 +2,12 @@ package app
 
 import (
 	"database/sql"
+	"net/http"
 	"os"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
+	"github.com/gofiber/fiber/v2/middleware/filesystem"
 	"github.com/gofiber/template/html/v2"
 	"github.com/idprm/go-linkit-tsel/internal/domain/repository"
 	"github.com/idprm/go-linkit-tsel/internal/handler"
@@ -18,10 +20,10 @@ import (
 
 var (
 	PUBLIC_PATH string = utils.GetEnv("PUBLIC_PATH")
+	LOG_PATH    string = utils.GetEnv("LOG_PATH")
 )
 
 func mapUrls(db *sql.DB, rmpq rmqp.AMQP, rdb *redis.Client, logger *logger.Logger) *fiber.App {
-
 	path, err := os.Getwd()
 	if err != nil {
 		panic(err)
@@ -39,6 +41,18 @@ func mapUrls(db *sql.DB, rmpq rmqp.AMQP, rdb *redis.Client, logger *logger.Logge
 	 * Initialize default config
 	 */
 	router.Use(cors.New())
+
+	/**
+	 * Access log on browser
+	 */
+	router.Use(LOG_PATH, filesystem.New(
+		filesystem.Config{
+			Root:         http.Dir(LOG_PATH),
+			Browse:       true,
+			Index:        "index.html",
+			NotFoundFile: "404.html",
+		},
+	))
 
 	router.Static("/static", path+"/"+PUBLIC_PATH)
 
