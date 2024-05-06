@@ -104,7 +104,6 @@ func (s *TransactionService) SelectTransactionToCSV() (*[]entity.TransactionToCS
 			tr := entity.TransactionToCSV{
 				Country:          a.Country,
 				Operator:         a.Operator,
-				Service:          a.Service,
 				Source:           a.Source,
 				Msisdn:           a.Msisdn,
 				Event:            a.Event,
@@ -123,6 +122,7 @@ func (s *TransactionService) SelectTransactionToCSV() (*[]entity.TransactionToCS
 				StatusSms:        a.StatusSms,
 			}
 
+			tr.SetService(a.Service, a.CampSubKeyword)
 			tr.SetEventDate(a.EventDate.String)
 			tr.SetChargeDate(a.ChargeDate.String)
 			tr.SetCycle(a.Cycle)

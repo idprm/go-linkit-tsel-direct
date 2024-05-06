@@ -260,7 +260,6 @@ func (s *SubscriptionService) SelectSubcriptionToCSV() (*[]entity.SubscriptionTo
 			sub := entity.SubscriptionToCSV{
 				Country:         a.Country,
 				Operator:        a.Operator,
-				Service:         a.Service,
 				Source:          a.Source,
 				Msisdn:          a.Msisdn,
 				LatestSubject:   a.LatestSubject,
@@ -284,6 +283,7 @@ func (s *SubscriptionService) SelectSubcriptionToCSV() (*[]entity.SubscriptionTo
 				SuccessBilling:  a.SuccessBilling,
 			}
 
+			sub.SetService(a.Service, a.CampSubKeyword)
 			sub.SetSubsDate(a.SubsDate.String)
 			sub.SetRenewalDate(a.RenewalDate.String)
 			sub.SetUnsubsDate(a.UnsubsDate.String)

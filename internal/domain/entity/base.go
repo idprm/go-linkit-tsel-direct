@@ -486,6 +486,7 @@ type SubscriptionToCSV struct {
 	Browser         string         `json:"browser,omitempty"`
 	AttemptCharging string         `json:"attempt_charging"`
 	SuccessBilling  string         `json:"success_billing"`
+	CampSubKeyword  string         `json:"camp_sub_keyword,omitempty"`
 }
 
 func (e *SubscriptionToCSV) SetLatestSubject(data string) {
@@ -498,6 +499,14 @@ func (e *SubscriptionToCSV) SetLatestSubject(data string) {
 		e.LatestSubject = "-1"
 	default:
 		e.LatestSubject = "NA"
+	}
+}
+
+func (e *SubscriptionToCSV) SetService(data, subkey string) {
+	if subkey != "" {
+		e.Service = data + " " + subkey
+	} else {
+		e.Service = data
 	}
 }
 
@@ -555,6 +564,15 @@ type TransactionToCSV struct {
 	TelcoApiResponse string         `json:"telco_api_response,omitempty"`
 	SmsContent       string         `json:"sms_content,omitempty"`
 	StatusSms        string         `json:"status_sms,omitempty"`
+	CampSubKeyword   string         `json:"camp_sub_keyword,omitempty"`
+}
+
+func (e *TransactionToCSV) SetService(data, subkey string) {
+	if subkey != "" {
+		e.Service = data + " " + subkey
+	} else {
+		e.Service = data
+	}
 }
 
 func (e *TransactionToCSV) SetEventDate(data string) {
