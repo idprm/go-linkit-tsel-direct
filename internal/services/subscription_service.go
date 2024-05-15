@@ -33,6 +33,10 @@ type ISubscriptionService interface {
 	RetryFpSubscription() *[]entity.Subscription
 	RetryDpSubscription() *[]entity.Subscription
 	RetryInsuffSubscription() *[]entity.Subscription
+	RetryInsuffBill0Subscription() *[]entity.Subscription
+	RetryInsuffBill1Subscription() *[]entity.Subscription
+	RetryInsuffBill2Subscription() *[]entity.Subscription
+	RetryInsuffBill3Subscription() *[]entity.Subscription
 	TrialSubscription() *[]entity.Subscription
 	EmptyCampSubscription() *[]entity.Subscription
 	AveragePerUser(string, string, string, string) (*[]entity.AveragePerUserResponse, error)
@@ -202,6 +206,38 @@ func (s *SubscriptionService) RetryDpSubscription() *[]entity.Subscription {
 
 func (s *SubscriptionService) RetryInsuffSubscription() *[]entity.Subscription {
 	subs, err := s.subscriptionRepo.RetryInsuff()
+	if err != nil {
+		log.Println(err)
+	}
+	return subs
+}
+
+func (s *SubscriptionService) RetryInsuffBill0Subscription() *[]entity.Subscription {
+	subs, err := s.subscriptionRepo.RetryInsuffBill0()
+	if err != nil {
+		log.Println(err)
+	}
+	return subs
+}
+
+func (s *SubscriptionService) RetryInsuffBill1Subscription() *[]entity.Subscription {
+	subs, err := s.subscriptionRepo.RetryInsuffBill1()
+	if err != nil {
+		log.Println(err)
+	}
+	return subs
+}
+
+func (s *SubscriptionService) RetryInsuffBill2Subscription() *[]entity.Subscription {
+	subs, err := s.subscriptionRepo.RetryInsuffBill2()
+	if err != nil {
+		log.Println(err)
+	}
+	return subs
+}
+
+func (s *SubscriptionService) RetryInsuffBill3Subscription() *[]entity.Subscription {
+	subs, err := s.subscriptionRepo.RetryInsuffBill3()
 	if err != nil {
 		log.Println(err)
 	}

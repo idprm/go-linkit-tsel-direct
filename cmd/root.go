@@ -32,30 +32,42 @@ var (
 )
 
 const (
-	RMQ_EXCHANGETYPE        string = "direct"
-	RMQ_DATATYPE            string = "application/json"
-	RMQ_MOEXCHANGE          string = "E_MO"
-	RMQ_MOQUEUE             string = "Q_MO"
-	RMQ_RENEWALEXCHANGE     string = "E_RENEWAL"
-	RMQ_RENEWALQUEUE        string = "Q_RENEWAL"
-	RMQ_RETRYFPEXCHANGE     string = "E_RETRY_FP"
-	RMQ_RETRYFPQUEUE        string = "Q_RETRY_FP"
-	RMQ_RETRYDPEXCHANGE     string = "E_RETRY_DP"
-	RMQ_RETRYDPQUEUE        string = "Q_RETRY_DP"
-	RMQ_RETRYINSUFFEXCHANGE string = "E_RETRY_INSUFF"
-	RMQ_RETRYINSUFFQUEUE    string = "Q_RETRY_INSUFF"
-	RMQ_NOTIFEXCHANGE       string = "E_NOTIF"
-	RMQ_NOTIFQUEUE          string = "Q_NOTIF"
-	RMQ_POSTBACKMOEXCHANGE  string = "E_POSTBACK_MO"
-	RMQ_POSTBACKMOQUEUE     string = "Q_POSTBACK_MO"
-	RMQ_POSTBACKMTEXCHANGE  string = "E_POSTBACK_MT"
-	RMQ_POSTBACKMTQUEUE     string = "Q_POSTBACK_MT"
-	MT_FIRSTPUSH            string = "MT_FIRSTPUSH"
-	ACT_RENEWAL             string = "RENEWAL"
-	ACT_RETRY_FP            string = "RETRY_FP"
-	ACT_RETRY_DP            string = "RETRY_DP"
-	ACT_RETRY_INSUFF        string = "RETRY_INSUFF"
-	ACT_CSV                 string = "CSV"
+	RMQ_EXCHANGETYPE             string = "direct"
+	RMQ_DATATYPE                 string = "application/json"
+	RMQ_MOEXCHANGE               string = "E_MO"
+	RMQ_MOQUEUE                  string = "Q_MO"
+	RMQ_RENEWALEXCHANGE          string = "E_RENEWAL"
+	RMQ_RENEWALQUEUE             string = "Q_RENEWAL"
+	RMQ_RETRYFPEXCHANGE          string = "E_RETRY_FP"
+	RMQ_RETRYFPQUEUE             string = "Q_RETRY_FP"
+	RMQ_RETRYDPEXCHANGE          string = "E_RETRY_DP"
+	RMQ_RETRYDPQUEUE             string = "Q_RETRY_DP"
+	RMQ_RETRYINSUFFEXCHANGE      string = "E_RETRY_INSUFF"
+	RMQ_RETRYINSUFFQUEUE         string = "Q_RETRY_INSUFF"
+	RMQ_RETRYINSUFFBILL0EXCHANGE string = "E_RETRY_INSUFF_BILL0"
+	RMQ_RETRYINSUFFBILL0QUEUE    string = "Q_RETRY_INSUFF_BILL0"
+	RMQ_RETRYINSUFFBILL1EXCHANGE string = "E_RETRY_INSUFF_BILL1"
+	RMQ_RETRYINSUFFBILL1QUEUE    string = "Q_RETRY_INSUFF_BILL1"
+	RMQ_RETRYINSUFFBILL2EXCHANGE string = "E_RETRY_INSUFF_BILL2"
+	RMQ_RETRYINSUFFBILL2QUEUE    string = "Q_RETRY_INSUFF_BILL2"
+	RMQ_RETRYINSUFFBILL3EXCHANGE string = "E_RETRY_INSUFF_BILL3"
+	RMQ_RETRYINSUFFBILL3QUEUE    string = "Q_RETRY_INSUFF_BILL3"
+	RMQ_NOTIFEXCHANGE            string = "E_NOTIF"
+	RMQ_NOTIFQUEUE               string = "Q_NOTIF"
+	RMQ_POSTBACKMOEXCHANGE       string = "E_POSTBACK_MO"
+	RMQ_POSTBACKMOQUEUE          string = "Q_POSTBACK_MO"
+	RMQ_POSTBACKMTEXCHANGE       string = "E_POSTBACK_MT"
+	RMQ_POSTBACKMTQUEUE          string = "Q_POSTBACK_MT"
+	MT_FIRSTPUSH                 string = "MT_FIRSTPUSH"
+	ACT_RENEWAL                  string = "RENEWAL"
+	ACT_RETRY_FP                 string = "RETRY_FP"
+	ACT_RETRY_DP                 string = "RETRY_DP"
+	ACT_RETRY_INSUFF             string = "RETRY_INSUFF"
+	ACT_RETRY_INSUFF_BILL0       string = "RETRY_INSUFF_BILL0"
+	ACT_RETRY_INSUFF_BILL1       string = "RETRY_INSUFF_BILL1"
+	ACT_RETRY_INSUFF_BILL2       string = "RETRY_INSUFF_BILL2"
+	ACT_RETRY_INSUFF_BILL3       string = "RETRY_INSUFF_BILL3"
+	ACT_CSV                      string = "CSV"
 )
 
 var (
@@ -83,6 +95,10 @@ func init() {
 	rootCmd.AddCommand(consumerRetryFpCmd)
 	rootCmd.AddCommand(consumerRetryDpCmd)
 	rootCmd.AddCommand(consumerRetryInsuffCmd)
+	rootCmd.AddCommand(consumerRetryInsuffBill0Cmd)
+	rootCmd.AddCommand(consumerRetryInsuffBill1Cmd)
+	rootCmd.AddCommand(consumerRetryInsuffBill2Cmd)
+	rootCmd.AddCommand(consumerRetryInsuffBill3Cmd)
 	rootCmd.AddCommand(consumerNotifCmd)
 	rootCmd.AddCommand(consumerPostbackMOCmd)
 	rootCmd.AddCommand(consumerPostbackMTCmd)
@@ -91,6 +107,10 @@ func init() {
 	rootCmd.AddCommand(publisherRetryFpCmd)
 	rootCmd.AddCommand(publisherRetryDpCmd)
 	rootCmd.AddCommand(publisherRetryInsuffCmd)
+	rootCmd.AddCommand(publisherRetryInsuffBill0Cmd)
+	rootCmd.AddCommand(publisherRetryInsuffBill1Cmd)
+	rootCmd.AddCommand(publisherRetryInsuffBill2Cmd)
+	rootCmd.AddCommand(publisherRetryInsuffBill3Cmd)
 	rootCmd.AddCommand(publisherCSVCmd)
 
 }

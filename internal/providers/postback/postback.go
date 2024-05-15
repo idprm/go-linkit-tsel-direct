@@ -255,6 +255,8 @@ func (p *Postback) SamMO() ([]byte, error) {
 		q.Add("operator", "198")
 		q.Add("id_service", "2252")
 	}
+	//NOTIF MO:
+	//https://mcb.mediapera.com/api/v2/mobile-originated/id/linkit?msisdn=SHDC-Enb6J2jYRpK%2BAHGpe0%2FyDH%2BDkVZCftqgHseNW4t%2BK3U%3D&id_service=2131&operator=183&sms=REG+CLOUDPLAY+SAM+%2AF2844F30124711EFA40D51E556BDC60E&trx_id=SHDC-Enb6J2jYRpK%2BAHGpe0%2FyDH%2BDkVZCftqgHseNW4t%2BK3U%3D17157286348407188512981&service_type=2&sdc=97770&trx_date=20240515061714
 
 	// msisdn, id_service, operator, sms, trx_id, service_type, sdc, trx_date
 
@@ -423,6 +425,7 @@ func (p *Postback) SamDN(status string) ([]byte, error) {
 	q.Add("type", strings.ToLower(p.subscription.GetLatestSubject()))
 	q.Add("trx_id", p.subscription.GetLatestTrxId())
 	q.Add("trx_date", time.Now().Format("20060102150405"))
+	q.Add("service_type", "")
 
 	req, err := http.NewRequest("GET", p.service.UrlPostbackSamDN+"?"+q.Encode(), nil)
 	if err != nil {
