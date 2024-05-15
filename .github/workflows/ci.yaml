@@ -34,9 +34,9 @@ jobs:
             image: idprm/linkit-tsel-direct-pub-retry-insuff-bill0-service
           - dockerfile: ./Dockerfile.pub_retry_insuff_bill1
             image: idprm/linkit-tsel-direct-pub-retry-insuff-bill1-service
-          - dockerfile: ./Dockerfile.pub_retry_insuff-bill2
+          - dockerfile: ./Dockerfile.pub_retry_insuff_bill2
             image: idprm/linkit-tsel-direct-pub-retry-insuff-bill2-service
-          - dockerfile: ./Dockerfile.pub_retry_insuff-bill3
+          - dockerfile: ./Dockerfile.pub_retry_insuff_bill3
             image: idprm/linkit-tsel-direct-pub-retry-insuff-bill3-service
           - dockerfile: ./Dockerfile.renewal
             image: idprm/linkit-tsel-direct-renewal-service
