@@ -68,7 +68,10 @@ var publisherRenewalCmd = &cobra.Command{
 				** Purge queue retry if populate renewal start
 				**/
 				p := rabbit.NewRabbitMQ()
-				p.Purge(RMQ_RETRYINSUFFQUEUE)
+				p.Purge(RMQ_RETRYINSUFFBILL0QUEUE)
+				p.Purge(RMQ_RETRYINSUFFBILL1QUEUE)
+				p.Purge(RMQ_RETRYINSUFFBILL2QUEUE)
+				p.Purge(RMQ_RETRYINSUFFBILL3QUEUE)
 			}
 
 			time.Sleep(timeDuration * time.Minute)
