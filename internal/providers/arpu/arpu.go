@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"time"
 
 	"github.com/idprm/go-linkit-tsel/internal/logger"
 	"github.com/idprm/go-linkit-tsel/internal/utils"
@@ -36,26 +37,36 @@ func NewArpu(
 func (a *Arpu) UploadCSV(urlTo, fileName string) {
 	l := a.logger.Init("csv", true)
 
+	start := time.Now()
+
 	request, err := a.fileUploadRequest(urlTo, "file", fileName)
 	if err != nil {
-		log.Fatal(err)
+		l.WithFields(logrus.Fields{"error": err.Error()}).Error("UPLOAD_CSV")
+		log.Println(err.Error())
 	}
 	client := &http.Client{}
 	resp, err := client.Do(request)
 	if err != nil {
-		log.Fatal(err)
+		l.WithFields(logrus.Fields{"error": err.Error()}).Error("UPLOAD_CSV")
+		log.Println(err.Error())
 	} else {
 		body := &bytes.Buffer{}
 		_, err := body.ReadFrom(resp.Body)
 		if err != nil {
 			l.WithFields(logrus.Fields{"error": err.Error()}).Error("UPLOAD_CSV")
-			log.Fatal(err)
+			log.Println(err.Error())
 		}
 		fmt.Println(resp.Header)
 		fmt.Println(body)
 
 		defer resp.Body.Close()
-		l.WithFields(logrus.Fields{"response": body.String()}).Info("UPLOAD_CSV")
+		duration := time.Since(start).Milliseconds()
+		l.WithFields(logrus.Fields{
+			"duration":    duration,
+			"response":    body.String(),
+			"status_code": resp.StatusCode,
+			"status_text": http.StatusText(resp.StatusCode),
+		}).Info("UPLOAD_CSV")
 	}
 }
 
