@@ -30,14 +30,6 @@ jobs:
             image: idprm/linkit-tsel-direct-pub-retry-fp-service
           - dockerfile: ./Dockerfile.pub_retry_insuff
             image: idprm/linkit-tsel-direct-pub-retry-insuff-service
-          - dockerfile: ./Dockerfile.pub_retry_insuff_bill0
-            image: idprm/linkit-tsel-direct-pub-retry-insuff-bill0-service
-          - dockerfile: ./Dockerfile.pub_retry_insuff_bill1
-            image: idprm/linkit-tsel-direct-pub-retry-insuff-bill1-service
-          - dockerfile: ./Dockerfile.pub_retry_insuff_bill2
-            image: idprm/linkit-tsel-direct-pub-retry-insuff-bill2-service
-          - dockerfile: ./Dockerfile.pub_retry_insuff_bill3
-            image: idprm/linkit-tsel-direct-pub-retry-insuff-bill3-service
           - dockerfile: ./Dockerfile.renewal
             image: idprm/linkit-tsel-direct-renewal-service
           - dockerfile: ./Dockerfile.retry_dp
@@ -46,14 +38,6 @@ jobs:
             image: idprm/linkit-tsel-direct-retry-fp-service
           - dockerfile: ./Dockerfile.retry_insuff
             image: idprm/linkit-tsel-direct-retry-insuff-service
-          - dockerfile: ./Dockerfile.retry_insuff_bill0
-            image: idprm/linkit-tsel-direct-retry-insuff-bill0-service
-          - dockerfile: ./Dockerfile.retry_insuff_bill1
-            image: idprm/linkit-tsel-direct-retry-insuff-bill1-service
-          - dockerfile: ./Dockerfile.retry_insuff_bill2
-            image: idprm/linkit-tsel-direct-retry-insuff-bill2-service
-          - dockerfile: ./Dockerfile.retry_insuff_bill3
-            image: idprm/linkit-tsel-direct-retry-insuff-bill3-service
           - dockerfile: ./Dockerfile.notif
             image: idprm/linkit-tsel-direct-notif-service
 

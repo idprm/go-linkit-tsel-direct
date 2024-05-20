@@ -82,6 +82,7 @@ func init() {
 	// setup timezone
 	loc, _ := time.LoadLocation(APP_TZ)
 	time.Local = loc
+
 	/**
 	 * WEBSERVER SERVICE
 	 */
