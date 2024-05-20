@@ -817,8 +817,11 @@ func populateCSV(db *sql.DB) {
 		log.Fatal(err)
 	}
 
+	time.Sleep(10 * time.Second)
 	// upload file csv
 	arp.UploadCSV(ARPU_URL_SUB, fileNameSubs)
+	//
+	time.Sleep(10 * time.Second)
 
 	transRecords, err := transactionService.SelectTransactionToCSV()
 	if err != nil {
@@ -862,6 +865,8 @@ func populateCSV(db *sql.DB) {
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	time.Sleep(10 * time.Second)
 
 	arp.UploadCSV(ARPU_URL_TRANS, fileNameTrans)
 }
