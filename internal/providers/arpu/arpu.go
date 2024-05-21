@@ -47,17 +47,18 @@ func (a *Arpu) UploadCSV(urlTo, fileName string) {
 	}
 	tr := &http.Transport{
 		Dial: (&net.Dialer{
-			Timeout:   500 * time.Second,
-			KeepAlive: 500 * time.Second,
+			Timeout:   0,
+			KeepAlive: 0,
 		}).Dial,
 		MaxIdleConns:          10,
-		IdleConnTimeout:       500 * time.Second,
-		TLSHandshakeTimeout:   500 * time.Second,
-		ResponseHeaderTimeout: 500 * time.Second,
+		IdleConnTimeout:       0,
+		TLSHandshakeTimeout:   0,
+		ResponseHeaderTimeout: 0,
 		ExpectContinueTimeout: 1 * time.Second,
 	}
 
 	client := &http.Client{
+		Timeout:   0,
 		Transport: tr,
 	}
 	resp, err := client.Do(request)
