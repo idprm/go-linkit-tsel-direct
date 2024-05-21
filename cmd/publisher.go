@@ -1,9 +1,12 @@
 package cmd
 
 import (
+	"compress/gzip"
 	"database/sql"
 	"encoding/csv"
 	"encoding/json"
+	"fmt"
+	"io"
 	"log"
 	"os"
 	"time"
@@ -800,12 +803,6 @@ func populateRetryInsuffBill3(db *sql.DB, queue rmqp.AMQP) {
 }
 
 func populateCSV(db *sql.DB) {
-	/**
-	 * SETUP LOG
-	 */
-	logger := logger.NewLogger()
-
-	arp := arpu.NewArpu(logger)
 
 	fileNameSubs := "/logs/csv/subscriptions_id_telkomsel_cloudplay.csv"
 	fileNameTrans := "/logs/csv/transactions_id_telkomsel_cloudplay.csv"
@@ -860,7 +857,7 @@ func populateCSV(db *sql.DB) {
 		log.Fatal(err)
 	}
 
-	time.Sleep(10 * time.Second)
+	time.Sleep(20 * time.Second)
 
 	transRecords, err := transactionService.SelectTransactionToCSV()
 	if err != nil {
@@ -902,15 +899,65 @@ func populateCSV(db *sql.DB) {
 
 	err = transW.WriteAll(transData) // calls Flush internally
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err.Error())
 	}
 
-	time.Sleep(10 * time.Second)
-	// upload file csv
-	arp.UploadCSV(ARPU_URL_SUB, fileNameSubs)
-	time.Sleep(10 * time.Second)
-	// upload file csv
-	arp.UploadCSV(ARPU_URL_TRANS, fileNameTrans)
+}
+
+func compressCSV(file1, file2 string) {
+
+	fileNameSubsCompress := "/logs/csv/subscriptions_id_telkomsel_cloudplay.gz"
+	fileNameTransCompress := "/logs/csv/transactions_id_telkomsel_cloudplay.gz"
+
+	//Add files to the zip archive
+	f1, err := os.Open(file1)
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+	defer f1.Close()
+
+	//Add files to the zip archive
+	f2, err := os.Open(file2)
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+	defer f2.Close()
+
+	// Create a new gzip writer
+	gzipSubsWriter, err := os.Create(fileNameSubsCompress)
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+	defer gzipSubsWriter.Close()
+
+	// Create a new gzip writer
+	gzipTransWriter, err := os.Create(fileNameTransCompress)
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+	defer gzipTransWriter.Close()
+
+	fmt.Println("archive file created successfully....")
+
+	zipSubsWriter := gzip.NewWriter(gzipSubsWriter)
+	defer zipSubsWriter.Close()
+
+	zipTransWriter := gzip.NewWriter(gzipTransWriter)
+	defer zipTransWriter.Close()
+
+	_, err = io.Copy(zipSubsWriter, f1)
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+	// Close the gzip writer
+	zipSubsWriter.Close()
+
+	_, err = io.Copy(zipTransWriter, f2)
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+	// Close the gzip writer
+	zipTransWriter.Close()
 }
 
 func uploadCSV() {
@@ -922,11 +969,18 @@ func uploadCSV() {
 	fileNameSubs := "/logs/csv/subscriptions_id_telkomsel_cloudplay.csv"
 	fileNameTrans := "/logs/csv/transactions_id_telkomsel_cloudplay.csv"
 
+	fileNameSubsCompress := "/logs/csv/subscriptions_id_telkomsel_cloudplay.gz"
+	fileNameTransCompress := "/logs/csv/transactions_id_telkomsel_cloudplay.gz"
+
+	// compress in new file
+	compressCSV(fileNameSubs, fileNameTrans)
+
 	arp := arpu.NewArpu(logger)
 
 	// upload file csv
-	arp.UploadCSV(ARPU_URL_SUB, fileNameSubs)
+	arp.UploadCSV(ARPU_URL_SUB, fileNameSubsCompress)
+
 	time.Sleep(10 * time.Second)
 	// upload file csv
-	arp.UploadCSV(ARPU_URL_TRANS, fileNameTrans)
+	arp.UploadCSV(ARPU_URL_TRANS, fileNameTransCompress)
 }
