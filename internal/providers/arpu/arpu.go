@@ -6,6 +6,7 @@ import (
 	"io"
 	"log"
 	"mime/multipart"
+	"net"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -45,13 +46,18 @@ func (a *Arpu) UploadCSV(urlTo, fileName string) {
 		log.Println(err.Error())
 	}
 	tr := &http.Transport{
-		MaxIdleConns:       10,
-		IdleConnTimeout:    180 * time.Second,
-		DisableCompression: true,
+		Dial: (&net.Dialer{
+			Timeout:   300 * time.Second,
+			KeepAlive: 500 * time.Second,
+		}).Dial,
+		MaxIdleConns:          10,
+		IdleConnTimeout:       300 * time.Second,
+		TLSHandshakeTimeout:   300 * time.Second,
+		ResponseHeaderTimeout: 300 * time.Second,
+		ExpectContinueTimeout: 1 * time.Second,
 	}
 
 	client := &http.Client{
-		Timeout:   180 * time.Second,
 		Transport: tr,
 	}
 	resp, err := client.Do(request)
