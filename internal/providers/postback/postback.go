@@ -939,7 +939,6 @@ func (p *Postback) PlwDN(status string) ([]byte, error) {
 /**
  * Message Originated (STAR)
  */
-
 func (p *Postback) StarMO() ([]byte, error) {
 	l := p.logger.Init("pb", true)
 
@@ -993,6 +992,207 @@ func (p *Postback) StarMO() ([]byte, error) {
 		"status_code": resp.StatusCode,
 		"status_text": http.StatusText(resp.StatusCode),
 	}).Info("POSTBACK_STAR_MO")
+
+	return body, nil
+}
+
+/**
+ * Message Originated (MXO)
+ */
+
+func (p *Postback) MxoMO() ([]byte, error) {
+	l := p.logger.Init("pb", true)
+
+	start := time.Now()
+	trxId := uuid_utils.GenerateTrxId()
+
+	q := url.Values{}
+	q.Add("msisdn", p.subscription.GetMsisdn())
+	// msisdn, id_service, operator, sms, trx_id, service_type, sdc, trx_date
+
+	q.Add("sdc", "97770")
+	q.Add("sms", p.subscription.GetCampKeyword()+" "+p.subscription.GetCampSubKeyword()+" "+p.subscription.GetAffSub())
+	q.Add("trx_id", p.subscription.GetLatestTrxId())
+	q.Add("service_type", "2")
+	q.Add("trx_date", time.Now().Format("20060102150405"))
+
+	req, err := http.NewRequest("GET", p.service.GetUrlPostbackMxoMO()+"?"+q.Encode(), nil)
+	if err != nil {
+		return nil, errors.New(err.Error())
+	}
+
+	tr := &http.Transport{
+		MaxIdleConns:       30,
+		IdleConnTimeout:    10 * time.Second,
+		DisableCompression: true,
+	}
+
+	client := &http.Client{
+		Timeout:   10 * time.Second,
+		Transport: tr,
+	}
+
+	p.logger.Writer(req)
+	l.WithFields(logrus.Fields{
+		"msisdn":  p.subscription.GetMsisdn(),
+		"request": p.service.GetUrlPostbackMxoMO() + "?" + q.Encode(),
+		"trx_id":  trxId,
+	}).Info("POSTBACK_MXO_MO")
+
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, errors.New(err.Error())
+	}
+
+	defer resp.Body.Close()
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, errors.New(err.Error())
+	}
+
+	duration := time.Since(start).Milliseconds()
+	p.logger.Writer(string(body))
+	l.WithFields(logrus.Fields{
+		"msisdn":      p.subscription.GetMsisdn(),
+		"response":    string(body),
+		"trx_id":      trxId,
+		"duration":    duration,
+		"status_code": resp.StatusCode,
+		"status_text": http.StatusText(resp.StatusCode),
+	}).Info("POSTBACK_MXO_MO")
+
+	return body, nil
+}
+
+func (p *Postback) MxoMOUnsub() ([]byte, error) {
+	l := p.logger.Init("pb", true)
+
+	start := time.Now()
+	trxId := uuid_utils.GenerateTrxId()
+
+	q := url.Values{}
+	q.Add("msisdn", p.subscription.GetMsisdn())
+	q.Add("sdc", "97770")
+	q.Add("trx_id", p.subscription.GetLatestTrxId())
+	q.Add("sms", p.subscription.GetLatestKeyword()+" "+p.subscription.GetCampSubKeyword())
+	q.Add("service_type", "2")
+
+	q.Add("trx_date", time.Now().Format("20060102150405"))
+
+	req, err := http.NewRequest("GET", p.service.GetUrlPostbackMxoMO()+"?"+q.Encode(), nil)
+	if err != nil {
+		return nil, errors.New(err.Error())
+	}
+
+	tr := &http.Transport{
+		MaxIdleConns:       30,
+		IdleConnTimeout:    10 * time.Second,
+		DisableCompression: true,
+	}
+
+	client := &http.Client{
+		Timeout:   10 * time.Second,
+		Transport: tr,
+	}
+
+	p.logger.Writer(req)
+	l.WithFields(logrus.Fields{
+		"msisdn":  p.subscription.GetMsisdn(),
+		"request": p.service.GetUrlPostbackMxoMO() + "?" + q.Encode(),
+		"trx_id":  trxId,
+	}).Info("POSTBACK_MXO_MO_UNSUB")
+
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, errors.New(err.Error())
+	}
+
+	defer resp.Body.Close()
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, errors.New(err.Error())
+	}
+
+	duration := time.Since(start).Milliseconds()
+	p.logger.Writer(string(body))
+	l.WithFields(logrus.Fields{
+		"msisdn":      p.subscription.GetMsisdn(),
+		"response":    string(body),
+		"trx_id":      trxId,
+		"duration":    duration,
+		"status_code": resp.StatusCode,
+		"status_text": http.StatusText(resp.StatusCode),
+	}).Info("POSTBACK_MXO_MO_UNSUB")
+
+	return body, nil
+}
+
+/**
+ * Delivery Notification (MXO)
+ */
+func (p *Postback) MxoDN(status string) ([]byte, error) {
+	l := p.logger.Init("pb", true)
+
+	start := time.Now()
+	trxId := uuid_utils.GenerateTrxId()
+
+	q := url.Values{}
+	q.Add("msisdn", p.subscription.GetMsisdn())
+
+	if status != "SUCCESS" {
+		q.Add("status", "0")
+	} else {
+		q.Add("status", "1")
+	}
+
+	// msisdn, id_service, operator, trx_id, status, statusdesc, sdc, trx_date
+	q.Add("statusdesc", strings.ToLower(status))
+	q.Add("sdc", "97770")
+	q.Add("service", p.subscription.GetCampKeyword()+" "+p.subscription.GetCampSubKeyword())
+	q.Add("type", strings.ToLower(p.subscription.GetLatestSubject()))
+	q.Add("trx_id", p.subscription.GetLatestTrxId())
+	q.Add("trx_date", time.Now().Format("20060102150405"))
+
+	req, err := http.NewRequest("GET", p.service.GetUrlPostbackMxoDN()+"?"+q.Encode(), nil)
+	if err != nil {
+		return nil, errors.New(err.Error())
+	}
+
+	tr := &http.Transport{
+		MaxIdleConns:       30,
+		IdleConnTimeout:    10 * time.Second,
+		DisableCompression: true,
+	}
+
+	client := &http.Client{
+		Timeout:   10 * time.Second,
+		Transport: tr,
+	}
+
+	p.logger.Writer(req)
+	l.WithFields(logrus.Fields{"msisdn": p.subscription.Msisdn, "request": p.service.GetUrlPostbackMxoDN() + "?" + q.Encode(), "trx_id": trxId}).Info("POSTBACK_MXO_DN")
+
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, errors.New(err.Error())
+	}
+
+	defer resp.Body.Close()
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, errors.New(err.Error())
+	}
+
+	duration := time.Since(start).Milliseconds()
+	p.logger.Writer(string(body))
+	l.WithFields(logrus.Fields{
+		"msisdn":      p.subscription.GetMsisdn(),
+		"response":    string(body),
+		"trx_id":      trxId,
+		"duration":    duration,
+		"status_code": resp.StatusCode,
+		"status_text": http.StatusText(resp.StatusCode),
+	}).Info("POSTBACK_MXO_DN")
 
 	return body, nil
 }

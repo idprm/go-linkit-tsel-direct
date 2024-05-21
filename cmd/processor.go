@@ -296,6 +296,10 @@ func (p *Processor) PostbackMO(wg *sync.WaitGroup, message []byte) {
 			h.StarMO()
 		}
 
+		if req.Verify.IsMxo() {
+			h.MxoMO()
+		}
+
 		// non billable
 		if !req.Verify.GetIsBillable() {
 			if !req.Verify.IsSam() &&
@@ -305,6 +309,7 @@ func (p *Processor) PostbackMO(wg *sync.WaitGroup, message []byte) {
 				!req.Verify.IsRdr() &&
 				!req.Verify.IsPlw() &&
 				!req.Verify.IsStar() &&
+				!req.Verify.IsMxo() &&
 				!req.Verify.IsV2Test() {
 
 				h.Postback()
@@ -324,6 +329,11 @@ func (p *Processor) PostbackMO(wg *sync.WaitGroup, message []byte) {
 		if req.Subscription.IsPlw() {
 			h.PlwMOUnsub()
 		}
+
+		if req.Subscription.IsMxo() {
+			h.MxoMOUnsub()
+		}
+
 	}
 
 	if req.IsMT() {
@@ -349,6 +359,10 @@ func (p *Processor) PostbackMO(wg *sync.WaitGroup, message []byte) {
 		if req.Verify.IsPlw() {
 			h.PlwDN(req.Status)
 		}
+
+		if req.Verify.IsMxo() {
+			h.MxoDN(req.Status)
+		}
 	}
 
 	wg.Done()
@@ -373,6 +387,9 @@ func (p *Processor) PostbackMT(wg *sync.WaitGroup, message []byte) {
 		if req.Subscription.IsPlw() {
 			h.PlwDN(req.Status)
 		}
+		if req.Subscription.IsMxo() {
+			h.MxoDN(req.Status)
+		}
 	}
 
 	/**
@@ -392,6 +409,9 @@ func (p *Processor) PostbackMT(wg *sync.WaitGroup, message []byte) {
 		}
 		if req.Subscription.IsPlw() {
 			h.PlwDN(req.Status)
+		}
+		if req.Subscription.IsMxo() {
+			h.MxoDN(req.Status)
 		}
 	}
 

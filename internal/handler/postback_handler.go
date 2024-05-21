@@ -90,3 +90,18 @@ func (h *PostbackHandler) StarMO() {
 	p := postback.NewPostback(h.logger, h.req.Subscription, h.req.Service, false)
 	p.StarMO()
 }
+
+func (h *PostbackHandler) MxoMO() {
+	p := postback.NewPostback(h.logger, h.req.Subscription, h.req.Service, false)
+	p.MxoMO()
+}
+
+func (h *PostbackHandler) MxoMOUnsub() {
+	p := postback.NewPostback(h.logger, h.req.Subscription, h.req.Service, false)
+	p.MxoMOUnsub()
+}
+
+func (h *PostbackHandler) MxoDN(status string) {
+	p := postback.NewPostback(h.logger, h.req.Subscription, h.req.Service, false)
+	p.MxoDN(status)
+}

@@ -29,7 +29,9 @@ CREATE TABLE IF NOT EXISTS "services" (
   "url_postback_plw_mo" varchar(85),
   "url_postback_plw_dn" varchar(85),
   "url_postback_star_mo" varchar(85),
-  "url_postback_star_dn" varchar(85)
+  "url_postback_star_dn" varchar(85),
+  "url_postback_mxo_mo" varchar(85),
+  "url_postback_mxo_dn" varchar(85)
 );
 
 CREATE TABLE IF NOT EXISTS "contents" (
@@ -204,6 +206,8 @@ ALTER TABLE "services" ADD "url_postback_plw_mo" varchar(85);
 ALTER TABLE "services" ADD "url_postback_plw_dn" varchar(85);
 ALTER TABLE "services" ADD "url_postback_star_mo" varchar(85);
 ALTER TABLE "services" ADD "url_postback_star_dn" varchar(85);
+ALTER TABLE "services" ADD "url_postback_mxo_mo" varchar(85);
+ALTER TABLE "services" ADD "url_postback_mxo_dn" varchar(85);
 
 ALTER TABLE "subscriptions" ALTER COLUMN "latest_pin" TYPE varchar(10);
 ALTER TABLE "transactions" ALTER COLUMN "pin" TYPE varchar(10);

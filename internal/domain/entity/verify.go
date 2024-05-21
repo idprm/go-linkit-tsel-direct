@@ -113,3 +113,7 @@ func (v *Verify) IsPlw() bool {
 func (v *Verify) IsStar() bool {
 	return strings.ToUpper(v.CampSubKeyword) == "STAR"
 }
+
+func (v *Verify) IsMxo() bool {
+	return strings.ToUpper(v.CampSubKeyword) == "MXO"
+}
