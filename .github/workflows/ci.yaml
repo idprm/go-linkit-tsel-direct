@@ -30,6 +30,8 @@ jobs:
             image: idprm/linkit-tsel-direct-pub-retry-fp-service
           - dockerfile: ./Dockerfile.pub_retry_insuff
             image: idprm/linkit-tsel-direct-pub-retry-insuff-service
+          - dockerfile: ./Dockerfile.pub_upload_csv
+            image: idprm/linkit-tsel-direct-pub-upload-csv-service
           - dockerfile: ./Dockerfile.renewal
             image: idprm/linkit-tsel-direct-renewal-service
           - dockerfile: ./Dockerfile.retry_dp

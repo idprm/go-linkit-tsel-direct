@@ -68,6 +68,7 @@ const (
 	ACT_RETRY_INSUFF_BILL2       string = "RETRY_INSUFF_BILL2"
 	ACT_RETRY_INSUFF_BILL3       string = "RETRY_INSUFF_BILL3"
 	ACT_CSV                      string = "CSV"
+	ACT_UPLOAD_CSV               string = "UPLOAD_CSV"
 )
 
 var (
@@ -113,7 +114,7 @@ func init() {
 	rootCmd.AddCommand(publisherRetryInsuffBill2Cmd)
 	rootCmd.AddCommand(publisherRetryInsuffBill3Cmd)
 	rootCmd.AddCommand(publisherCSVCmd)
-
+	rootCmd.AddCommand(publisherUploadCSVCmd)
 }
 
 func Execute() error {

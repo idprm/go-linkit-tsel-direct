@@ -44,7 +44,16 @@ func (a *Arpu) UploadCSV(urlTo, fileName string) {
 		l.WithFields(logrus.Fields{"error": err.Error()}).Error("UPLOAD_CSV")
 		log.Println(err.Error())
 	}
-	client := &http.Client{}
+	tr := &http.Transport{
+		MaxIdleConns:       10,
+		IdleConnTimeout:    180 * time.Second,
+		DisableCompression: true,
+	}
+
+	client := &http.Client{
+		Timeout:   180 * time.Second,
+		Transport: tr,
+	}
 	resp, err := client.Do(request)
 	if err != nil {
 		l.WithFields(logrus.Fields{"error": err.Error()}).Error("UPLOAD_CSV")

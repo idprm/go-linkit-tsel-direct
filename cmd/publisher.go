@@ -509,6 +509,49 @@ var publisherCSVCmd = &cobra.Command{
 	},
 }
 
+var publisherUploadCSVCmd = &cobra.Command{
+	Use:   "pub_upload_csv",
+	Short: "Upload CSV CLI",
+	Long:  ``,
+	Run: func(cmd *cobra.Command, args []string) {
+		/**
+		 * connect pgsql
+		 */
+		db, err := connectPgsql()
+		if err != nil {
+			panic(err)
+		}
+
+		/**
+		 * Looping schedule
+		 */
+		timeDuration := time.Duration(1)
+
+		for {
+			timeNow := time.Now().Format("15:04")
+
+			scheduleRepo := repository.NewScheduleRepository(db)
+			scheduleService := services.NewScheduleService(scheduleRepo)
+
+			if scheduleService.GetUnlocked(ACT_UPLOAD_CSV, timeNow) {
+
+				scheduleService.UpdateSchedule(false, ACT_UPLOAD_CSV)
+
+				go func() {
+					uploadCSV()
+				}()
+			}
+
+			if scheduleService.GetLocked(ACT_UPLOAD_CSV, timeNow) {
+				scheduleService.UpdateSchedule(true, ACT_UPLOAD_CSV)
+			}
+
+			time.Sleep(timeDuration * time.Minute)
+		}
+
+	},
+}
+
 func populateRenewal(db *sql.DB, queue rmqp.AMQP) {
 	subscriptionRepo := repository.NewSubscriptionRepository(db)
 	subscriptionService := services.NewSubscriptionService(subscriptionRepo)
@@ -818,10 +861,6 @@ func populateCSV(db *sql.DB) {
 	}
 
 	time.Sleep(10 * time.Second)
-	// upload file csv
-	arp.UploadCSV(ARPU_URL_SUB, fileNameSubs)
-	//
-	time.Sleep(10 * time.Second)
 
 	transRecords, err := transactionService.SelectTransactionToCSV()
 	if err != nil {
@@ -867,6 +906,27 @@ func populateCSV(db *sql.DB) {
 	}
 
 	time.Sleep(10 * time.Second)
+	// upload file csv
+	arp.UploadCSV(ARPU_URL_SUB, fileNameSubs)
+	time.Sleep(10 * time.Second)
+	// upload file csv
+	arp.UploadCSV(ARPU_URL_TRANS, fileNameTrans)
+}
 
+func uploadCSV() {
+	/**
+	 * SETUP LOG
+	 */
+	logger := logger.NewLogger()
+
+	fileNameSubs := "/logs/csv/subscriptions_id_telkomsel_cloudplay.csv"
+	fileNameTrans := "/logs/csv/transactions_id_telkomsel_cloudplay.csv"
+
+	arp := arpu.NewArpu(logger)
+
+	// upload file csv
+	arp.UploadCSV(ARPU_URL_SUB, fileNameSubs)
+	time.Sleep(10 * time.Second)
+	// upload file csv
 	arp.UploadCSV(ARPU_URL_TRANS, fileNameTrans)
 }
