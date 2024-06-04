@@ -105,3 +105,8 @@ func (h *PostbackHandler) MxoDN(status string) {
 	p := postback.NewPostback(h.logger, h.req.Subscription, h.req.Service, false)
 	p.MxoDN(status)
 }
+
+func (h *PostbackHandler) StarsMO() {
+	p := postback.NewPostback(h.logger, h.req.Subscription, h.req.Service, false)
+	p.StarsMO()
+}

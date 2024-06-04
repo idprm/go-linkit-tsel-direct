@@ -300,6 +300,10 @@ func (p *Processor) PostbackMO(wg *sync.WaitGroup, message []byte) {
 			h.MxoMO()
 		}
 
+		if req.Verify.IsStars() {
+			h.StarsMO()
+		}
+
 		// non billable
 		if !req.Verify.GetIsBillable() {
 			if !req.Verify.IsSam() &&
@@ -310,6 +314,7 @@ func (p *Processor) PostbackMO(wg *sync.WaitGroup, message []byte) {
 				!req.Verify.IsPlw() &&
 				!req.Verify.IsStar() &&
 				!req.Verify.IsMxo() &&
+				!req.Verify.IsStars() &&
 				!req.Verify.IsV2Test() {
 
 				h.Postback()

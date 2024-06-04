@@ -105,6 +105,10 @@ func (s *Subscription) IsMxo() bool {
 	return s.GetCampSubKeyword() == "MXO"
 }
 
+func (s *Subscription) IsStars() bool {
+	return s.GetCampSubKeyword() == "STARS"
+}
+
 func (s *Subscription) GetAdnet() string {
 	return s.Adnet
 }
