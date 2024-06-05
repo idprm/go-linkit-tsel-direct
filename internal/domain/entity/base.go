@@ -244,11 +244,9 @@ func (r *CampaignToolsRequest) GetIpAddress() string {
 }
 
 func (r *CampaignToolsRequest) IsBillable() bool {
-	return r.GetSubKeyword() == "LNK" ||
-		strings.Contains(r.GetSubKeyword(), "BLB") ||
+	return strings.Contains(r.GetSubKeyword(), "BLB") ||
 		strings.Contains(r.GetSubKeyword(), "BIL") ||
-		strings.Contains(r.GetSubDynamic(), "BLB") ||
-		strings.Contains(r.GetSubDynamic(), "BIL")
+		r.GetSubKeyword() == "LNK"
 }
 
 func (r *CampaignToolsRequest) IsSam() bool {
