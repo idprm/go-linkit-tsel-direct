@@ -60,6 +60,8 @@ const (
 	RMQ_POSTBACKMOQUEUE    string = "Q_POSTBACK_MO"
 	RMQ_POSTBACKMTEXCHANGE string = "E_POSTBACK_MT"
 	RMQ_POSTBACKMTQUEUE    string = "Q_POSTBACK_MT"
+	RMQ_TRAFFICEXCHANGE    string = "E_TRAFFIC"
+	RMQ_TRAFFICQUEUE       string = "Q_TRAFFIC"
 	MT_FIRSTPUSH           string = "FIRSTPUSH"
 	MT_RENEWAL             string = "RENEWAL"
 	MT_UNSUB               string = "UNSUB"
@@ -233,6 +235,28 @@ func (h *IncomingHandler) CloudPlayCampaign(c *fiber.Ctx) error {
 			},
 		)
 	}
+	// insert to rabbitmq
+	jsonData, _ := json.Marshal(
+		&entity.ReqTrafficParams{
+			ServiceId:      service.GetID(),
+			CampKeyword:    req.GetCampKeyword(),
+			CampSubKeyword: req.GetCampSubKeyword(),
+			Adnet:          req.GetAdnet(),
+			PubId:          req.GetPubId(),
+			AffSub:         req.GetAffSub(),
+			Browser:        ua.Name,
+			OS:             ua.OS + " " + ua.OSVersion,
+			Device:         ua.Device,
+			IpAddress:      req.GetIpAddress(),
+		},
+	)
+	h.message.IntegratePublish(
+		RMQ_TRAFFICEXCHANGE,
+		RMQ_TRAFFICQUEUE,
+		RMQ_DATATYPE,
+		"",
+		string(jsonData),
+	)
 
 	duration := time.Since(start).Milliseconds()
 	if token != "" {
@@ -335,6 +359,29 @@ func (h *IncomingHandler) GalaysCampaign(c *fiber.Ctx) error {
 			},
 		)
 	}
+
+	// insert to rabbitmq
+	jsonData, _ := json.Marshal(
+		&entity.ReqTrafficParams{
+			ServiceId:      service.GetID(),
+			CampKeyword:    req.GetCampKeyword(),
+			CampSubKeyword: req.GetCampSubKeyword(),
+			Adnet:          req.GetAdnet(),
+			PubId:          req.GetPubId(),
+			AffSub:         req.GetAffSub(),
+			Browser:        ua.Name,
+			OS:             ua.OS + " " + ua.OSVersion,
+			Device:         ua.Device,
+			IpAddress:      req.GetIpAddress(),
+		},
+	)
+	h.message.IntegratePublish(
+		RMQ_TRAFFICEXCHANGE,
+		RMQ_TRAFFICQUEUE,
+		RMQ_DATATYPE,
+		"",
+		string(jsonData),
+	)
 
 	duration := time.Since(start).Milliseconds()
 	if token != "" {
@@ -440,6 +487,29 @@ func (h *IncomingHandler) CloudPlayCampaignBillable(c *fiber.Ctx) error {
 		)
 	}
 
+	// insert to rabbitmq
+	jsonData, _ := json.Marshal(
+		&entity.ReqTrafficParams{
+			ServiceId:      service.GetID(),
+			CampKeyword:    req.GetCampKeyword(),
+			CampSubKeyword: req.GetCampSubKeyword(),
+			Adnet:          req.GetAdnet(),
+			PubId:          req.GetPubId(),
+			AffSub:         req.GetAffSub(),
+			Browser:        ua.Name,
+			OS:             ua.OS + " " + ua.OSVersion,
+			Device:         ua.Device,
+			IpAddress:      req.GetIpAddress(),
+		},
+	)
+	h.message.IntegratePublish(
+		RMQ_TRAFFICEXCHANGE,
+		RMQ_TRAFFICQUEUE,
+		RMQ_DATATYPE,
+		"",
+		string(jsonData),
+	)
+
 	duration := time.Since(start).Milliseconds()
 	if token != "" {
 		l.WithFields(logrus.Fields{
@@ -541,6 +611,29 @@ func (h *IncomingHandler) GalaysCampaignBillable(c *fiber.Ctx) error {
 		})
 	}
 
+	// insert to rabbitmq
+	jsonData, _ := json.Marshal(
+		&entity.ReqTrafficParams{
+			ServiceId:      service.GetID(),
+			CampKeyword:    req.GetCampKeyword(),
+			CampSubKeyword: req.GetCampSubKeyword(),
+			Adnet:          req.GetAdnet(),
+			PubId:          req.GetPubId(),
+			AffSub:         req.GetAffSub(),
+			Browser:        ua.Name,
+			OS:             ua.OS + " " + ua.OSVersion,
+			Device:         ua.Device,
+			IpAddress:      req.GetIpAddress(),
+		},
+	)
+	h.message.IntegratePublish(
+		RMQ_TRAFFICEXCHANGE,
+		RMQ_TRAFFICQUEUE,
+		RMQ_DATATYPE,
+		"",
+		string(jsonData),
+	)
+
 	duration := time.Since(start).Milliseconds()
 	if token != "" {
 		l.WithFields(logrus.Fields{
@@ -634,6 +727,29 @@ func (h *IncomingHandler) CampaignTool(c *fiber.Ctx) error {
 			"message": err,
 		})
 	}
+
+	// insert to rabbitmq
+	jsonData, _ := json.Marshal(
+		&entity.ReqTrafficParams{
+			ServiceId:      service.GetID(),
+			CampKeyword:    "REG " + req.GetService(),
+			CampSubKeyword: req.GetSubKeyword(),
+			Adnet:          req.GetAdnet(),
+			PubId:          req.GetPubId(),
+			AffSub:         req.GetAffSub(),
+			Browser:        ua.Name,
+			OS:             ua.OS + " " + ua.OSVersion,
+			Device:         ua.Device,
+			IpAddress:      req.GetIpAddress(),
+		},
+	)
+	h.message.IntegratePublish(
+		RMQ_TRAFFICEXCHANGE,
+		RMQ_TRAFFICQUEUE,
+		RMQ_DATATYPE,
+		"",
+		string(jsonData),
+	)
 
 	duration := time.Since(start).Milliseconds()
 	if token != "" {
@@ -746,6 +862,29 @@ func (h *IncomingHandler) CloudPlaySub1CampaignPage(c *fiber.Ctx) error {
 		)
 	}
 
+	// insert to rabbitmq
+	jsonData, _ := json.Marshal(
+		&entity.ReqTrafficParams{
+			ServiceId:      service.GetID(),
+			CampKeyword:    req.GetCampKeyword(),
+			CampSubKeyword: req.GetCampSubKeyword(),
+			Adnet:          req.GetAdnet(),
+			PubId:          req.GetPubId(),
+			AffSub:         req.GetAffSub(),
+			Browser:        ua.Name,
+			OS:             ua.OS + " " + ua.OSVersion,
+			Device:         ua.Device,
+			IpAddress:      req.GetIpAddress(),
+		},
+	)
+	h.message.IntegratePublish(
+		RMQ_TRAFFICEXCHANGE,
+		RMQ_TRAFFICQUEUE,
+		RMQ_DATATYPE,
+		"",
+		string(jsonData),
+	)
+
 	duration := time.Since(start).Milliseconds()
 	if token != "" {
 		l.WithFields(logrus.Fields{
@@ -846,6 +985,29 @@ func (h *IncomingHandler) GalaysSub1CampaignPage(c *fiber.Ctx) error {
 			"message": err,
 		})
 	}
+
+	// insert to rabbitmq
+	jsonData, _ := json.Marshal(
+		&entity.ReqTrafficParams{
+			ServiceId:      service.GetID(),
+			CampKeyword:    req.GetCampKeyword(),
+			CampSubKeyword: req.GetCampSubKeyword(),
+			Adnet:          req.GetAdnet(),
+			PubId:          req.GetPubId(),
+			AffSub:         req.GetAffSub(),
+			Browser:        ua.Name,
+			OS:             ua.OS + " " + ua.OSVersion,
+			Device:         ua.Device,
+			IpAddress:      req.GetIpAddress(),
+		},
+	)
+	h.message.IntegratePublish(
+		RMQ_TRAFFICEXCHANGE,
+		RMQ_TRAFFICQUEUE,
+		RMQ_DATATYPE,
+		"",
+		string(jsonData),
+	)
 
 	duration := time.Since(start).Milliseconds()
 	if token != "" {
@@ -949,6 +1111,29 @@ func (h *IncomingHandler) CloudPlaySub2CampaignPage(c *fiber.Ctx) error {
 			"message": err,
 		})
 	}
+
+	// insert to rabbitmq
+	jsonData, _ := json.Marshal(
+		&entity.ReqTrafficParams{
+			ServiceId:      service.GetID(),
+			CampKeyword:    req.GetCampKeyword(),
+			CampSubKeyword: req.GetCampSubKeyword(),
+			Adnet:          req.GetAdnet(),
+			PubId:          req.GetPubId(),
+			AffSub:         req.GetAffSub(),
+			Browser:        ua.Name,
+			OS:             ua.OS + " " + ua.OSVersion,
+			Device:         ua.Device,
+			IpAddress:      req.GetIpAddress(),
+		},
+	)
+	h.message.IntegratePublish(
+		RMQ_TRAFFICEXCHANGE,
+		RMQ_TRAFFICQUEUE,
+		RMQ_DATATYPE,
+		"",
+		string(jsonData),
+	)
 
 	duration := time.Since(start).Milliseconds()
 	if token != "" {
@@ -1054,6 +1239,29 @@ func (h *IncomingHandler) CloudPlaySub3CampaignPage(c *fiber.Ctx) error {
 		)
 	}
 
+	// insert to rabbitmq
+	jsonData, _ := json.Marshal(
+		&entity.ReqTrafficParams{
+			ServiceId:      service.GetID(),
+			CampKeyword:    req.GetCampKeyword(),
+			CampSubKeyword: req.GetCampSubKeyword(),
+			Adnet:          req.GetAdnet(),
+			PubId:          req.GetPubId(),
+			AffSub:         req.GetAffSub(),
+			Browser:        ua.Name,
+			OS:             ua.OS + " " + ua.OSVersion,
+			Device:         ua.Device,
+			IpAddress:      req.GetIpAddress(),
+		},
+	)
+	h.message.IntegratePublish(
+		RMQ_TRAFFICEXCHANGE,
+		RMQ_TRAFFICQUEUE,
+		RMQ_DATATYPE,
+		"",
+		string(jsonData),
+	)
+
 	duration := time.Since(start).Milliseconds()
 	if token != "" {
 		l.WithFields(logrus.Fields{
@@ -1157,6 +1365,29 @@ func (h *IncomingHandler) CloudPlaySub4CampaignPage(c *fiber.Ctx) error {
 		)
 	}
 
+	// insert to rabbitmq
+	jsonData, _ := json.Marshal(
+		&entity.ReqTrafficParams{
+			ServiceId:      service.GetID(),
+			CampKeyword:    req.GetCampKeyword(),
+			CampSubKeyword: req.GetCampSubKeyword(),
+			Adnet:          req.GetAdnet(),
+			PubId:          req.GetPubId(),
+			AffSub:         req.GetAffSub(),
+			Browser:        ua.Name,
+			OS:             ua.OS + " " + ua.OSVersion,
+			Device:         ua.Device,
+			IpAddress:      req.GetIpAddress(),
+		},
+	)
+	h.message.IntegratePublish(
+		RMQ_TRAFFICEXCHANGE,
+		RMQ_TRAFFICQUEUE,
+		RMQ_DATATYPE,
+		"",
+		string(jsonData),
+	)
+
 	duration := time.Since(start).Milliseconds()
 	if token != "" {
 		l.WithFields(logrus.Fields{
@@ -1252,6 +1483,29 @@ func (h *IncomingHandler) CampaignToolDynamic(c *fiber.Ctx) error {
 			"message": err,
 		})
 	}
+
+	// insert to rabbitmq
+	jsonData, _ := json.Marshal(
+		&entity.ReqTrafficParams{
+			ServiceId:      service.GetID(),
+			CampKeyword:    "REG " + req.GetDynamic(),
+			CampSubKeyword: req.GetSubDynamic(),
+			Adnet:          req.GetAdnet(),
+			PubId:          req.GetPubId(),
+			AffSub:         req.GetAffSub(),
+			Browser:        ua.Name,
+			OS:             ua.OS + " " + ua.OSVersion,
+			Device:         ua.Device,
+			IpAddress:      req.GetIpAddress(),
+		},
+	)
+	h.message.IntegratePublish(
+		RMQ_TRAFFICEXCHANGE,
+		RMQ_TRAFFICQUEUE,
+		RMQ_DATATYPE,
+		"",
+		string(jsonData),
+	)
 
 	duration := time.Since(start).Milliseconds()
 	if token != "" {
@@ -1362,6 +1616,29 @@ func (h *IncomingHandler) CampaignDirect(c *fiber.Ctx) error {
 			},
 		)
 	}
+
+	// insert to rabbitmq
+	jsonData, _ := json.Marshal(
+		&entity.ReqTrafficParams{
+			ServiceId:      service.GetID(),
+			CampKeyword:    req.GetCampKeyword(),
+			CampSubKeyword: req.GetCampSubKeyword(),
+			Adnet:          req.GetAdnet(),
+			PubId:          req.GetPubId(),
+			AffSub:         req.GetAffSub(),
+			Browser:        ua.Name,
+			OS:             ua.OS + " " + ua.OSVersion,
+			Device:         ua.Device,
+			IpAddress:      req.GetIpAddress(),
+		},
+	)
+	h.message.IntegratePublish(
+		RMQ_TRAFFICEXCHANGE,
+		RMQ_TRAFFICQUEUE,
+		RMQ_DATATYPE,
+		"",
+		string(jsonData),
+	)
 
 	duration := time.Since(start).Milliseconds()
 	if token != "" {

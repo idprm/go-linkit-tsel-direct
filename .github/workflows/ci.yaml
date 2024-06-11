@@ -42,6 +42,8 @@ jobs:
             image: idprm/linkit-tsel-direct-retry-insuff-service
           - dockerfile: ./Dockerfile.notif
             image: idprm/linkit-tsel-direct-notif-service
+          - dockerfile: ./Dockerfile.traffic
+            image: idprm/linkit-tsel-direct-traffic-service
 
     permissions:
       contents: read

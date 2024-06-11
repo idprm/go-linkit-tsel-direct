@@ -59,6 +59,8 @@ func (p *Processor) MO(wg *sync.WaitGroup, message []byte) {
 	transactionService := services.NewTransactionService(transactionRepo)
 	historyRepo := repository.NewHistoryRepository(p.db)
 	historyService := services.NewHistoryService(historyRepo)
+	trafficRepo := repository.NewTrafficRepository(p.db)
+	trafficService := services.NewTrafficService(trafficRepo)
 
 	var req *entity.ReqMOParams
 	json.Unmarshal([]byte(message), &req)
@@ -74,6 +76,7 @@ func (p *Processor) MO(wg *sync.WaitGroup, message []byte) {
 		subscriptionService,
 		transactionService,
 		historyService,
+		trafficService,
 		reqMO,
 	)
 
@@ -419,6 +422,24 @@ func (p *Processor) PostbackMT(wg *sync.WaitGroup, message []byte) {
 			h.MxoDN(req.Status)
 		}
 	}
+
+	wg.Done()
+}
+
+func (p *Processor) Traffic(wg *sync.WaitGroup, message []byte) {
+
+	/**
+	 * load repo
+	 */
+	trafficRepo := repository.NewTrafficRepository(p.db)
+	trafficService := services.NewTrafficService(trafficRepo)
+
+	var req *entity.ReqTrafficParams
+	json.Unmarshal(message, &req)
+
+	h := handler.NewTrafficHandler(trafficService, req)
+
+	h.Campaign()
 
 	wg.Done()
 }

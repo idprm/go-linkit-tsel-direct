@@ -27,6 +27,19 @@ type (
 	}
 )
 
+type ReqTrafficParams struct {
+	ServiceId      int    `json:"service_id"`
+	CampKeyword    string `json:"camp_keyword,omitempty"`
+	CampSubKeyword string `json:"camp_sub_keyword,omitempty"`
+	Adnet          string `json:"adnet,omitempty"`
+	PubId          string `json:"pub_id,omitempty"`
+	AffSub         string `json:"aff_sub,omitempty"`
+	Browser        string `json:"browser,omitempty"`
+	OS             string `json:"os,omitempty"`
+	Device         string `json:"device,omitempty"`
+	IpAddress      string `json:"ip_address,omitempty"`
+}
+
 type ReqMOParams struct {
 	SMS       string `validate:"required" query:"sms" json:"sms"`
 	Adn       string `query:"adn" json:"adn"`

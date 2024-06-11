@@ -26,6 +26,7 @@ type MOHandler struct {
 	subscriptionService services.ISubscriptionService
 	transactionService  services.ITransactionService
 	historyService      services.IHistoryService
+	trafficService      services.ITrafficService
 	req                 *entity.ReqMOParams
 }
 
@@ -39,6 +40,7 @@ func NewMOHandler(
 	subscriptionService services.ISubscriptionService,
 	transactionService services.ITransactionService,
 	historyService services.IHistoryService,
+	trafficService services.ITrafficService,
 	req *entity.ReqMOParams,
 ) *MOHandler {
 	return &MOHandler{
@@ -51,6 +53,7 @@ func NewMOHandler(
 		subscriptionService: subscriptionService,
 		transactionService:  transactionService,
 		historyService:      historyService,
+		trafficService:      trafficService,
 		req:                 req,
 	}
 }
@@ -98,6 +101,21 @@ func (h *MOHandler) Firstpush() {
 		subscription.CampKeyword = verify.GetCampKeyword()
 		subscription.CampSubKeyword = verify.GetCampSubKeyword()
 		subscription.IpAddress = verify.GetIpAddress()
+
+		// insert to traffics_mo
+		h.trafficService.SaveMO(
+			&entity.TrafficMO{
+				ServiceID:      service.GetID(),
+				Msisdn:         h.req.GetMsisdn(),
+				Channel:        channel,
+				CampKeyword:    verify.GetCampKeyword(),
+				CampSubKeyword: verify.GetCampSubKeyword(),
+				Adnet:          verify.GetAdnet(),
+				PubID:          verify.GetPubId(),
+				AffSub:         verify.GetAffSub(),
+				IpAddress:      verify.GetIpAddress(),
+			},
+		)
 
 		// insert to rabbitmq
 		jsonDataPostback, _ := json.Marshal(

@@ -169,6 +169,36 @@ CREATE TABLE IF NOT EXISTS "verifies" (
   "created_at" timestamp
 );
 
+CREATE TABLE IF NOT EXISTS "traffics_campaign" (
+  "id" SERIAL PRIMARY KEY,
+  "service_id" int NOT NULL,
+  "camp_keyword" varchar(55),
+  "camp_sub_keyword" varchar(55),
+  "adnet" varchar(55),
+  "pub_id" varchar(55),
+  "aff_sub" varchar(100),
+  "browser" varchar(200),
+  "os" varchar(100),
+  "device" varchar(200),
+  "ip_address" varchar(45),
+  "created_at" timestamp
+);
+
+CREATE TABLE IF NOT EXISTS "traffics_mo" (
+  "id" SERIAL PRIMARY KEY,
+  "service_id" int NOT NULL,
+  "msisdn" varchar(60) NOT NULL,
+  "channel" varchar(20),
+  "camp_keyword" varchar(55),
+  "camp_sub_keyword" varchar(55),
+  "adnet" varchar(55),
+  "pub_id" varchar(55),
+  "aff_sub" varchar(100),
+  "ip_address" varchar(45),
+  "created_at" timestamp
+);
+
+
 CREATE UNIQUE INDEX IF NOT EXISTS "uidx_msisdn" ON "blacklists" ("msisdn");
 CREATE UNIQUE INDEX IF NOT EXISTS "uidx_service_msisdn" ON "subscriptions" ("service_id", "msisdn");
 CREATE INDEX IF NOT EXISTS "idx_latest_pin" ON "subscriptions" ("latest_pin");
@@ -184,6 +214,8 @@ ALTER TABLE "subscriptions" ADD FOREIGN KEY ("service_id") REFERENCES "services"
 ALTER TABLE "transactions" ADD FOREIGN KEY ("service_id") REFERENCES "services" ("id");
 ALTER TABLE "histories" ADD FOREIGN KEY ("service_id") REFERENCES "services" ("id");
 ALTER TABLE "campaigns" ADD FOREIGN KEY ("service_id") REFERENCES "services" ("id");
+ALTER TABLE "traffics_campaign" ADD FOREIGN KEY ("service_id") REFERENCES "services" ("id");
+ALTER TABLE "traffics_mo" ADD FOREIGN KEY ("service_id") REFERENCES "services" ("id");
 
 ALTER TABLE "subscriptions" ADD "is_confirm" bool DEFAULT false BEFORE "is_active";
 
