@@ -354,11 +354,13 @@ func (h *MOHandler) Unsub() {
 	h.subscriptionService.UpdateDisable(subscription)
 
 	// if unsub, set PIN to 0
-	h.subscriptionService.UpdatePin(&entity.Subscription{
-		ServiceID: service.GetID(),
-		Msisdn:    h.req.GetMsisdn(),
-		LatestPIN: "",
-	})
+	h.subscriptionService.UpdatePin(
+		&entity.Subscription{
+			ServiceID: service.GetID(),
+			Msisdn:    h.req.GetMsisdn(),
+			LatestPIN: "",
+		},
+	)
 
 	confirm := &entity.Subscription{
 		ServiceID: service.GetID(),

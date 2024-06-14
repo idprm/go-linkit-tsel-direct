@@ -271,7 +271,7 @@ func (h *IncomingHandler) CloudPlayCampaign(c *fiber.Ctx) error {
 		}).Info("REDIRECT")
 	}
 
-	return c.Redirect(redirect)
+	return c.Redirect(redirect, 303)
 }
 
 func (h *IncomingHandler) GalaysCampaign(c *fiber.Ctx) error {
@@ -396,7 +396,7 @@ func (h *IncomingHandler) GalaysCampaign(c *fiber.Ctx) error {
 		}).Info("REDIRECT")
 	}
 
-	return c.Redirect(redirect)
+	return c.Redirect(redirect, 303)
 }
 
 func (h *IncomingHandler) CloudPlayCampaignBillable(c *fiber.Ctx) error {
@@ -523,7 +523,7 @@ func (h *IncomingHandler) CloudPlayCampaignBillable(c *fiber.Ctx) error {
 		}).Info("REDIRECT")
 	}
 
-	return c.Redirect(redirect)
+	return c.Redirect(redirect, 303)
 }
 
 func (h *IncomingHandler) GalaysCampaignBillable(c *fiber.Ctx) error {
@@ -647,7 +647,7 @@ func (h *IncomingHandler) GalaysCampaignBillable(c *fiber.Ctx) error {
 		}).Info("REDIRECT")
 	}
 
-	return c.Redirect(redirect)
+	return c.Redirect(redirect, 303)
 }
 
 func (h *IncomingHandler) CampaignTool(c *fiber.Ctx) error {
@@ -898,7 +898,7 @@ func (h *IncomingHandler) CloudPlaySub1CampaignPage(c *fiber.Ctx) error {
 		}).Info("REDIRECT")
 	}
 
-	return c.Redirect(redirect)
+	return c.Redirect(redirect, 303)
 }
 
 func (h *IncomingHandler) GalaysSub1CampaignPage(c *fiber.Ctx) error {
@@ -1022,7 +1022,7 @@ func (h *IncomingHandler) GalaysSub1CampaignPage(c *fiber.Ctx) error {
 		}).Info("REDIRECT")
 	}
 
-	return c.Redirect(redirect)
+	return c.Redirect(redirect, 303)
 }
 
 func (h *IncomingHandler) CloudPlaySub2CampaignPage(c *fiber.Ctx) error {
@@ -1148,7 +1148,7 @@ func (h *IncomingHandler) CloudPlaySub2CampaignPage(c *fiber.Ctx) error {
 		}).Info("REDIRECT")
 	}
 
-	return c.Redirect(redirect)
+	return c.Redirect(redirect, 303)
 }
 
 func (h *IncomingHandler) CloudPlaySub3CampaignPage(c *fiber.Ctx) error {
@@ -1275,7 +1275,7 @@ func (h *IncomingHandler) CloudPlaySub3CampaignPage(c *fiber.Ctx) error {
 		}).Info("REDIRECT")
 	}
 
-	return c.Redirect(redirect)
+	return c.Redirect(redirect, 303)
 }
 
 func (h *IncomingHandler) CloudPlaySub4CampaignPage(c *fiber.Ctx) error {
@@ -1401,7 +1401,7 @@ func (h *IncomingHandler) CloudPlaySub4CampaignPage(c *fiber.Ctx) error {
 		}).Info("REDIRECT")
 	}
 
-	return c.Redirect(redirect)
+	return c.Redirect(redirect, 303)
 }
 
 func (h *IncomingHandler) CampaignToolDynamic(c *fiber.Ctx) error {
@@ -1653,7 +1653,7 @@ func (h *IncomingHandler) CampaignDirect(c *fiber.Ctx) error {
 		}).Info("REDIRECT")
 	}
 
-	return c.Redirect(redirect)
+	return c.Redirect(redirect, 303)
 }
 
 func (h *IncomingHandler) OptIn(c *fiber.Ctx) error {
@@ -1806,7 +1806,7 @@ func (h *IncomingHandler) CallbackUrl(c *fiber.Ctx) error {
 		})
 	}
 	service, _ := h.serviceService.GetServiceByCode(verify.GetService())
-	return c.Redirect(service.GetUrlPortal())
+	return c.Redirect(service.GetUrlPortal(), 303)
 
 }
 

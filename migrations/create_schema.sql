@@ -191,9 +191,11 @@ CREATE TABLE IF NOT EXISTS "traffics_mo" (
   "channel" varchar(20),
   "camp_keyword" varchar(55),
   "camp_sub_keyword" varchar(55),
+  "subject" varchar(55),
   "adnet" varchar(55),
   "pub_id" varchar(55),
   "aff_sub" varchar(100),
+  "is_charge" boolean DEFAULT false,
   "ip_address" varchar(45),
   "created_at" timestamp
 );
@@ -208,6 +210,7 @@ CREATE INDEX IF NOT EXISTS "idx_service_adnet" ON "campaigns" ("service_id", "ad
 CREATE INDEX IF NOT EXISTS "idx_service_name" ON "contents" ("service_id", "name");
 CREATE INDEX IF NOT EXISTS "idx_name_publish_at" ON "schedules" ("name", "publish_at");
 CREATE INDEX IF NOT EXISTS "idx_token" ON "verifies" ("token");
+CREATE INDEX IF NOT EXISTS "idx_traffic_service_msisdn" ON "traffics_mo" ("service_id", "msisdn");
 
 ALTER TABLE "contents" ADD FOREIGN KEY ("service_id") REFERENCES "services" ("id");
 ALTER TABLE "subscriptions" ADD FOREIGN KEY ("service_id") REFERENCES "services" ("id");
