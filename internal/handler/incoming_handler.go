@@ -198,7 +198,7 @@ func (h *IncomingHandler) CloudPlayCampaign(c *fiber.Ctx) error {
 		}).Error("NO_REDIRECT")
 		return c.Status(fiber.StatusBadGateway).JSON(fiber.Map{
 			"error":   true,
-			"message": "Failed",
+			"message": err.Error(),
 		})
 	}
 

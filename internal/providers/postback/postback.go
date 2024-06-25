@@ -10,6 +10,7 @@ import (
 
 	"github.com/idprm/go-linkit-tsel/internal/domain/entity"
 	"github.com/idprm/go-linkit-tsel/internal/logger"
+	"github.com/idprm/go-linkit-tsel/internal/utils/pin_utils"
 	"github.com/idprm/go-linkit-tsel/internal/utils/response_utils"
 	"github.com/idprm/go-linkit-tsel/internal/utils/uuid_utils"
 	"github.com/sirupsen/logrus"
@@ -932,6 +933,72 @@ func (p *Postback) PlwDN(status string) ([]byte, error) {
 		"status_code": resp.StatusCode,
 		"status_text": http.StatusText(resp.StatusCode),
 	}).Info("POSTBACK_PLW_MT")
+
+	return body, nil
+}
+
+func (p *Postback) PlwNotif(status string) ([]byte, error) {
+	l := p.logger.Init("notif", true)
+
+	start := time.Now()
+	trxId := uuid_utils.GenerateTrxId()
+
+	q := url.Values{}
+	q.Add("msisdn", p.subscription.GetMsisdn())
+
+	if p.service.IsMplus() {
+		q.Add("pin", pin_utils.GetLatestMsisdn(p.subscription.GetMsisdn(), 8))
+		q.Add("package", p.service.GetPackage())
+	}
+
+	q.Add("status", status)
+	q.Add("time", time.Now().String())
+
+	req, err := http.NewRequest("GET", p.service.UrlPostbackPlwDN+"?"+q.Encode(), nil)
+	if err != nil {
+		return nil, errors.New(err.Error())
+	}
+
+	tr := &http.Transport{
+		MaxIdleConns:       10,
+		IdleConnTimeout:    8 * time.Second,
+		DisableCompression: true,
+	}
+
+	client := &http.Client{
+		Timeout:   8 * time.Second,
+		Transport: tr,
+	}
+
+	p.logger.Writer(req)
+	l.WithFields(logrus.Fields{
+		"msisdn":  p.subscription.GetMsisdn(),
+		"request": p.service.UrlPostbackPlwDN + "?" + q.Encode(),
+		"trx_id":  trxId,
+	}).Info("SUBSCRIPTION")
+
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, errors.New(err.Error())
+	}
+
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, errors.New(err.Error())
+	}
+
+	duration := time.Since(start).Milliseconds()
+	p.logger.Writer(string(body))
+	l.WithFields(logrus.Fields{
+		"msisdn":      p.subscription.GetMsisdn(),
+		"response":    string(body),
+		"trx_id":      trxId,
+		"duration":    duration,
+		"status_code": resp.StatusCode,
+		"status_text": http.StatusText(resp.StatusCode),
+	}).Info("SUBSCRIPTION")
 
 	return body, nil
 }
