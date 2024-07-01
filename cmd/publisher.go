@@ -564,14 +564,12 @@ func compressCSV(file1, file2 string) {
 	fileNameSubsCompress := "/logs/csv/subscriptions_id_telkomsel_cloudplay.gz"
 	fileNameTransCompress := "/logs/csv/transactions_id_telkomsel_cloudplay.gz"
 
-	//Add files to the zip archive
 	f1, err := os.Open(file1)
 	if err != nil {
 		log.Fatal(err.Error())
 	}
 	defer f1.Close()
 
-	//Add files to the zip archive
 	f2, err := os.Open(file2)
 	if err != nil {
 		log.Fatal(err.Error())
@@ -595,16 +593,24 @@ func compressCSV(file1, file2 string) {
 	fmt.Println("archive file created successfully....")
 
 	zipSubsWriter := gzip.NewWriter(gzipSubsWriter)
+	defer zipSubsWriter.Close()
+
+	zipTransWriter := gzip.NewWriter(gzipTransWriter)
+	defer zipTransWriter.Close()
+
 	_, err = io.Copy(zipSubsWriter, f1)
 	if err != nil {
 		log.Fatal(err.Error())
 	}
+	// Close the gzip writer
+	zipSubsWriter.Close()
 
-	zipTransWriter := gzip.NewWriter(gzipTransWriter)
 	_, err = io.Copy(zipTransWriter, f2)
 	if err != nil {
 		log.Fatal(err.Error())
 	}
+	// Close the gzip writer
+	zipTransWriter.Close()
 }
 
 func uploadCSV() {
