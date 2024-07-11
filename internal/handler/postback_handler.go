@@ -1,29 +1,23 @@
 package handler
 
 import (
-	"log"
-
 	"github.com/idprm/go-linkit-tsel/internal/domain/entity"
 	"github.com/idprm/go-linkit-tsel/internal/logger"
 	"github.com/idprm/go-linkit-tsel/internal/providers/postback"
-	"github.com/idprm/go-linkit-tsel/internal/services"
 )
 
 type PostbackHandler struct {
-	logger              *logger.Logger
-	subscriptionService services.ISubscriptionService
-	req                 *entity.ReqPostbackParams
+	logger *logger.Logger
+	req    *entity.ReqPostbackParams
 }
 
 func NewPostbackHandler(
 	logger *logger.Logger,
-	subscriptionService services.ISubscriptionService,
 	req *entity.ReqPostbackParams,
 ) *PostbackHandler {
 	return &PostbackHandler{
-		logger:              logger,
-		subscriptionService: subscriptionService,
-		req:                 req,
+		logger: logger,
+		req:    req,
 	}
 }
 
@@ -89,11 +83,7 @@ func (h *PostbackHandler) PlwMOUnsub() {
 
 func (h *PostbackHandler) PlwDN(status string) {
 	p := postback.NewPostback(h.logger, h.req.Subscription, h.req.Service, false)
-	sub, err := h.subscriptionService.SelectSubscription(h.req.Subscription.GetServiceId(), h.req.Subscription.GetMsisdn())
-	if err != nil {
-		log.Println(err.Error())
-	}
-	p.PlwDN(sub)
+	p.PlwDN()
 }
 
 func (h *PostbackHandler) StarMO() {

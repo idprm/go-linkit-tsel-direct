@@ -26,10 +26,10 @@ const (
 	queryCountActiveSubscription        = "SELECT COUNT(*) as count FROM subscriptions WHERE service_id = $1 AND msisdn = $2 AND is_active = true"
 	queryCountPinSub                    = "SELECT COUNT(*) as count FROM subscriptions WHERE latest_pin = $1"
 	querySelectSubscription             = "SELECT id, service_id, msisdn, channel, camp_keyword, camp_sub_keyword, adnet, pub_id, aff_sub, latest_trxid, latest_keyword, latest_subject, latest_status, latest_payload, amount, renewal_at, success, ip_address, total_firstpush, total_renewal, total_amount_firstpush, total_amount_renewal, is_retry, is_active FROM subscriptions WHERE service_id = $1 AND msisdn = $2"
-	querySelectPopulateRenewal          = "SELECT id, service_id, msisdn, channel, adnet, latest_keyword, latest_subject, latest_pin, ip_address, aff_sub, camp_keyword, camp_sub_keyword, created_at FROM subscriptions WHERE renewal_at IS NOT NULL AND DATE(renewal_at) <= DATE(NOW()) AND is_active = true ORDER BY success DESC, DATE(created_at) DESC"
-	querySelectPopulateRetryFirstpush   = "SELECT id, service_id, msisdn, channel, adnet, latest_keyword, latest_subject, latest_pin, ip_address, aff_sub, camp_keyword, camp_sub_keyword, retry_at, created_at FROM subscriptions WHERE latest_payload <> '3:3:21' AND latest_subject = 'FIRSTPUSH' AND renewal_at IS NOT NULL AND DATE(renewal_at) = DATE(NOW() + interval '1 day') AND is_retry = true AND is_active = true ORDER BY success DESC, DATE(created_at) DESC"
-	querySelectPopulateRetryDailypush   = "SELECT id, service_id, msisdn, channel, adnet, latest_keyword, latest_subject, latest_pin, ip_address, aff_sub, camp_keyword, camp_sub_keyword, retry_at, created_at FROM subscriptions WHERE latest_payload <> '3:3:21' AND latest_subject = 'RENEWAL' AND renewal_at IS NOT NULL AND DATE(renewal_at) = DATE(NOW() + interval '1 day') AND is_retry = true AND is_active = true ORDER BY success DESC, DATE(created_at) DESC"
-	querySelectPopulateRetryInsuff      = "SELECT id, service_id, msisdn, channel, adnet, latest_keyword, latest_subject, latest_pin, ip_address, aff_sub, camp_keyword, camp_sub_keyword, retry_at, created_at FROM subscriptions WHERE latest_payload = '3:3:21' AND renewal_at IS NOT NULL AND DATE(renewal_at) = DATE(NOW() + interval '1 day') AND is_retry = true AND is_active = true ORDER BY success DESC, DATE(created_at) DESC"
+	querySelectPopulateRenewal          = "SELECT id, service_id, msisdn, channel, adnet, latest_keyword, latest_subject, latest_pin, latest_payload, ip_address, aff_sub, camp_keyword, camp_sub_keyword, created_at FROM subscriptions WHERE renewal_at IS NOT NULL AND DATE(renewal_at) <= DATE(NOW()) AND is_active = true ORDER BY success DESC, DATE(created_at) DESC"
+	querySelectPopulateRetryFirstpush   = "SELECT id, service_id, msisdn, channel, adnet, latest_keyword, latest_subject, latest_pin, latest_payload, ip_address, aff_sub, camp_keyword, camp_sub_keyword, retry_at, created_at FROM subscriptions WHERE latest_payload <> '3:3:21' AND latest_subject = 'FIRSTPUSH' AND renewal_at IS NOT NULL AND DATE(renewal_at) = DATE(NOW() + interval '1 day') AND is_retry = true AND is_active = true ORDER BY success DESC, DATE(created_at) DESC"
+	querySelectPopulateRetryDailypush   = "SELECT id, service_id, msisdn, channel, adnet, latest_keyword, latest_subject, latest_pin, latest_payload, ip_address, aff_sub, camp_keyword, camp_sub_keyword, retry_at, created_at FROM subscriptions WHERE latest_payload <> '3:3:21' AND latest_subject = 'RENEWAL' AND renewal_at IS NOT NULL AND DATE(renewal_at) = DATE(NOW() + interval '1 day') AND is_retry = true AND is_active = true ORDER BY success DESC, DATE(created_at) DESC"
+	querySelectPopulateRetryInsuff      = "SELECT id, service_id, msisdn, channel, adnet, latest_keyword, latest_subject, latest_pin, latest_payload, ip_address, aff_sub, camp_keyword, camp_sub_keyword, retry_at, created_at FROM subscriptions WHERE latest_payload = '3:3:21' AND renewal_at IS NOT NULL AND DATE(renewal_at) = DATE(NOW() + interval '1 day') AND is_retry = true AND is_active = true ORDER BY success DESC, DATE(created_at) DESC"
 	querySelectPopulateRetryInsuffBill0 = "SELECT id, service_id, msisdn, channel, adnet, latest_keyword, latest_subject, latest_pin, ip_address, aff_sub, camp_keyword, camp_sub_keyword, retry_at, created_at FROM subscriptions WHERE latest_payload = '3:3:21' AND renewal_at IS NOT NULL AND DATE(renewal_at) = DATE(NOW() + interval '1 day') AND DATE(created_at) BETWEEN DATE(NOW() - interval '14 day') AND DATE(NOW()) AND success > failed AND is_retry = true AND is_active = true ORDER BY success DESC, DATE(created_at) DESC"
 	querySelectPopulateRetryInsuffBill1 = "SELECT id, service_id, msisdn, channel, adnet, latest_keyword, latest_subject, latest_pin, ip_address, aff_sub, camp_keyword, camp_sub_keyword, retry_at, created_at FROM subscriptions WHERE latest_payload = '3:3:21' AND renewal_at IS NOT NULL AND DATE(renewal_at) = DATE(NOW() + interval '1 day') AND DATE(created_at) BETWEEN DATE(NOW() - interval '30 day') AND DATE(NOW()) AND success > 0 AND is_retry = true AND is_active = true ORDER BY success DESC, DATE(created_at) DESC"
 	querySelectPopulateRetryInsuffBill2 = "SELECT id, service_id, msisdn, channel, adnet, latest_keyword, latest_subject, latest_pin, ip_address, aff_sub, camp_keyword, camp_sub_keyword, retry_at, created_at FROM subscriptions WHERE latest_payload = '3:3:21' AND renewal_at IS NOT NULL AND DATE(renewal_at) = DATE(NOW() + interval '1 day') AND DATE(created_at) BETWEEN DATE(NOW() - interval '181 day') AND DATE(NOW() - interval '31 day') AND success > 0 AND is_retry = true AND is_active = true ORDER BY success DESC, DATE(created_at) DESC"
@@ -421,7 +421,7 @@ func (r *SubscriptionRepository) Renewal() (*[]entity.Subscription, error) {
 	for rows.Next() {
 
 		var s entity.Subscription
-		if err := rows.Scan(&s.ID, &s.ServiceID, &s.Msisdn, &s.Channel, &s.Adnet, &s.LatestKeyword, &s.LatestSubject, &s.LatestPIN, &s.IpAddress, &s.AffSub, &s.CampKeyword, &s.CampSubKeyword, &s.CreatedAt); err != nil {
+		if err := rows.Scan(&s.ID, &s.ServiceID, &s.Msisdn, &s.Channel, &s.Adnet, &s.LatestKeyword, &s.LatestSubject, &s.LatestPIN, &s.LatestPayload, &s.IpAddress, &s.AffSub, &s.CampKeyword, &s.CampSubKeyword, &s.CreatedAt); err != nil {
 			return nil, err
 		}
 		subs = append(subs, s)
@@ -446,7 +446,7 @@ func (r *SubscriptionRepository) RetryFp() (*[]entity.Subscription, error) {
 	for rows.Next() {
 
 		var s entity.Subscription
-		if err := rows.Scan(&s.ID, &s.ServiceID, &s.Msisdn, &s.Channel, &s.Adnet, &s.LatestKeyword, &s.LatestSubject, &s.LatestPIN, &s.IpAddress, &s.AffSub, &s.CampKeyword, &s.CampSubKeyword, &s.RetryAt, &s.CreatedAt); err != nil {
+		if err := rows.Scan(&s.ID, &s.ServiceID, &s.Msisdn, &s.Channel, &s.Adnet, &s.LatestKeyword, &s.LatestSubject, &s.LatestPIN, &s.LatestPayload, &s.IpAddress, &s.AffSub, &s.CampKeyword, &s.CampSubKeyword, &s.RetryAt, &s.CreatedAt); err != nil {
 			return nil, err
 		}
 		subs = append(subs, s)
@@ -471,7 +471,7 @@ func (r *SubscriptionRepository) RetryDp() (*[]entity.Subscription, error) {
 	for rows.Next() {
 
 		var s entity.Subscription
-		if err := rows.Scan(&s.ID, &s.ServiceID, &s.Msisdn, &s.Channel, &s.Adnet, &s.LatestKeyword, &s.LatestSubject, &s.LatestPIN, &s.IpAddress, &s.AffSub, &s.CampKeyword, &s.CampSubKeyword, &s.RetryAt, &s.CreatedAt); err != nil {
+		if err := rows.Scan(&s.ID, &s.ServiceID, &s.Msisdn, &s.Channel, &s.Adnet, &s.LatestKeyword, &s.LatestSubject, &s.LatestPIN, &s.LatestPayload, &s.IpAddress, &s.AffSub, &s.CampKeyword, &s.CampSubKeyword, &s.RetryAt, &s.CreatedAt); err != nil {
 			return nil, err
 		}
 		subs = append(subs, s)
@@ -496,7 +496,7 @@ func (r *SubscriptionRepository) RetryInsuff() (*[]entity.Subscription, error) {
 	for rows.Next() {
 
 		var s entity.Subscription
-		if err := rows.Scan(&s.ID, &s.ServiceID, &s.Msisdn, &s.Channel, &s.Adnet, &s.LatestKeyword, &s.LatestSubject, &s.LatestPIN, &s.IpAddress, &s.AffSub, &s.CampKeyword, &s.CampSubKeyword, &s.RetryAt, &s.CreatedAt); err != nil {
+		if err := rows.Scan(&s.ID, &s.ServiceID, &s.Msisdn, &s.Channel, &s.Adnet, &s.LatestKeyword, &s.LatestSubject, &s.LatestPIN, &s.LatestPayload, &s.IpAddress, &s.AffSub, &s.CampKeyword, &s.CampSubKeyword, &s.RetryAt, &s.CreatedAt); err != nil {
 			return nil, err
 		}
 		subs = append(subs, s)
