@@ -232,3 +232,7 @@ func (s *Subscription) IsFirstpush() bool {
 func (s *Subscription) IsRenewal() bool {
 	return s.GetLatestSubject() == "RENEWAL"
 }
+
+func (s *Subscription) IsSuccess() bool {
+	return s.LatestPayload == "1"
+}

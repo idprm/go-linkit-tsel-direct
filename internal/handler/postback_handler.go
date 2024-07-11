@@ -84,6 +84,9 @@ func (h *PostbackHandler) PlwMOUnsub() {
 func (h *PostbackHandler) PlwDN(status string) {
 	p := postback.NewPostback(h.logger, h.req.Subscription, h.req.Service, false)
 	p.PlwDN()
+	if h.req.Subscription.IsSuccess() {
+		p.PlwNotif(status)
+	}
 }
 
 func (h *PostbackHandler) StarMO() {
