@@ -863,30 +863,26 @@ func (p *Postback) PlwMOUnsub() ([]byte, error) {
 /**
  * Delivery Notification (PLW)
  */
-func (p *Postback) PlwDN(status string) ([]byte, error) {
+func (p *Postback) PlwDN(s *entity.Subscription) ([]byte, error) {
 	l := p.logger.Init("pb", true)
 
 	start := time.Now()
 	trxId := uuid_utils.GenerateTrxId()
 
 	q := url.Values{}
-	q.Add("msisdn", p.subscription.GetMsisdn())
+	q.Add("msisdn", s.GetMsisdn())
 	if p.service.IsMplus() {
 		q.Add("id_service", "3131")
 		q.Add("operator", "5021")
 	}
 
-	q.Add("trx_id", p.subscription.GetLatestTrxId())
-	if status != "SUCCESS" {
-		q.Add("status", "0")
-	} else {
-		q.Add("status", "1")
-	}
-	q.Add("statusdesc", strings.ToLower(status))
+	q.Add("trx_id", s.GetLatestTrxId())
+	q.Add("status", s.LatestPayload)
+	q.Add("statusdesc", response_utils.ParseStatusCode(s.LatestPayload))
 	q.Add("sdc", "97770")
-	q.Add("service", p.subscription.GetCampKeyword()+" "+p.subscription.GetCampSubKeyword())
-	q.Add("type", strings.ToLower(p.subscription.GetLatestSubject()))
-	q.Add("trx_id", p.subscription.GetLatestTrxId())
+	q.Add("service", s.GetCampKeyword()+" "+s.GetCampSubKeyword())
+	q.Add("type", strings.ToLower(s.GetLatestSubject()))
+	q.Add("trx_id", s.GetLatestTrxId())
 	q.Add("trx_date", time.Now().Format("20060102150405"))
 
 	req, err := http.NewRequest("GET", p.service.GetUrlPostbackPlwDN()+"?"+q.Encode(), nil)

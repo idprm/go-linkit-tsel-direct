@@ -277,7 +277,10 @@ func (p *Processor) PostbackMO(wg *sync.WaitGroup, message []byte) {
 	var req *entity.ReqPostbackParams
 	json.Unmarshal(message, &req)
 
-	h := handler.NewPostbackHandler(p.logger, req)
+	subscriptionRepo := repository.NewSubscriptionRepository(p.db)
+	subscriptionService := services.NewSubscriptionService(subscriptionRepo)
+
+	h := handler.NewPostbackHandler(p.logger, subscriptionService, req)
 
 	if req.IsMO() {
 		if req.Verify.IsSam() {
@@ -380,7 +383,10 @@ func (p *Processor) PostbackMT(wg *sync.WaitGroup, message []byte) {
 	var req *entity.ReqPostbackParams
 	json.Unmarshal(message, &req)
 
-	h := handler.NewPostbackHandler(p.logger, req)
+	subscriptionRepo := repository.NewSubscriptionRepository(p.db)
+	subscriptionService := services.NewSubscriptionService(subscriptionRepo)
+
+	h := handler.NewPostbackHandler(p.logger, subscriptionService, req)
 
 	/**
 	 * Renewal & Retry Dailypush
