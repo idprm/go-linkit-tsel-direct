@@ -213,6 +213,10 @@ func (s *Subscription) SetAffSub(affsub string) {
 	s.AffSub = affsub
 }
 
+func (s *Subscription) SetLatestPayload(payload string) {
+	s.LatestPayload = payload
+}
+
 func (s *Subscription) IsCreatedAtToday() bool {
 	return s.CreatedAt.Format("2006-01-02") == time.Now().Format("2006-01-02")
 }

@@ -178,6 +178,7 @@ func (h *MOHandler) Firstpush() {
 		}
 
 		h.subscriptionService.UpdateSuccess(subSuccess)
+		subscription.SetLatestPayload(string(resp))
 
 		transSuccess := &entity.Transaction{
 			TxID:         trxId,
@@ -256,6 +257,7 @@ func (h *MOHandler) Firstpush() {
 			LatestPayload: string(resp),
 		}
 		h.subscriptionService.UpdateFailed(subFailed)
+		subscription.SetLatestPayload(string(resp))
 
 		// keep update PIN if failed
 		h.subscriptionService.UpdatePin(
