@@ -350,6 +350,7 @@ func populateRenewal(db *sql.DB, queue rmqp.AMQP) {
 		sub.LatestKeyword = s.LatestKeyword
 		sub.LatestSubject = s.LatestSubject
 		sub.LatestPIN = s.LatestPIN
+		sub.LatestPayload = s.LatestPayload
 		sub.IpAddress = s.IpAddress
 		sub.AffSub = s.AffSub
 		sub.CampKeyword = s.CampKeyword
@@ -381,6 +382,7 @@ func populateRetryFp(db *sql.DB, queue rmqp.AMQP) {
 		sub.LatestKeyword = s.LatestKeyword
 		sub.LatestSubject = s.LatestSubject
 		sub.LatestPIN = s.LatestPIN
+		sub.LatestPayload = s.LatestPayload
 		sub.IpAddress = s.IpAddress
 		sub.AffSub = s.AffSub
 		sub.CampKeyword = s.CampKeyword
@@ -412,6 +414,7 @@ func populateRetryDp(db *sql.DB, queue rmqp.AMQP) {
 		sub.LatestKeyword = s.LatestKeyword
 		sub.LatestSubject = s.LatestSubject
 		sub.LatestPIN = s.LatestPIN
+		sub.LatestPayload = s.LatestPayload
 		sub.IpAddress = s.IpAddress
 		sub.AffSub = s.AffSub
 		sub.CampKeyword = s.CampKeyword
@@ -443,6 +446,7 @@ func populateRetryInsuff(db *sql.DB, queue rmqp.AMQP) {
 		sub.LatestKeyword = s.LatestKeyword
 		sub.LatestSubject = s.LatestSubject
 		sub.LatestPIN = s.LatestPIN
+		sub.LatestPayload = s.LatestPayload
 		sub.IpAddress = s.IpAddress
 		sub.AffSub = s.AffSub
 		sub.CampKeyword = s.CampKeyword
