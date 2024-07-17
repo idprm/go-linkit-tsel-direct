@@ -131,11 +131,12 @@ func (h *RetryHandler) Firstpush() {
 			jsonDataPostback, _ := json.Marshal(
 				&entity.ReqPostbackParams{
 					Subscription: &entity.Subscription{
-						LatestTrxId:    h.sub.GetLatestTrxId(),
+						LatestTrxId:    trxId,
 						ServiceID:      h.sub.GetServiceId(),
 						Msisdn:         h.sub.GetMsisdn(),
 						LatestKeyword:  h.sub.GetLatestKeyword(),
 						LatestSubject:  SUBJECT_FIRSTPUSH,
+						LatestPayload:  string(resp),
 						CampKeyword:    h.sub.GetCampKeyword(),
 						CampSubKeyword: h.sub.GetCampSubKeyword(),
 					},
@@ -249,11 +250,12 @@ func (h *RetryHandler) Dailypush() {
 			jsonDataPostback, _ := json.Marshal(
 				&entity.ReqPostbackParams{
 					Subscription: &entity.Subscription{
-						LatestTrxId:    h.sub.GetLatestTrxId(),
+						LatestTrxId:    trxId,
 						ServiceID:      h.sub.GetServiceId(),
 						Msisdn:         h.sub.GetMsisdn(),
 						LatestKeyword:  h.sub.GetLatestKeyword(),
 						LatestSubject:  SUBJECT_RETRY,
+						LatestPayload:  string(resp),
 						CampKeyword:    h.sub.GetCampKeyword(),
 						CampSubKeyword: h.sub.GetCampSubKeyword(),
 					},

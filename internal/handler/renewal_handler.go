@@ -181,17 +181,19 @@ func (h *RenewalHandler) Dailypush() {
 		jsonData, _ := json.Marshal(
 			&entity.ReqPostbackParams{
 				Subscription: &entity.Subscription{
-					LatestTrxId:    h.sub.GetLatestTrxId(),
+					LatestTrxId:    trxId,
 					ServiceID:      h.sub.GetServiceId(),
 					Msisdn:         h.sub.GetMsisdn(),
 					LatestKeyword:  h.sub.GetLatestKeyword(),
 					LatestSubject:  SUBJECT_RENEWAL,
+					LatestPayload:  string(resp),
 					CampKeyword:    h.sub.GetCampKeyword(),
 					CampSubKeyword: h.sub.GetCampSubKeyword(),
 				},
 				Service:   service,
 				Action:    "MT_DAILYPUSH",
 				Status:    status,
+				AffSub:    h.sub.GetAffSub(),
 				IsSuccess: isSuccess,
 			},
 		)

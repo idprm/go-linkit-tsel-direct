@@ -876,7 +876,6 @@ func (p *Postback) PlwDN() ([]byte, error) {
 		q.Add("operator", "5021")
 	}
 
-	q.Add("trx_id", p.subscription.GetLatestTrxId())
 	q.Add("status", p.subscription.LatestPayload)
 	q.Add("statusdesc", response_utils.ParseStatusCode(p.subscription.LatestPayload))
 	q.Add("sdc", "97770")
