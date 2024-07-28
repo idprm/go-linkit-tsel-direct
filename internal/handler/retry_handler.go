@@ -23,6 +23,8 @@ type RetryHandler struct {
 	contentService      services.IContentService
 	subscriptionService services.ISubscriptionService
 	transactionService  services.ITransactionService
+	trafficService      services.ITrafficService
+	dailypushService    services.IDailypushService
 }
 
 func NewRetryHandler(
@@ -33,6 +35,8 @@ func NewRetryHandler(
 	contentService services.IContentService,
 	subscriptionService services.ISubscriptionService,
 	transactionService services.ITransactionService,
+	trafficService services.ITrafficService,
+	dailypushService services.IDailypushService,
 ) *RetryHandler {
 
 	return &RetryHandler{
@@ -43,6 +47,8 @@ func NewRetryHandler(
 		contentService:      contentService,
 		subscriptionService: subscriptionService,
 		transactionService:  transactionService,
+		trafficService:      trafficService,
+		dailypushService:    dailypushService,
 	}
 }
 
@@ -111,6 +117,15 @@ func (h *RetryHandler) Firstpush() {
 
 			h.transactionService.UpdateTransaction(transSuccess)
 
+			// update traffics_mo if success charge
+			h.trafficService.UpdateMOCharge(
+				&entity.TrafficMO{
+					ServiceID: h.sub.GetServiceId(),
+					Msisdn:    h.sub.GetMsisdn(),
+					IsCharge:  true,
+				},
+			)
+
 			// insert to rabbitmq
 			jsonDataNotif, _ := json.Marshal(
 				&entity.ReqNotifParams{
@@ -154,6 +169,7 @@ func (h *RetryHandler) Firstpush() {
 				"",
 				string(jsonDataPostback),
 			)
+
 		} else {
 			/**
 			* insuff action
@@ -272,6 +288,36 @@ func (h *RetryHandler) Dailypush() {
 				RMQ_DATATYPE,
 				"",
 				string(jsonDataPostback),
+			)
+
+			// insert to rabbitmq
+			jsonDataDP, _ := json.Marshal(
+				&entity.DailypushBodyRequest{
+					TxId:           trxId,
+					SubscriptionId: h.sub.GetId(),
+					ServiceId:      h.sub.GetServiceId(),
+					Msisdn:         h.sub.GetMsisdn(),
+					Channel:        h.sub.GetChannel(),
+					CampKeyword:    h.sub.GetCampKeyword(),
+					CampSubKeyword: h.sub.GetCampSubKeyword(),
+					Adnet:          h.sub.GetAdnet(),
+					PubID:          h.sub.GetPubId(),
+					AffSub:         h.sub.GetPubId(),
+					Subject:        SUBJECT_DAILYPUSH,
+					StatusCode:     string(resp),
+					StatusDetail:   response_utils.ParseStatusCode(string(resp)),
+					IsCharge:       true,
+					IpAddress:      h.sub.GetIpAddress(),
+					Action:         SUBJECT_RETRY,
+				},
+			)
+
+			h.rmq.IntegratePublish(
+				RMQ_DAILYPUSHEXCHANGE,
+				RMQ_DAILYPUSHQUEUE,
+				RMQ_DATATYPE,
+				"",
+				string(jsonDataDP),
 			)
 		} else {
 			/**

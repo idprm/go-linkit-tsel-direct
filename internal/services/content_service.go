@@ -36,3 +36,22 @@ func (s *ContentService) GetContent(serviceId int, name string, pin string) (*en
 	}
 	return &content, nil
 }
+
+func (s *ContentService) GetContentCustom(serviceId int, name, pin, url string) (*entity.Content, error) {
+	result, err := s.contentRepo.Get(serviceId, name)
+	if err != nil {
+		return nil, err
+	}
+
+	var content entity.Content
+
+	if result != nil {
+		content = entity.Content{
+			Value: result.Value,
+			Tid:   result.Tid,
+		}
+		content.SetPIN(pin)
+		content.SetLinkPortalMainPlus("https://mindplus.store/linkit360/login")
+	}
+	return &content, nil
+}

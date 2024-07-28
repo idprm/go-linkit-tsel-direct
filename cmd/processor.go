@@ -160,6 +160,10 @@ func (p *Processor) RetryFp(wg *sync.WaitGroup, message []byte) {
 	subscriptionService := services.NewSubscriptionService(subscriptionRepo)
 	transactionRepo := repository.NewTransactionRepository(p.db)
 	transactionService := services.NewTransactionService(transactionRepo)
+	trafficRepo := repository.NewTrafficRepository(p.db)
+	trafficService := services.NewTrafficService(trafficRepo)
+	dailypushRepo := repository.NewDailypushRepository(p.db)
+	dailypushService := services.NewDailypushService(dailypushRepo)
 
 	// parsing json to string
 	var sub *entity.Subscription
@@ -173,6 +177,8 @@ func (p *Processor) RetryFp(wg *sync.WaitGroup, message []byte) {
 		contentService,
 		subscriptionService,
 		transactionService,
+		trafficService,
+		dailypushService,
 	)
 
 	h.Firstpush()
@@ -192,6 +198,10 @@ func (p *Processor) RetryDp(wg *sync.WaitGroup, message []byte) {
 	subscriptionService := services.NewSubscriptionService(subscriptionRepo)
 	transactionRepo := repository.NewTransactionRepository(p.db)
 	transactionService := services.NewTransactionService(transactionRepo)
+	trafficRepo := repository.NewTrafficRepository(p.db)
+	trafficService := services.NewTrafficService(trafficRepo)
+	dailypushRepo := repository.NewDailypushRepository(p.db)
+	dailypushService := services.NewDailypushService(dailypushRepo)
 
 	// parsing json to string
 	var sub *entity.Subscription
@@ -205,6 +215,8 @@ func (p *Processor) RetryDp(wg *sync.WaitGroup, message []byte) {
 		contentService,
 		subscriptionService,
 		transactionService,
+		trafficService,
+		dailypushService,
 	)
 
 	h.Dailypush()
@@ -224,6 +236,10 @@ func (p *Processor) RetryInsuff(wg *sync.WaitGroup, message []byte) {
 	subscriptionService := services.NewSubscriptionService(subscriptionRepo)
 	transactionRepo := repository.NewTransactionRepository(p.db)
 	transactionService := services.NewTransactionService(transactionRepo)
+	trafficRepo := repository.NewTrafficRepository(p.db)
+	trafficService := services.NewTrafficService(trafficRepo)
+	dailypushRepo := repository.NewDailypushRepository(p.db)
+	dailypushService := services.NewDailypushService(dailypushRepo)
 
 	// parsing json to string
 	var sub *entity.Subscription
@@ -237,6 +253,8 @@ func (p *Processor) RetryInsuff(wg *sync.WaitGroup, message []byte) {
 		contentService,
 		subscriptionService,
 		transactionService,
+		trafficService,
+		dailypushService,
 	)
 
 	if sub.IsFirstpush() {
@@ -427,7 +445,6 @@ func (p *Processor) PostbackMT(wg *sync.WaitGroup, message []byte) {
 }
 
 func (p *Processor) Traffic(wg *sync.WaitGroup, message []byte) {
-
 	/**
 	 * load repo
 	 */
@@ -440,6 +457,23 @@ func (p *Processor) Traffic(wg *sync.WaitGroup, message []byte) {
 	h := handler.NewTrafficHandler(trafficService, req)
 
 	h.Campaign()
+
+	wg.Done()
+}
+
+func (p *Processor) Dailypush(wg *sync.WaitGroup, message []byte) {
+	/**
+	 * load repo
+	 */
+	dailypushRepo := repository.NewDailypushRepository(p.db)
+	dailypushService := services.NewDailypushService(dailypushRepo)
+
+	var req *entity.DailypushBodyRequest
+	json.Unmarshal(message, &req)
+
+	h := handler.NewDailypushHandler(dailypushService, req)
+
+	h.Dailypush()
 
 	wg.Done()
 }

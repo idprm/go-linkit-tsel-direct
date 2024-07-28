@@ -171,6 +171,7 @@ CREATE TABLE IF NOT EXISTS "verifies" (
 
 CREATE TABLE IF NOT EXISTS "traffics_campaign" (
   "id" SERIAL PRIMARY KEY,
+  "tx_id" varchar(100) UNIQUE NOT NULL,
   "service_id" int NOT NULL,
   "camp_keyword" varchar(55),
   "camp_sub_keyword" varchar(55),
@@ -180,12 +181,15 @@ CREATE TABLE IF NOT EXISTS "traffics_campaign" (
   "browser" varchar(200),
   "os" varchar(100),
   "device" varchar(200),
+  "referer" varchar(300),
   "ip_address" varchar(45),
-  "created_at" timestamp
+  "created_at" timestamp,
+  FOREIGN KEY ("service_id") REFERENCES "services" ("id")
 );
 
 CREATE TABLE IF NOT EXISTS "traffics_mo" (
   "id" SERIAL PRIMARY KEY,
+  "tx_id" varchar(100) UNIQUE NOT NULL,
   "service_id" int NOT NULL,
   "msisdn" varchar(60) NOT NULL,
   "channel" varchar(20),
@@ -197,9 +201,32 @@ CREATE TABLE IF NOT EXISTS "traffics_mo" (
   "aff_sub" varchar(100),
   "is_charge" boolean DEFAULT false,
   "ip_address" varchar(45),
-  "created_at" timestamp
+  "created_at" timestamp,
+  FOREIGN KEY ("service_id") REFERENCES "services" ("id")
 );
 
+CREATE TABLE IF NOT EXISTS "dailypushes" (
+  "id" SERIAL PRIMARY KEY,
+  "tx_id" varchar(100) UNIQUE NOT NULL,
+  "subscription_id" int NOT NULL,
+  "service_id" int NOT NULL,
+  "msisdn" varchar(60) NOT NULL,
+  "channel" varchar(20),
+  "camp_keyword" varchar(55),
+  "camp_sub_keyword" varchar(55),
+  "subject" varchar(55),
+  "adnet" varchar(55),
+  "pub_id" varchar(55),
+  "aff_sub" varchar(100),
+  "status_code" varchar(45),
+  "status_detail" varchar(100),
+  "is_charge" boolean DEFAULT false,
+  "ip_address" varchar(45),
+  "created_at" timestamp,
+  "updated_at" timestamp,
+  FOREIGN KEY ("subscription_id") REFERENCES "subscriptions" ("id"),
+  FOREIGN KEY ("service_id") REFERENCES "services" ("id")
+);
 
 CREATE UNIQUE INDEX IF NOT EXISTS "uidx_msisdn" ON "blacklists" ("msisdn");
 CREATE UNIQUE INDEX IF NOT EXISTS "uidx_service_msisdn" ON "subscriptions" ("service_id", "msisdn");
@@ -211,6 +238,7 @@ CREATE INDEX IF NOT EXISTS "idx_service_name" ON "contents" ("service_id", "name
 CREATE INDEX IF NOT EXISTS "idx_name_publish_at" ON "schedules" ("name", "publish_at");
 CREATE INDEX IF NOT EXISTS "idx_token" ON "verifies" ("token");
 CREATE INDEX IF NOT EXISTS "idx_traffic_service_msisdn" ON "traffics_mo" ("service_id", "msisdn");
+CREATE INDEX IF NOT EXISTS "idx_dp_service_msisdn" ON "dailypushes" ("service_id", "msisdn");
 
 ALTER TABLE "contents" ADD FOREIGN KEY ("service_id") REFERENCES "services" ("id");
 ALTER TABLE "subscriptions" ADD FOREIGN KEY ("service_id") REFERENCES "services" ("id");

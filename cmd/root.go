@@ -52,6 +52,8 @@ const (
 	RMQ_POSTBACKMTQUEUE     string = "Q_POSTBACK_MT"
 	RMQ_TRAFFICEXCHANGE     string = "E_TRAFFIC"
 	RMQ_TRAFFICQUEUE        string = "Q_TRAFFIC"
+	RMQ_DAILYPUSHEXCHANGE   string = "E_BQ_DAILYPUSH"
+	RMQ_DAILYPUSHQUEUE      string = "Q_BQ_DAILYPUSH"
 	MT_FIRSTPUSH            string = "MT_FIRSTPUSH"
 	ACT_RENEWAL             string = "RENEWAL"
 	ACT_RETRY_FP            string = "RETRY_FP"
@@ -91,6 +93,7 @@ func init() {
 	rootCmd.AddCommand(consumerPostbackMOCmd)
 	rootCmd.AddCommand(consumerPostbackMTCmd)
 	rootCmd.AddCommand(consumerTrafficCmd)
+	rootCmd.AddCommand(consumerDailypushCmd)
 
 	rootCmd.AddCommand(publisherRenewalCmd)
 	rootCmd.AddCommand(publisherRetryFpCmd)

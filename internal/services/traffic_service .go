@@ -12,6 +12,7 @@ type TrafficService struct {
 type ITrafficService interface {
 	SaveCampaign(*entity.TrafficCampaign) error
 	SaveMO(*entity.TrafficMO) error
+	UpdateMOCharge(*entity.TrafficMO) error
 }
 
 func NewTrafficService(trafficRepo repository.ITrafficRepository) *TrafficService {
@@ -30,6 +31,14 @@ func (s *TrafficService) SaveCampaign(t *entity.TrafficCampaign) error {
 
 func (s *TrafficService) SaveMO(t *entity.TrafficMO) error {
 	err := s.trafficRepo.SaveMO(t)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s *TrafficService) UpdateMOCharge(t *entity.TrafficMO) error {
+	err := s.trafficRepo.UpdateMOCharge(t)
 	if err != nil {
 		return err
 	}

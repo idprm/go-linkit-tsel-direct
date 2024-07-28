@@ -296,6 +296,37 @@ type CampaignToolsResponse struct {
 	UrlPromo   string `json:"url_promo" xml:"url_promo"`
 }
 
+type DailypushBodyRequest struct {
+	TxId           string `json:"tx_id,omitempty"`
+	SubscriptionId int64  `json:"subscription_id,omitempty"`
+	ServiceId      int    `json:"service_id"`
+	Msisdn         string `json:"msisdn"`
+	Channel        string `json:"channel,omitempty"`
+	CampKeyword    string `json:"camp_keyword,omitempty"`
+	CampSubKeyword string `json:"camp_sub_keyword,omitempty"`
+	Adnet          string `json:"adnet,omitempty"`
+	PubID          string `json:"pub_id,omitempty"`
+	AffSub         string `json:"aff_sub,omitempty"`
+	Subject        string `json:"subject,omitempty"`
+	StatusCode     string `json:"status_code,omitempty"`
+	StatusDetail   string `json:"status_detail,omitempty"`
+	IsCharge       bool   `json:"is_charge"`
+	IpAddress      string `json:"ip_address,omitempty"`
+	Action         string `json:"action,omitempty"`
+}
+
+func (e *DailypushBodyRequest) SetAction(value string) {
+	e.Action = value
+}
+
+func (e *DailypushBodyRequest) IsRenewal() bool {
+	return e.Action == "RENEWAL"
+}
+
+func (e *DailypushBodyRequest) IsRetry() bool {
+	return e.Action == "RETRY"
+}
+
 type ResponseMO struct {
 	StatusCode int    `json:"status_code" xml:"status_code"`
 	Message    string `json:"message" xml:"message"`

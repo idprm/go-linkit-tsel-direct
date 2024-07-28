@@ -205,6 +205,42 @@ func (h *RenewalHandler) Dailypush() {
 			string(jsonData),
 		)
 
+		var subject string
+		if response_utils.IsPurge(string(resp)) {
+			subject = SUBJECT_PURGE
+		} else {
+			subject = SUBJECT_DAILYPUSH
+		}
+
+		// insert to rabbitmq
+		jsonDataDP, _ := json.Marshal(
+			&entity.DailypushBodyRequest{
+				TxId:           trxId,
+				SubscriptionId: h.sub.GetId(),
+				ServiceId:      h.sub.GetServiceId(),
+				Msisdn:         h.sub.GetMsisdn(),
+				Channel:        h.sub.GetChannel(),
+				CampKeyword:    h.sub.GetCampKeyword(),
+				CampSubKeyword: h.sub.GetCampSubKeyword(),
+				Adnet:          h.sub.GetAdnet(),
+				PubID:          h.sub.GetPubId(),
+				AffSub:         h.sub.GetPubId(),
+				Subject:        subject,
+				StatusCode:     string(resp),
+				StatusDetail:   response_utils.ParseStatusCode(string(resp)),
+				IsCharge:       isSuccess,
+				IpAddress:      h.sub.GetIpAddress(),
+				Action:         SUBJECT_RENEWAL,
+			},
+		)
+
+		h.rmq.IntegratePublish(
+			RMQ_DAILYPUSHEXCHANGE,
+			RMQ_DAILYPUSHQUEUE,
+			RMQ_DATATYPE,
+			"",
+			string(jsonDataDP),
+		)
 	}
 
 }

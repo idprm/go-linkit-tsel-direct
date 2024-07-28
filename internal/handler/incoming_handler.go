@@ -14,6 +14,7 @@ import (
 	"github.com/idprm/go-linkit-tsel/internal/services"
 	"github.com/idprm/go-linkit-tsel/internal/utils"
 	"github.com/idprm/go-linkit-tsel/internal/utils/response_utils"
+	"github.com/idprm/go-linkit-tsel/internal/utils/uuid_utils"
 	"github.com/mileusna/useragent"
 	"github.com/sirupsen/logrus"
 	"github.com/wiliehidayat87/rmqp"
@@ -62,12 +63,15 @@ const (
 	RMQ_POSTBACKMTQUEUE    string = "Q_POSTBACK_MT"
 	RMQ_TRAFFICEXCHANGE    string = "E_TRAFFIC"
 	RMQ_TRAFFICQUEUE       string = "Q_TRAFFIC"
+	RMQ_DAILYPUSHEXCHANGE  string = "E_BQ_DAILYPUSH"
+	RMQ_DAILYPUSHQUEUE     string = "Q_BQ_DAILYPUSH"
 	MT_FIRSTPUSH           string = "FIRSTPUSH"
 	MT_RENEWAL             string = "RENEWAL"
 	MT_UNSUB               string = "UNSUB"
 	STATUS_SUCCESS         string = "SUCCESS"
 	STATUS_FAILED          string = "FAILED"
 	SUBJECT_FIRSTPUSH      string = "FIRSTPUSH"
+	SUBJECT_DAILYPUSH      string = "DAILYPUSH"
 	SUBJECT_RENEWAL        string = "RENEWAL"
 	SUBJECT_UNSUB          string = "UNSUB"
 	SUBJECT_RETRY          string = "RETRY"
@@ -156,6 +160,7 @@ func (h *IncomingHandler) CloudPlayCampaign(c *fiber.Ctx) error {
 
 	start := time.Now()
 
+	trxId := uuid_utils.GenerateTrxId()
 	userAgent := c.Get("USER-AGENT")
 	ua := useragent.Parse(userAgent)
 
@@ -211,6 +216,7 @@ func (h *IncomingHandler) CloudPlayCampaign(c *fiber.Ctx) error {
 	// insert token & params campaign
 	err = h.verifyService.SetVerify(
 		&entity.Verify{
+			TxId:           trxId,
 			Token:          strings.TrimSpace(token),
 			Service:        service.GetCode(),
 			Adnet:          req.GetAdnet(),
@@ -279,6 +285,7 @@ func (h *IncomingHandler) GalaysCampaign(c *fiber.Ctx) error {
 
 	start := time.Now()
 
+	trxId := uuid_utils.GenerateTrxId()
 	userAgent := c.Get("USER-AGENT")
 	ua := useragent.Parse(userAgent)
 
@@ -335,6 +342,7 @@ func (h *IncomingHandler) GalaysCampaign(c *fiber.Ctx) error {
 	// insert token & params campaign
 	err = h.verifyService.SetVerify(
 		&entity.Verify{
+			TxId:           trxId,
 			Token:          strings.TrimSpace(token),
 			Service:        service.GetCode(),
 			Adnet:          req.GetAdnet(),
@@ -404,6 +412,7 @@ func (h *IncomingHandler) CloudPlayCampaignBillable(c *fiber.Ctx) error {
 
 	start := time.Now()
 
+	trxId := uuid_utils.GenerateTrxId()
 	userAgent := c.Get("USER-AGENT")
 	ua := useragent.Parse(userAgent)
 
@@ -461,21 +470,24 @@ func (h *IncomingHandler) CloudPlayCampaignBillable(c *fiber.Ctx) error {
 	}
 
 	// insert token & params campaign
-	err = h.verifyService.SetVerify(&entity.Verify{
-		Token:          strings.TrimSpace(token),
-		Service:        service.GetCode(),
-		Adnet:          req.GetAdnet(),
-		PubID:          req.GetPubId(),
-		AffSub:         req.GetAffSub(),
-		CampKeyword:    req.GetCampKeyword(),
-		CampSubKeyword: req.GetCampSubKeyword(),
-		Browser:        ua.Name,
-		OS:             ua.OS + " " + ua.OSVersion,
-		Device:         ua.Device,
-		IpAddress:      req.GetIpAddress(),
-		IsBillable:     true,
-		IsCampTool:     false,
-	})
+	err = h.verifyService.SetVerify(
+		&entity.Verify{
+			TxId:           trxId,
+			Token:          strings.TrimSpace(token),
+			Service:        service.GetCode(),
+			Adnet:          req.GetAdnet(),
+			PubID:          req.GetPubId(),
+			AffSub:         req.GetAffSub(),
+			CampKeyword:    req.GetCampKeyword(),
+			CampSubKeyword: req.GetCampSubKeyword(),
+			Browser:        ua.Name,
+			OS:             ua.OS + " " + ua.OSVersion,
+			Device:         ua.Device,
+			IpAddress:      req.GetIpAddress(),
+			IsBillable:     true,
+			IsCampTool:     false,
+		},
+	)
 
 	if err != nil {
 		log.Println(err)
@@ -531,6 +543,7 @@ func (h *IncomingHandler) GalaysCampaignBillable(c *fiber.Ctx) error {
 
 	start := time.Now()
 
+	trxId := uuid_utils.GenerateTrxId()
 	userAgent := c.Get("USER-AGENT")
 	ua := useragent.Parse(userAgent)
 
@@ -587,6 +600,7 @@ func (h *IncomingHandler) GalaysCampaignBillable(c *fiber.Ctx) error {
 	// insert token & params campaign
 	err = h.verifyService.SetVerify(
 		&entity.Verify{
+			TxId:           trxId,
 			Token:          strings.TrimSpace(token),
 			Service:        service.GetCode(),
 			Adnet:          req.GetAdnet(),
@@ -655,6 +669,7 @@ func (h *IncomingHandler) CampaignTool(c *fiber.Ctx) error {
 
 	start := time.Now()
 
+	trxId := uuid_utils.GenerateTrxId()
 	userAgent := c.Get("USER-AGENT")
 	ua := useragent.Parse(userAgent)
 
@@ -704,6 +719,7 @@ func (h *IncomingHandler) CampaignTool(c *fiber.Ctx) error {
 	// insert token & params campaign
 	err = h.verifyService.SetVerify(
 		&entity.Verify{
+			TxId:           trxId,
 			Token:          strings.TrimSpace(token),
 			Service:        service.GetCode(),
 			Adnet:          req.GetAdnet(),
@@ -778,6 +794,7 @@ func (h *IncomingHandler) CloudPlaySub1CampaignPage(c *fiber.Ctx) error {
 
 	start := time.Now()
 
+	trxId := uuid_utils.GenerateTrxId()
 	userAgent := c.Get("USER-AGENT")
 	ua := useragent.Parse(userAgent)
 
@@ -836,6 +853,7 @@ func (h *IncomingHandler) CloudPlaySub1CampaignPage(c *fiber.Ctx) error {
 	// insert token & params campaign
 	err = h.verifyService.SetVerify(
 		&entity.Verify{
+			TxId:           trxId,
 			Token:          strings.TrimSpace(token),
 			Service:        service.GetCode(),
 			Adnet:          req.GetAdnet(),
@@ -906,6 +924,7 @@ func (h *IncomingHandler) GalaysSub1CampaignPage(c *fiber.Ctx) error {
 
 	start := time.Now()
 
+	trxId := uuid_utils.GenerateTrxId()
 	userAgent := c.Get("USER-AGENT")
 	ua := useragent.Parse(userAgent)
 
@@ -962,6 +981,7 @@ func (h *IncomingHandler) GalaysSub1CampaignPage(c *fiber.Ctx) error {
 	// insert token & params campaign
 	err = h.verifyService.SetVerify(
 		&entity.Verify{
+			TxId:           trxId,
 			Token:          strings.TrimSpace(token),
 			Service:        service.GetCode(),
 			Adnet:          req.GetAdnet(),
@@ -1030,6 +1050,7 @@ func (h *IncomingHandler) CloudPlaySub2CampaignPage(c *fiber.Ctx) error {
 
 	start := time.Now()
 
+	trxId := uuid_utils.GenerateTrxId()
 	userAgent := c.Get("USER-AGENT")
 	ua := useragent.Parse(userAgent)
 
@@ -1088,6 +1109,7 @@ func (h *IncomingHandler) CloudPlaySub2CampaignPage(c *fiber.Ctx) error {
 	// insert token & params campaign
 	err = h.verifyService.SetVerify(
 		&entity.Verify{
+			TxId:           trxId,
 			Token:          strings.TrimSpace(token),
 			Service:        "CLOUDPLAY2",
 			Adnet:          req.GetAdnet(),
@@ -1156,6 +1178,7 @@ func (h *IncomingHandler) CloudPlaySub3CampaignPage(c *fiber.Ctx) error {
 
 	start := time.Now()
 
+	trxId := uuid_utils.GenerateTrxId()
 	userAgent := c.Get("USER-AGENT")
 	ua := useragent.Parse(userAgent)
 
@@ -1214,6 +1237,7 @@ func (h *IncomingHandler) CloudPlaySub3CampaignPage(c *fiber.Ctx) error {
 	// insert token & params campaign
 	err = h.verifyService.SetVerify(
 		&entity.Verify{
+			TxId:           trxId,
 			Token:          strings.TrimSpace(token),
 			Service:        service.GetCode(),
 			Adnet:          req.GetAdnet(),
@@ -1283,6 +1307,7 @@ func (h *IncomingHandler) CloudPlaySub4CampaignPage(c *fiber.Ctx) error {
 
 	start := time.Now()
 
+	trxId := uuid_utils.GenerateTrxId()
 	userAgent := c.Get("USER-AGENT")
 	ua := useragent.Parse(userAgent)
 
@@ -1339,6 +1364,7 @@ func (h *IncomingHandler) CloudPlaySub4CampaignPage(c *fiber.Ctx) error {
 	// insert token & params campaign
 	err = h.verifyService.SetVerify(
 		&entity.Verify{
+			TxId:           trxId,
 			Token:          strings.TrimSpace(token),
 			Service:        service.GetCode(),
 			Adnet:          req.GetAdnet(),
@@ -1409,6 +1435,7 @@ func (h *IncomingHandler) CampaignToolDynamic(c *fiber.Ctx) error {
 
 	start := time.Now()
 
+	trxId := uuid_utils.GenerateTrxId()
 	userAgent := c.Get("USER-AGENT")
 	ua := useragent.Parse(userAgent)
 
@@ -1460,6 +1487,7 @@ func (h *IncomingHandler) CampaignToolDynamic(c *fiber.Ctx) error {
 	// insert token & params campaign
 	err = h.verifyService.SetVerify(
 		&entity.Verify{
+			TxId:           trxId,
 			Token:          strings.TrimSpace(token),
 			Service:        req.GetDynamic(),
 			Adnet:          req.GetAdnet(),
@@ -1534,6 +1562,7 @@ func (h *IncomingHandler) CampaignDirect(c *fiber.Ctx) error {
 
 	start := time.Now()
 
+	trxId := uuid_utils.GenerateTrxId()
 	userAgent := c.Get("USER-AGENT")
 	ua := useragent.Parse(userAgent)
 
@@ -1591,6 +1620,7 @@ func (h *IncomingHandler) CampaignDirect(c *fiber.Ctx) error {
 	// insert token & params campaign
 	err = h.verifyService.SetVerify(
 		&entity.Verify{
+			TxId:           trxId,
 			Token:          strings.TrimSpace(token),
 			Service:        service.GetCode(),
 			Adnet:          req.GetAdnet(),
@@ -1661,6 +1691,7 @@ func (h *IncomingHandler) OptIn(c *fiber.Ctx) error {
 
 	start := time.Now()
 
+	trxId := uuid_utils.GenerateTrxId()
 	userAgent := c.Get("USER-AGENT")
 	ua := useragent.Parse(userAgent)
 
@@ -1716,6 +1747,7 @@ func (h *IncomingHandler) OptIn(c *fiber.Ctx) error {
 	// insert token & params campaign
 	err = h.verifyService.SetVerify(
 		&entity.Verify{
+			TxId:           trxId,
 			Token:          strings.TrimSpace(token),
 			Service:        req.GetService(),
 			Adnet:          req.GetAdnet(),

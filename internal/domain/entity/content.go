@@ -29,3 +29,8 @@ func (c *Content) SetPIN(pin string) {
 	replacer := strings.NewReplacer("@pin", pin)
 	c.Value = replacer.Replace(c.Value)
 }
+
+func (c *Content) SetLinkPortalMainPlus(val string) {
+	replacer := strings.NewReplacer("https://tsel.mainplus.mobi/", val)
+	c.Value = replacer.Replace(c.Value)
+}

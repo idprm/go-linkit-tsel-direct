@@ -612,3 +612,65 @@ var consumerTrafficCmd = &cobra.Command{
 		<-forever
 	},
 }
+
+var consumerDailypushCmd = &cobra.Command{
+	Use:   "dailypush",
+	Short: "Consumer Dailypush Service CLI",
+	Long:  ``,
+	Run: func(cmd *cobra.Command, args []string) {
+
+		/**
+		 * connect pgsql
+		 */
+		db, err := connectPgsql()
+		if err != nil {
+			panic(err)
+		}
+
+		/**
+		 * connect rabbitmq
+		 */
+		rmq := connectRabbitMq()
+
+		/**
+		 * SETUP LOG
+		 */
+		logger := logger.NewLogger()
+
+		/**
+		 * SETUP CHANNEL
+		 */
+		rmq.SetUpChannel(RMQ_EXCHANGETYPE, true, RMQ_DAILYPUSHEXCHANGE, true, RMQ_DAILYPUSHQUEUE)
+
+		messagesData := rmq.Subscribe(1, false, RMQ_DAILYPUSHQUEUE, RMQ_DAILYPUSHEXCHANGE, RMQ_DAILYPUSHQUEUE)
+
+		// Initial sync waiting group
+		var wg sync.WaitGroup
+
+		// Loop forever listening incoming data
+		forever := make(chan bool)
+
+		processor := NewProcessor(db, rmq, &redis.Client{}, logger)
+
+		// Set into goroutine this listener
+		go func() {
+
+			// Loop every incoming data
+			for d := range messagesData {
+
+				wg.Add(1)
+				processor.Dailypush(&wg, d.Body)
+				wg.Wait()
+
+				// Manual consume queue
+				d.Ack(false)
+			}
+
+		}()
+
+		fmt.Println("[*] Waiting for data...")
+
+		<-forever
+
+	},
+}

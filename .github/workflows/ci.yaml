@@ -44,6 +44,8 @@ jobs:
             image: idprm/linkit-tsel-direct-notif-service
           - dockerfile: ./Dockerfile.traffic
             image: idprm/linkit-tsel-direct-traffic-service
+          - dockerfile: ./Dockerfile.dailypush
+            image: idprm/linkit-tsel-direct-dailypush-service
 
     permissions:
       contents: read

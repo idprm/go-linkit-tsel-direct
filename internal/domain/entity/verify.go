@@ -3,6 +3,7 @@ package entity
 import "strings"
 
 type Verify struct {
+	TxId           string `json:"tx_id,omitempty"`
 	Token          string `json:"token,omitempty"`
 	Service        string `json:"service,omitempty"`
 	Adnet          string `json:"adnet,omitempty"`
@@ -16,6 +17,10 @@ type Verify struct {
 	IpAddress      string `json:"ip_address,omitempty"`
 	IsBillable     bool   `json:"is_billable,omitempty"`
 	IsCampTool     bool   `json:"is_camptool,omitempty"`
+}
+
+func (v *Verify) GetTxId() string {
+	return v.TxId
 }
 
 func (v *Verify) GetToken() string {

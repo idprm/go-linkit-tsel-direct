@@ -102,14 +102,16 @@ func (h *MOHandler) Firstpush() {
 		subscription.CampSubKeyword = verify.GetCampSubKeyword()
 		subscription.IpAddress = verify.GetIpAddress()
 
-		// insert to traffics_mo
+		// insert to traffics_mo (REG)
 		h.trafficService.SaveMO(
 			&entity.TrafficMO{
+				TxId:           verify.GetTxId(),
 				ServiceID:      service.GetID(),
 				Msisdn:         h.req.GetMsisdn(),
 				Channel:        channel,
 				CampKeyword:    verify.GetCampKeyword(),
 				CampSubKeyword: verify.GetCampSubKeyword(),
+				Subject:        SUBJECT_FIRSTPUSH,
 				Adnet:          verify.GetAdnet(),
 				PubID:          verify.GetPubId(),
 				AffSub:         verify.GetAffSub(),
@@ -221,6 +223,15 @@ func (h *MOHandler) Firstpush() {
 		}
 
 		h.historyService.SaveHistory(historySuccess)
+
+		// update traffics_mo if success charge
+		h.trafficService.UpdateMOCharge(
+			&entity.TrafficMO{
+				ServiceID: service.GetID(),
+				Msisdn:    h.req.GetMsisdn(),
+				IsCharge:  true,
+			},
+		)
 
 		// insert to rabbitmq
 		jsonDataNotif, _ := json.Marshal(

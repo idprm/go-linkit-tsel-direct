@@ -49,6 +49,10 @@ type Subscription struct {
 	UpdatedAt            time.Time `json:"updated_at"`
 }
 
+func (s *Subscription) GetId() int64 {
+	return s.ID
+}
+
 func (s *Subscription) GetServiceId() int {
 	return s.ServiceID
 }
