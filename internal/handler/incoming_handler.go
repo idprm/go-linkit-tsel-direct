@@ -244,6 +244,7 @@ func (h *IncomingHandler) CloudPlayCampaign(c *fiber.Ctx) error {
 	// insert to rabbitmq
 	jsonData, _ := json.Marshal(
 		&entity.ReqTrafficParams{
+			TxId:           trxId,
 			ServiceId:      service.GetID(),
 			CampKeyword:    req.GetCampKeyword(),
 			CampSubKeyword: req.GetCampSubKeyword(),
@@ -371,6 +372,7 @@ func (h *IncomingHandler) GalaysCampaign(c *fiber.Ctx) error {
 	// insert to rabbitmq
 	jsonData, _ := json.Marshal(
 		&entity.ReqTrafficParams{
+			TxId:           trxId,
 			ServiceId:      service.GetID(),
 			CampKeyword:    req.GetCampKeyword(),
 			CampSubKeyword: req.GetCampSubKeyword(),
@@ -502,6 +504,7 @@ func (h *IncomingHandler) CloudPlayCampaignBillable(c *fiber.Ctx) error {
 	// insert to rabbitmq
 	jsonData, _ := json.Marshal(
 		&entity.ReqTrafficParams{
+			TxId:           trxId,
 			ServiceId:      service.GetID(),
 			CampKeyword:    req.GetCampKeyword(),
 			CampSubKeyword: req.GetCampSubKeyword(),
@@ -628,6 +631,7 @@ func (h *IncomingHandler) GalaysCampaignBillable(c *fiber.Ctx) error {
 	// insert to rabbitmq
 	jsonData, _ := json.Marshal(
 		&entity.ReqTrafficParams{
+			TxId:           trxId,
 			ServiceId:      service.GetID(),
 			CampKeyword:    req.GetCampKeyword(),
 			CampSubKeyword: req.GetCampSubKeyword(),
@@ -747,6 +751,7 @@ func (h *IncomingHandler) CampaignTool(c *fiber.Ctx) error {
 	// insert to rabbitmq
 	jsonData, _ := json.Marshal(
 		&entity.ReqTrafficParams{
+			TxId:           trxId,
 			ServiceId:      service.GetID(),
 			CampKeyword:    "REG " + req.GetService(),
 			CampSubKeyword: req.GetSubKeyword(),
@@ -884,6 +889,7 @@ func (h *IncomingHandler) CloudPlaySub1CampaignPage(c *fiber.Ctx) error {
 	// insert to rabbitmq
 	jsonData, _ := json.Marshal(
 		&entity.ReqTrafficParams{
+			TxId:           trxId,
 			ServiceId:      service.GetID(),
 			CampKeyword:    req.GetCampKeyword(),
 			CampSubKeyword: req.GetCampSubKeyword(),
@@ -1010,6 +1016,7 @@ func (h *IncomingHandler) GalaysSub1CampaignPage(c *fiber.Ctx) error {
 	// insert to rabbitmq
 	jsonData, _ := json.Marshal(
 		&entity.ReqTrafficParams{
+			TxId:           trxId,
 			ServiceId:      service.GetID(),
 			CampKeyword:    req.GetCampKeyword(),
 			CampSubKeyword: req.GetCampSubKeyword(),
@@ -1138,6 +1145,7 @@ func (h *IncomingHandler) CloudPlaySub2CampaignPage(c *fiber.Ctx) error {
 	// insert to rabbitmq
 	jsonData, _ := json.Marshal(
 		&entity.ReqTrafficParams{
+			TxId:           trxId,
 			ServiceId:      service.GetID(),
 			CampKeyword:    req.GetCampKeyword(),
 			CampSubKeyword: req.GetCampSubKeyword(),
@@ -1267,6 +1275,7 @@ func (h *IncomingHandler) CloudPlaySub3CampaignPage(c *fiber.Ctx) error {
 	// insert to rabbitmq
 	jsonData, _ := json.Marshal(
 		&entity.ReqTrafficParams{
+			TxId:           trxId,
 			ServiceId:      service.GetID(),
 			CampKeyword:    req.GetCampKeyword(),
 			CampSubKeyword: req.GetCampSubKeyword(),
@@ -1395,6 +1404,7 @@ func (h *IncomingHandler) CloudPlaySub4CampaignPage(c *fiber.Ctx) error {
 	// insert to rabbitmq
 	jsonData, _ := json.Marshal(
 		&entity.ReqTrafficParams{
+			TxId:           trxId,
 			ServiceId:      service.GetID(),
 			CampKeyword:    req.GetCampKeyword(),
 			CampSubKeyword: req.GetCampSubKeyword(),
@@ -1516,6 +1526,7 @@ func (h *IncomingHandler) CampaignToolDynamic(c *fiber.Ctx) error {
 	// insert to rabbitmq
 	jsonData, _ := json.Marshal(
 		&entity.ReqTrafficParams{
+			TxId:           trxId,
 			ServiceId:      service.GetID(),
 			CampKeyword:    "REG " + req.GetDynamic(),
 			CampSubKeyword: req.GetSubDynamic(),
@@ -1652,6 +1663,7 @@ func (h *IncomingHandler) CampaignDirect(c *fiber.Ctx) error {
 	// insert to rabbitmq
 	jsonData, _ := json.Marshal(
 		&entity.ReqTrafficParams{
+			TxId:           trxId,
 			ServiceId:      service.GetID(),
 			CampKeyword:    req.GetCampKeyword(),
 			CampSubKeyword: req.GetCampSubKeyword(),
