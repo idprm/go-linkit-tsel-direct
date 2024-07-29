@@ -28,6 +28,7 @@ type (
 )
 
 type ReqTrafficParams struct {
+	TxId           string `json:"tx_id,omitempty"`
 	ServiceId      int    `json:"service_id"`
 	CampKeyword    string `json:"camp_keyword,omitempty"`
 	CampSubKeyword string `json:"camp_sub_keyword,omitempty"`
@@ -37,7 +38,56 @@ type ReqTrafficParams struct {
 	Browser        string `json:"browser,omitempty"`
 	OS             string `json:"os,omitempty"`
 	Device         string `json:"device,omitempty"`
+	Referer        string `json:"referer,omitempty"`
 	IpAddress      string `json:"ip_address,omitempty"`
+}
+
+func (e *ReqTrafficParams) GetTxId() string {
+	return e.TxId
+}
+
+func (e *ReqTrafficParams) GetServiceId() int {
+	return e.ServiceId
+}
+
+func (e *ReqTrafficParams) GetCampKeyword() string {
+	return strings.ToUpper(e.CampKeyword)
+}
+
+func (e *ReqTrafficParams) GetCampSubKeyword() string {
+	return strings.ToUpper(e.CampSubKeyword)
+}
+
+func (e *ReqTrafficParams) GetAdnet() string {
+	return e.Adnet
+}
+
+func (e *ReqTrafficParams) GetPubId() string {
+	return e.PubId
+}
+
+func (e *ReqTrafficParams) GetAffSub() string {
+	return e.AffSub
+}
+
+func (e *ReqTrafficParams) GetBrowser() string {
+	return e.Browser
+}
+
+func (e *ReqTrafficParams) GetOS() string {
+	return e.OS
+}
+
+func (e *ReqTrafficParams) GetDevice() string {
+	return e.Device
+}
+
+func (e *ReqTrafficParams) GetReferer() string {
+	return e.Referer
+}
+
+func (e *ReqTrafficParams) GetIpAddress() string {
+	return e.IpAddress
 }
 
 type ReqMOParams struct {
@@ -196,12 +246,18 @@ func (e *SuccessQueryParamsRequest) GetTrxId() string {
 }
 
 type CampaignToolsRequest struct {
-	Service   string `json:"srv" query:"srv"`
-	Dynamic   string `json:"dyn" query:"dyn"`
-	Adnet     string `json:"adnet" query:"ad"`
-	PubId     string `json:"pub_id" query:"pubid"`
-	AffSub    string `json:"aff_sub" query:"aff_sub"`
-	IpAddress string `json:"ip_address" query:"ip"`
+	Service        string `json:"srv" query:"srv"`
+	Dynamic        string `json:"dyn" query:"dyn"`
+	Adnet          string `json:"adnet" query:"ad"`
+	PubId          string `json:"pub_id" query:"pubid"`
+	AffSub         string `json:"aff_sub" query:"aff_sub"`
+	CampKeyword    string `json:"keyword" query:"keyword"`
+	CampSubKeyword string `json:"subkey" query:"subkey"`
+	IpAddress      string `json:"ip_address" query:"ip"`
+	OS             string `json:"os" query:"os"`
+	Browser        string `json:"browser" query:"browser"`
+	UA             string `json:"useragent" query:"useragent"`
+	Referer        string `json:"referer" query:"referer"`
 }
 
 func (r *CampaignToolsRequest) GetService() string {
@@ -254,6 +310,30 @@ func (r *CampaignToolsRequest) GetAffSub() string {
 
 func (r *CampaignToolsRequest) GetIpAddress() string {
 	return r.IpAddress
+}
+
+func (r *CampaignToolsRequest) SetIpAddress(ip string) {
+	r.IpAddress = ip
+}
+
+func (r *CampaignToolsRequest) GetReferer() string {
+	return r.Referer
+}
+
+func (r *CampaignToolsRequest) SetReferer(value string) {
+	r.Referer = value
+}
+
+func (r *CampaignToolsRequest) GetOS() string {
+	return r.OS
+}
+
+func (r *CampaignToolsRequest) GetBrowser() string {
+	return r.Browser
+}
+
+func (r *CampaignToolsRequest) GetUA() string {
+	return r.UA
 }
 
 func (r *CampaignToolsRequest) IsBillable() bool {

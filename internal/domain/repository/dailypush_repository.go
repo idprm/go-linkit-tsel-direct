@@ -6,7 +6,7 @@ import (
 	"log"
 	"time"
 
-	"github.com/idprm/go-waki-tsel/internal/domain/entity"
+	"github.com/idprm/go-linkit-tsel/internal/domain/entity"
 )
 
 const (

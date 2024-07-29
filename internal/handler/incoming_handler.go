@@ -753,9 +753,10 @@ func (h *IncomingHandler) CampaignTool(c *fiber.Ctx) error {
 			Adnet:          req.GetAdnet(),
 			PubId:          req.GetPubId(),
 			AffSub:         req.GetAffSub(),
-			Browser:        ua.Name,
-			OS:             ua.OS + " " + ua.OSVersion,
-			Device:         ua.Device,
+			Browser:        req.GetBrowser(),
+			OS:             req.GetOS(),
+			Device:         "",
+			Referer:        req.GetReferer(),
 			IpAddress:      req.GetIpAddress(),
 		},
 	)
@@ -773,10 +774,10 @@ func (h *IncomingHandler) CampaignTool(c *fiber.Ctx) error {
 			"url_campaign": c.OriginalURL(),
 			"url_redirect": redirect,
 			"duration":     duration,
-			"ip_address":   c.Get("X-Forwarded-For"),
-			"os":           ua.OS + " " + ua.OSVersion,
-			"browser":      ua.Name,
-			"device":       ua.Device,
+			"ip_address":   req.GetIpAddress(),
+			"os":           req.GetOS(),
+			"browser":      req.GetBrowser(),
+			"device":       "",
 		}).Info("REDIRECT")
 	}
 
@@ -1495,8 +1496,8 @@ func (h *IncomingHandler) CampaignToolDynamic(c *fiber.Ctx) error {
 			AffSub:         req.GetAffSub(),
 			CampKeyword:    "REG " + req.GetDynamic(),
 			CampSubKeyword: req.GetSubDynamic(),
-			Browser:        ua.Name,
-			OS:             ua.OS + " " + ua.OSVersion,
+			Browser:        req.GetBrowser(),
+			OS:             req.GetOS(),
 			Device:         ua.Device,
 			IpAddress:      req.GetIpAddress(),
 			IsBillable:     req.IsBillable(),
@@ -1521,9 +1522,10 @@ func (h *IncomingHandler) CampaignToolDynamic(c *fiber.Ctx) error {
 			Adnet:          req.GetAdnet(),
 			PubId:          req.GetPubId(),
 			AffSub:         req.GetAffSub(),
-			Browser:        ua.Name,
-			OS:             ua.OS + " " + ua.OSVersion,
-			Device:         ua.Device,
+			Browser:        req.GetBrowser(),
+			OS:             req.GetOS(),
+			Device:         "",
+			Referer:        req.GetReferer(),
 			IpAddress:      req.GetIpAddress(),
 		},
 	)
@@ -1541,10 +1543,10 @@ func (h *IncomingHandler) CampaignToolDynamic(c *fiber.Ctx) error {
 			"url_campaign": c.OriginalURL(),
 			"url_redirect": redirect,
 			"duration":     duration,
-			"ip_address":   c.Get("X-Forwarded-For"),
-			"os":           ua.OS + " " + ua.OSVersion,
-			"browser":      ua.Name,
-			"device":       ua.Device,
+			"ip_address":   req.GetIpAddress(),
+			"os":           req.GetOS(),
+			"browser":      req.GetBrowser(),
+			"device":       "",
 		}).Info("REDIRECT")
 	}
 
