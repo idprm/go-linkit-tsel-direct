@@ -23,15 +23,17 @@ func NewTrafficHandler(
 func (h *TrafficHandler) Campaign() {
 	h.trafficService.SaveCampaign(
 		&entity.TrafficCampaign{
-			ServiceID:      h.req.ServiceId,
-			CampKeyword:    h.req.CampKeyword,
-			CampSubKeyword: h.req.CampSubKeyword,
+			TxId:           h.req.GetTxId(),
+			ServiceID:      h.req.GetServiceId(),
+			CampKeyword:    h.req.GetCampKeyword(),
+			CampSubKeyword: h.req.GetCampSubKeyword(),
 			Adnet:          h.req.Adnet,
 			PubID:          h.req.PubId,
 			AffSub:         h.req.AffSub,
 			Browser:        h.req.Browser,
 			OS:             h.req.OS,
 			Device:         h.req.Device,
+			Referer:        h.req.Referer,
 			IpAddress:      h.req.IpAddress,
 		},
 	)
