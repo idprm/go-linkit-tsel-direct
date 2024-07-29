@@ -674,8 +674,6 @@ func (h *IncomingHandler) CampaignTool(c *fiber.Ctx) error {
 	start := time.Now()
 
 	trxId := uuid_utils.GenerateTrxId()
-	userAgent := c.Get("USER-AGENT")
-	ua := useragent.Parse(userAgent)
 
 	req := new(entity.CampaignToolsRequest)
 
@@ -710,9 +708,9 @@ func (h *IncomingHandler) CampaignTool(c *fiber.Ctx) error {
 			"url_campaign": c.OriginalURL(),
 			"url_redirect": redirect,
 			"duration":     duration,
-			"os":           ua.OS + " " + ua.OSVersion,
-			"browser":      ua.Name,
-			"device":       ua.Device,
+			"os":           req.GetOS(),
+			"browser":      req.GetBrowser(),
+			"device":       "",
 		}).Error("NO_REDIRECT")
 		return c.Status(fiber.StatusBadGateway).JSON(fiber.Map{
 			"error":   true,
@@ -731,9 +729,9 @@ func (h *IncomingHandler) CampaignTool(c *fiber.Ctx) error {
 			AffSub:         req.GetAffSub(),
 			CampKeyword:    "REG " + req.GetService(),
 			CampSubKeyword: req.GetSubKeyword(),
-			Browser:        ua.Name,
-			OS:             ua.OS + " " + ua.OSVersion,
-			Device:         ua.Device,
+			Browser:        req.GetBrowser(),
+			OS:             req.GetOS(),
+			Device:         "",
 			IpAddress:      req.GetIpAddress(),
 			IsBillable:     req.IsBillable(),
 			IsCampTool:     true,
@@ -1508,7 +1506,7 @@ func (h *IncomingHandler) CampaignToolDynamic(c *fiber.Ctx) error {
 			CampSubKeyword: req.GetSubDynamic(),
 			Browser:        req.GetBrowser(),
 			OS:             req.GetOS(),
-			Device:         ua.Device,
+			Device:         "",
 			IpAddress:      req.GetIpAddress(),
 			IsBillable:     req.IsBillable(),
 			IsCampTool:     true,
