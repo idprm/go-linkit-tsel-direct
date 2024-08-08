@@ -339,7 +339,7 @@ func (r *CampaignToolsRequest) GetUA() string {
 func (r *CampaignToolsRequest) IsBillable() bool {
 	return strings.Contains(r.GetSubKeyword(), "BLB") ||
 		strings.Contains(r.GetSubKeyword(), "BIL") ||
-		r.GetSubKeyword() == "LNK"
+		strings.Contains(r.GetSubKeyword(), "LNK")
 }
 
 func (r *CampaignToolsRequest) IsSam() bool {

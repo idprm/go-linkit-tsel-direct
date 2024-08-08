@@ -1,4 +1,4 @@
-FROM golang:1.21-alpine as golang
+FROM golang:1.22-alpine as golang
 
 RUN apk --no-cache add tzdata
 
@@ -12,7 +12,7 @@ COPY . .
 RUN go mod download
 RUN go mod verify
 
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o /linkit-tsel-direct .
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o /xl-direct .
 
 FROM scratch
 
@@ -22,6 +22,6 @@ COPY --from=golang /etc/passwd /etc/passwd
 COPY --from=golang /etc/group /etc/group
 COPY --from=golang /bin/sh /bin/sh
 
-COPY --from=golang /linkit-tsel-direct .
+COPY --from=golang /xl-direct .
 
-CMD ["/linkit-tsel-direct", "dailypush"]
+CMD ["/xl-direct", "dailypush"]
