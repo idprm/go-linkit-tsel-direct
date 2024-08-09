@@ -73,13 +73,13 @@ func (p *Portal) Subscription() ([]byte, error) {
 	}
 
 	tr := &http.Transport{
-		MaxIdleConns:       10,
-		IdleConnTimeout:    8 * time.Second,
+		MaxIdleConns:       30,
+		IdleConnTimeout:    30 * time.Second,
 		DisableCompression: true,
 	}
 
 	client := &http.Client{
-		Timeout:   8 * time.Second,
+		Timeout:   30 * time.Second,
 		Transport: tr,
 	}
 
@@ -133,13 +133,13 @@ func (p *Portal) Unsubscription() ([]byte, error) {
 	}
 
 	tr := &http.Transport{
-		MaxIdleConns:       10,
-		IdleConnTimeout:    8 * time.Second,
+		MaxIdleConns:       30,
+		IdleConnTimeout:    30 * time.Second,
 		DisableCompression: true,
 	}
 
 	client := &http.Client{
-		Timeout:   8 * time.Second,
+		Timeout:   30 * time.Second,
 		Transport: tr,
 	}
 
@@ -215,13 +215,13 @@ func (p *Portal) Renewal() ([]byte, error) {
 	}
 
 	tr := &http.Transport{
-		MaxIdleConns:       10,
-		IdleConnTimeout:    8 * time.Second,
+		MaxIdleConns:       30,
+		IdleConnTimeout:    30 * time.Second,
 		DisableCompression: true,
 	}
 
 	client := &http.Client{
-		Timeout:   8 * time.Second,
+		Timeout:   30 * time.Second,
 		Transport: tr,
 	}
 
