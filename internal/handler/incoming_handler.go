@@ -9,6 +9,7 @@ import (
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
 	"github.com/idprm/go-linkit-tsel/internal/domain/entity"
+	"github.com/idprm/go-linkit-tsel/internal/domain/model"
 	"github.com/idprm/go-linkit-tsel/internal/logger"
 	"github.com/idprm/go-linkit-tsel/internal/providers/telco"
 	"github.com/idprm/go-linkit-tsel/internal/services"
@@ -1984,4 +1985,62 @@ func (h *IncomingHandler) AveragePerUser(c *fiber.Ctx) error {
 		"code":  fiber.StatusOK,
 		"data":  subs,
 	})
+}
+
+func (h *IncomingHandler) Auth(c *fiber.Ctx) error {
+	/**
+	 * Body Parser
+	 */
+	req := new(entity.AuthPortalRequest)
+
+	err := c.BodyParser(req)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(
+			&model.WebResponse{
+				Error:      true,
+				StatusCode: fiber.StatusBadRequest,
+				Message:    err.Error(),
+			},
+		)
+	}
+
+	errors := ValidateStruct(*req)
+	if errors != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(errors)
+	}
+
+	if c.Get("Cf-Connecting-Ip") != "" {
+		req.SetIpAddress(c.Get("Cf-Connecting-Ip"))
+	} else {
+		req.SetIpAddress(c.Get("X-Forwarded-For"))
+	}
+
+	if !h.serviceService.IsServiceByCategory(strings.ToUpper(c.Params("category"))) {
+		return c.Status(fiber.StatusNotFound).JSON(
+			&model.WebResponse{
+				Error:      true,
+				StatusCode: fiber.StatusNotFound,
+				Message:    "service_not_found",
+			},
+		)
+	}
+
+	if !h.subscriptionService.GetPinActiveSub(strings.ToUpper(c.Params("category")), req.GetPin()) {
+		return c.Status(fiber.StatusNotFound).JSON(
+			&model.WebResponse{
+				Error:      true,
+				StatusCode: fiber.StatusNotFound,
+				Message:    "pin_not_found",
+			},
+		)
+	}
+
+	return c.Status(fiber.StatusOK).JSON(
+		&model.WebResponse{
+			Error:      false,
+			StatusCode: fiber.StatusOK,
+			Message:    "authenticated",
+			IpAddress:  req.GetIpAddress(),
+		},
+	)
 }

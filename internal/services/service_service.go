@@ -11,6 +11,7 @@ type ServiceService struct {
 
 type IServiceService interface {
 	CheckService(string) bool
+	IsServiceByCategory(string) bool
 	GetServiceId(int) (*entity.Service, error)
 	GetServiceByCode(string) (*entity.Service, error)
 }
@@ -23,6 +24,11 @@ func NewServiceService(serviceRepo repository.IServiceRepository) *ServiceServic
 
 func (s *ServiceService) CheckService(code string) bool {
 	count, _ := s.serviceRepo.CountByCode(code)
+	return count > 0
+}
+
+func (s *ServiceService) IsServiceByCategory(category string) bool {
+	count, _ := s.serviceRepo.CountByCategory(category)
 	return count > 0
 }
 

@@ -15,6 +15,7 @@ type ISubscriptionService interface {
 	GetActiveSubscription(int, string) bool
 	GetSubscription(int, string) bool
 	GetPinSubscription(int) bool
+	GetPinActiveSub(string, string) bool
 	SelectSubscription(int, string) (*entity.Subscription, error)
 	SaveSubscription(*entity.Subscription) error
 	UpdateSuccess(*entity.Subscription) error
@@ -58,6 +59,14 @@ func (s *SubscriptionService) GetSubscription(serviceId int, msisdn string) bool
 
 func (s *SubscriptionService) GetPinSubscription(pin int) bool {
 	count, err := s.subscriptionRepo.CountPin(pin)
+	if err != nil {
+		log.Println(err)
+	}
+	return count > 0
+}
+
+func (s *SubscriptionService) GetPinActiveSub(category, pin string) bool {
+	count, err := s.subscriptionRepo.CountPinActive(category, pin)
 	if err != nil {
 		log.Println(err)
 	}

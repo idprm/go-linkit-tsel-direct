@@ -745,3 +745,20 @@ func (r *RabbitMQResponse) IsRunning() bool {
 func (r *RabbitMQResponse) GetName() string {
 	return r.Name
 }
+
+type AuthPortalRequest struct {
+	PIN       string `validate:"required" json:"pin"`
+	IpAddress string `json:"ip_address,omitempty"`
+}
+
+func (e *AuthPortalRequest) GetPin() string {
+	return e.PIN
+}
+
+func (e *AuthPortalRequest) GetIpAddress() string {
+	return e.IpAddress
+}
+
+func (m *AuthPortalRequest) SetIpAddress(data string) {
+	m.IpAddress = data
+}

@@ -25,6 +25,7 @@ const (
 	queryCountSubscription            = "SELECT COUNT(*) as count FROM subscriptions WHERE service_id = $1 AND msisdn = $2"
 	queryCountActiveSubscription      = "SELECT COUNT(*) as count FROM subscriptions WHERE service_id = $1 AND msisdn = $2 AND is_active = true"
 	queryCountPinSub                  = "SELECT COUNT(*) as count FROM subscriptions WHERE latest_pin = $1"
+	queryCountSubActivePin            = "SELECT COUNT(*) as count FROM subscriptions WHERE category = $1 AND latest_pin = $2 AND is_active = true AND is_retry = false"
 	querySelectSubscription           = "SELECT id, service_id, msisdn, channel, camp_keyword, camp_sub_keyword, adnet, pub_id, aff_sub, latest_trxid, latest_keyword, latest_subject, latest_status, latest_payload, amount, renewal_at, success, ip_address, total_firstpush, total_renewal, total_amount_firstpush, total_amount_renewal, is_retry, is_active FROM subscriptions WHERE service_id = $1 AND msisdn = $2"
 	querySelectPopulateRenewal        = "SELECT id, service_id, msisdn, channel, adnet, latest_keyword, latest_subject, latest_pin, latest_payload, ip_address, aff_sub, camp_keyword, camp_sub_keyword, created_at FROM subscriptions WHERE renewal_at IS NOT NULL AND DATE(renewal_at) <= DATE(NOW()) AND is_active = true ORDER BY success DESC, DATE(created_at) DESC"
 	querySelectPopulateRetryFirstpush = "SELECT id, service_id, msisdn, channel, adnet, latest_keyword, latest_subject, latest_pin, latest_payload, ip_address, aff_sub, camp_keyword, camp_sub_keyword, retry_at, created_at FROM subscriptions WHERE latest_payload <> '3:3:21' AND latest_subject = 'FIRSTPUSH' AND renewal_at IS NOT NULL AND DATE(renewal_at) = DATE(NOW() + interval '1 day') AND is_retry = true AND is_active = true ORDER BY success DESC, DATE(created_at) DESC"
@@ -59,6 +60,7 @@ type ISubscriptionRepository interface {
 	Count(int, string) (int, error)
 	CountActive(int, string) (int, error)
 	CountPin(int) (int, error)
+	CountPinActive(string, string) (int, error)
 	Get(int, string) (*entity.Subscription, error)
 	Renewal() (*[]entity.Subscription, error)
 	RetryFp() (*[]entity.Subscription, error)
@@ -386,6 +388,15 @@ func (r *SubscriptionRepository) CountActive(serviceId int, msisdn string) (int,
 func (r *SubscriptionRepository) CountPin(pin int) (int, error) {
 	var count int
 	err := r.db.QueryRow(queryCountPinSub, pin).Scan(&count)
+	if err != nil {
+		return count, err
+	}
+	return count, nil
+}
+
+func (r *SubscriptionRepository) CountPinActive(category, pin string) (int, error) {
+	var count int
+	err := r.db.QueryRow(queryCountSubActivePin, category, pin).Scan(&count)
 	if err != nil {
 		return count, err
 	}

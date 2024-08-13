@@ -239,6 +239,7 @@ CREATE INDEX IF NOT EXISTS "idx_name_publish_at" ON "schedules" ("name", "publis
 CREATE INDEX IF NOT EXISTS "idx_token" ON "verifies" ("token");
 CREATE INDEX IF NOT EXISTS "idx_traffic_service_msisdn" ON "traffics_mo" ("service_id", "msisdn");
 CREATE INDEX IF NOT EXISTS "idx_dp_service_msisdn" ON "dailypushes" ("service_id", "msisdn");
+CREATE INDEX IF NOT EXISTS "idx_service_latest_pin" ON "subscriptions" ("category", "latest_pin");
 
 ALTER TABLE "contents" ADD FOREIGN KEY ("service_id") REFERENCES "services" ("id");
 ALTER TABLE "subscriptions" ADD FOREIGN KEY ("service_id") REFERENCES "services" ("id");

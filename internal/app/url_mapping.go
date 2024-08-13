@@ -117,6 +117,8 @@ func mapUrls(db *sql.DB, rmpq rmqp.AMQP, rdb *redis.Client, logger *logger.Logge
 	router.Get("success", incomingHandler.CallbackUrl)
 	router.Get("cancel", incomingHandler.CallbackUrl)
 
+	router.Post("auth/:category", incomingHandler.Auth)
+
 	/**``
 	 * Routes Another CP
 	 */
