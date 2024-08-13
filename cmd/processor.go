@@ -3,6 +3,7 @@ package cmd
 import (
 	"database/sql"
 	"encoding/json"
+	"log"
 	"sync"
 
 	"github.com/idprm/go-linkit-tsel/internal/domain/entity"
@@ -274,19 +275,25 @@ func (p *Processor) Notif(wg *sync.WaitGroup, message []byte) {
 	var req *entity.ReqNotifParams
 	json.Unmarshal(message, &req)
 
-	h := handler.NewNotifHandler(p.logger, req)
+	/**
+	 *	DISABLE METHOD
+	**/
 
-	if req.IsSub() {
-		h.Sub()
-	}
+	// h := handler.NewNotifHandler(p.logger, req)
 
-	if req.IsRenewal() {
-		h.Renewal()
-	}
+	// if req.IsSub() {
+	// 	h.Sub()
+	// }
 
-	if req.IsUnsub() {
-		h.Unsub()
-	}
+	// if req.IsRenewal() {
+	// 	h.Renewal()
+	// }
+
+	// if req.IsUnsub() {
+	// 	h.Unsub()
+	// }
+
+	log.Println(req)
 
 	wg.Done()
 }
