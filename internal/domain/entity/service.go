@@ -34,6 +34,8 @@ type Service struct {
 	UrlPostbackMxoMO    string  `json:"url_postback_mxo_mo"`
 	UrlPostbackMxoDN    string  `json:"url_postback_mxo_dn"`
 	UrlPostbackStarsMO  string  `json:"url_postback_stars_mo"`
+	UrlPostbackUntMO    string  `json:"url_postback_unt_mo"`
+	UrlPostbackUntDN    string  `json:"url_postback_unt_dn"`
 }
 
 func (s *Service) GetID() int {
@@ -158,6 +160,14 @@ func (s *Service) GetUrlPostbackMxoDN() string {
 
 func (s *Service) GetUrlPostbackStarsMO() string {
 	return s.UrlPostbackStarsMO
+}
+
+func (s *Service) GetUrlPostbackUntMO() string {
+	return s.UrlPostbackUntMO
+}
+
+func (s *Service) GetUrlPostbackUntDN() string {
+	return s.UrlPostbackUntDN
 }
 
 func (s *Service) IsCloudplay() bool {

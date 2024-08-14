@@ -126,3 +126,7 @@ func (v *Verify) IsMxo() bool {
 func (v *Verify) IsStars() bool {
 	return strings.ToUpper(v.CampSubKeyword) == "STARS"
 }
+
+func (v *Verify) IsUnt() bool {
+	return strings.ToUpper(v.CampSubKeyword) == "UNT"
+}

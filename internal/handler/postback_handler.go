@@ -113,3 +113,18 @@ func (h *PostbackHandler) StarsMO() {
 	p := postback.NewPostback(h.logger, h.req.Subscription, h.req.Service, false)
 	p.StarsMO()
 }
+
+func (h *PostbackHandler) UntMO() {
+	p := postback.NewPostback(h.logger, h.req.Subscription, h.req.Service, false)
+	p.UntMO()
+}
+
+func (h *PostbackHandler) UntMOUnsub() {
+	p := postback.NewPostback(h.logger, h.req.Subscription, h.req.Service, false)
+	p.UntMOUnsub()
+}
+
+func (h *PostbackHandler) UntDN(status string) {
+	p := postback.NewPostback(h.logger, h.req.Subscription, h.req.Service, false)
+	p.UntDN()
+}

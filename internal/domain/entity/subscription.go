@@ -113,6 +113,10 @@ func (s *Subscription) IsStars() bool {
 	return s.GetCampSubKeyword() == "STARS"
 }
 
+func (s *Subscription) IsUnt() bool {
+	return s.GetCampSubKeyword() == "UNT"
+}
+
 func (s *Subscription) GetAdnet() string {
 	return s.Adnet
 }

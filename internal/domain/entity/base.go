@@ -370,6 +370,10 @@ func (r *CampaignToolsRequest) IsStars() bool {
 	return r.GetSubKeyword() == "STARS"
 }
 
+func (r *CampaignToolsRequest) IsUnt() bool {
+	return r.GetSubKeyword() == "UNT"
+}
+
 type CampaignToolsResponse struct {
 	StatusCode int    `json:"status_code" xml:"status_code"`
 	Token      string `json:"token" xml:"token"`
