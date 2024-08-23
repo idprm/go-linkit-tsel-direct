@@ -192,15 +192,15 @@ func (h *MOHandler) Firstpush() {
 		subscription.SetLatestPayload(string(resp))
 
 		// if first_success_at is null
-		// if !h.subscriptionService.IsFirstSuccess(service.GetID(), h.req.GetMsisdn()) {
-		// 	h.subscriptionService.UpdateFirstSuccess(
-		// 		&entity.Subscription{
-		// 			ServiceID:      service.GetID(),
-		// 			Msisdn:         h.req.GetMsisdn(),
-		// 			FirstSuccessAt: time.Now(),
-		// 		},
-		// 	)
-		// }
+		if !h.subscriptionService.IsFirstSuccess(service.GetID(), h.req.GetMsisdn()) {
+			h.subscriptionService.UpdateFirstSuccess(
+				&entity.Subscription{
+					ServiceID:      service.GetID(),
+					Msisdn:         h.req.GetMsisdn(),
+					FirstSuccessAt: time.Now(),
+				},
+			)
+		}
 
 		transSuccess := &entity.Transaction{
 			TxID:         trxId,
