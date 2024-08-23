@@ -22,10 +22,14 @@ const (
 	queryUpdateSubPin                 = "UPDATE subscriptions SET latest_pin = $1, updated_at = NOW() WHERE service_id = $2 AND msisdn = $3"
 	queryUpdateSubCampByToken         = "UPDATE subscriptions SET camp_keyword = $1, camp_sub_keyword = $2, adnet = $3, pub_id = $4, aff_sub = $5, is_trial = true, updated_at = NOW() WHERE latest_keyword = $6 AND DATE(created_at) = DATE(NOW()) AND camp_keyword = '' AND camp_sub_keyword = ''"
 	queryUpdateSubSuccessRetry        = "UPDATE subscriptions SET latest_trxid = $1, latest_subject = $2, latest_status = $3, latest_pin = $4, amount = amount + $5, renewal_at = $6, charge_at = $7, success = success + $8, failed = failed - $9, is_retry = $10, charging_count = charging_count + $11, charging_count_all = charging_count_all + $12, total_firstpush = total_firstpush + $13, total_renewal = total_renewal + $14, total_amount_firstpush = total_amount_firstpush + $15, total_amount_renewal = total_amount_renewal + $16, latest_payload = $17, updated_at = NOW() WHERE service_id = $18 AND msisdn = $19"
+	queryUpdateSubFirstSuccess        = "UPDATE subscriptions SET first_success_at = $1, updated_at = NOW() WHERE service_id = $2 AND msisdn = $3"
+	queryUpdateSubTotalSub            = "UPDATE subscriptions SET total_sub = total_sub + $1, updated_at = NOW() WHERE service_id = $2 AND msisdn $3"
+	queryUpdateSubTotalUnsub          = "UPDATE subscriptions SET total_unsub = total_unsub + $1, updated_at = NOW() WHERE service_id = $2 AND msisdn $3"
 	queryCountSubscription            = "SELECT COUNT(*) as count FROM subscriptions WHERE service_id = $1 AND msisdn = $2"
 	queryCountActiveSubscription      = "SELECT COUNT(*) as count FROM subscriptions WHERE service_id = $1 AND msisdn = $2 AND is_active = true"
 	queryCountPinSub                  = "SELECT COUNT(*) as count FROM subscriptions WHERE latest_pin = $1"
 	queryCountSubActivePin            = "SELECT COUNT(*) as count FROM subscriptions WHERE category = $1 AND latest_pin = $2 AND is_active = true AND is_retry = false"
+	queryCountFirstSuccess            = "SELECT COUNT(*) as count FROM subscriptions WHERE service_id = $1 AND msisdn = $2 AND first_success_at IS NOT NULL"
 	querySelectSubscription           = "SELECT id, service_id, msisdn, channel, camp_keyword, camp_sub_keyword, adnet, pub_id, aff_sub, latest_trxid, latest_keyword, latest_subject, latest_status, latest_payload, amount, renewal_at, success, ip_address, total_firstpush, total_renewal, total_amount_firstpush, total_amount_renewal, is_retry, is_active FROM subscriptions WHERE service_id = $1 AND msisdn = $2"
 	querySelectPopulateRenewal        = "SELECT id, service_id, msisdn, channel, adnet, latest_keyword, latest_subject, latest_pin, latest_payload, ip_address, aff_sub, camp_keyword, camp_sub_keyword, created_at FROM subscriptions WHERE renewal_at IS NOT NULL AND DATE(renewal_at) <= DATE(NOW()) AND is_active = true ORDER BY success DESC, DATE(created_at) DESC"
 	querySelectPopulateRetryFirstpush = "SELECT id, service_id, msisdn, channel, adnet, latest_keyword, latest_subject, latest_pin, latest_payload, ip_address, aff_sub, camp_keyword, camp_sub_keyword, retry_at, created_at FROM subscriptions WHERE latest_payload <> '3:3:21' AND latest_subject = 'FIRSTPUSH' AND renewal_at IS NOT NULL AND DATE(renewal_at) = DATE(NOW() + interval '1 day') AND is_retry = true AND is_active = true ORDER BY success DESC, DATE(created_at) DESC"
@@ -57,10 +61,13 @@ type ISubscriptionRepository interface {
 	UpdatePin(*entity.Subscription) error
 	UpdateCampByToken(*entity.Subscription) error
 	UpdateSuccessRetry(*entity.Subscription) error
+	UpdateTotalSub(*entity.Subscription) error
+	UpdateTotalUnSub(*entity.Subscription) error
 	Count(int, string) (int, error)
 	CountActive(int, string) (int, error)
 	CountPin(int) (int, error)
 	CountPinActive(string, string) (int, error)
+	CountFirstSuccess(int, string) (int, error)
 	Get(int, string) (*entity.Subscription, error)
 	Renewal() (*[]entity.Subscription, error)
 	RetryFp() (*[]entity.Subscription, error)
@@ -367,6 +374,78 @@ func (r *SubscriptionRepository) UpdateSuccessRetry(s *entity.Subscription) erro
 	return nil
 }
 
+func (r *SubscriptionRepository) UpdateFirstSuccess(s *entity.Subscription) error {
+	ctx, cancelfunc := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancelfunc()
+	stmt, err := r.db.PrepareContext(ctx, queryUpdateSubFirstSuccess)
+	if err != nil {
+		log.Printf("Error %s when preparing SQL statement", err)
+		return err
+	}
+	defer stmt.Close()
+	res, err := stmt.ExecContext(ctx, s.FirstSuccessAt, s.ServiceID, s.Msisdn)
+	if err != nil {
+		log.Printf("Error %s when update row into subscriptions table", err)
+		return err
+	}
+	rows, err := res.RowsAffected()
+	if err != nil {
+		log.Printf("Error %s when finding rows affected", err)
+		return err
+	}
+	log.Printf("%d subscriptions updated ", rows)
+
+	return nil
+}
+
+func (r *SubscriptionRepository) UpdateTotalSub(s *entity.Subscription) error {
+	ctx, cancelfunc := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancelfunc()
+	stmt, err := r.db.PrepareContext(ctx, queryUpdateSubTotalSub)
+	if err != nil {
+		log.Printf("Error %s when preparing SQL statement", err)
+		return err
+	}
+	defer stmt.Close()
+	res, err := stmt.ExecContext(ctx, s.TotalSub, s.ServiceID, s.Msisdn)
+	if err != nil {
+		log.Printf("Error %s when update row into subscriptions table", err)
+		return err
+	}
+	rows, err := res.RowsAffected()
+	if err != nil {
+		log.Printf("Error %s when finding rows affected", err)
+		return err
+	}
+	log.Printf("%d subscriptions updated ", rows)
+
+	return nil
+}
+
+func (r *SubscriptionRepository) UpdateTotalUnSub(s *entity.Subscription) error {
+	ctx, cancelfunc := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancelfunc()
+	stmt, err := r.db.PrepareContext(ctx, queryUpdateSubTotalUnsub)
+	if err != nil {
+		log.Printf("Error %s when preparing SQL statement", err)
+		return err
+	}
+	defer stmt.Close()
+	res, err := stmt.ExecContext(ctx, s.TotalUnsub, s.ServiceID, s.Msisdn)
+	if err != nil {
+		log.Printf("Error %s when update row into subscriptions table", err)
+		return err
+	}
+	rows, err := res.RowsAffected()
+	if err != nil {
+		log.Printf("Error %s when finding rows affected", err)
+		return err
+	}
+	log.Printf("%d subscriptions updated ", rows)
+
+	return nil
+}
+
 func (r *SubscriptionRepository) Count(serviceId int, msisdn string) (int, error) {
 	var count int
 	err := r.db.QueryRow(queryCountSubscription, serviceId, msisdn).Scan(&count)
@@ -397,6 +476,15 @@ func (r *SubscriptionRepository) CountPin(pin int) (int, error) {
 func (r *SubscriptionRepository) CountPinActive(category, pin string) (int, error) {
 	var count int
 	err := r.db.QueryRow(queryCountSubActivePin, category, pin).Scan(&count)
+	if err != nil {
+		return count, err
+	}
+	return count, nil
+}
+
+func (r *SubscriptionRepository) CountFirstSuccess(serviceId int, msisdn string) (int, error) {
+	var count int
+	err := r.db.QueryRow(queryCountFirstSuccess, serviceId, msisdn).Scan(&count)
 	if err != nil {
 		return count, err
 	}

@@ -152,6 +152,15 @@ func (h *MOHandler) Firstpush() {
 		h.subscriptionService.SaveSubscription(subscription)
 	}
 
+	// count total sub
+	h.subscriptionService.UpdateTotalSub(
+		&entity.Subscription{
+			ServiceID: service.GetID(),
+			Msisdn:    h.req.GetMsisdn(),
+			TotalSub:  1,
+		},
+	)
+
 	smsMT := telco.NewTelco(h.logger, subscription, service, content)
 	resp, err := smsMT.SMSbyParam()
 	if err != nil {
@@ -375,13 +384,22 @@ func (h *MOHandler) Unsub() {
 		},
 	)
 
-	confirm := &entity.Subscription{
-		ServiceID: service.GetID(),
-		Msisdn:    h.req.GetMsisdn(),
-		IsConfirm: false,
-	}
+	// count total unsub
+	h.subscriptionService.UpdateTotalUnSub(
+		&entity.Subscription{
+			ServiceID:  service.GetID(),
+			Msisdn:     h.req.GetMsisdn(),
+			TotalUnsub: 1,
+		},
+	)
 
-	h.subscriptionService.UpdateConfirm(confirm)
+	h.subscriptionService.UpdateConfirm(
+		&entity.Subscription{
+			ServiceID: service.GetID(),
+			Msisdn:    h.req.GetMsisdn(),
+			IsConfirm: false,
+		},
+	)
 
 	// select data by service_id & msisdn
 	sub, _ := h.subscriptionService.SelectSubscription(service.GetID(), h.req.GetMsisdn())

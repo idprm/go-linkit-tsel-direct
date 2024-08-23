@@ -29,6 +29,7 @@ type Subscription struct {
 	UnsubAt              time.Time `json:"unsub_at,omitempty"`
 	ChargeAt             time.Time `json:"charge_at,omitempty"`
 	RetryAt              time.Time `json:"retry_at,omitempty"`
+	FirstSuccessAt       time.Time `json:"first_success_at,omitempty"`
 	PurgeAt              time.Time `json:"purge_at,omitempty"`
 	PurgeReason          string    `json:"purge_reason,omitempty"`
 	Success              uint      `json:"success,omitempty"`
@@ -36,6 +37,8 @@ type Subscription struct {
 	IpAddress            string    `json:"ip_address,omitempty"`
 	TotalFirstpush       uint      `json:"total_firstpush,omitempty"`
 	TotalRenewal         uint      `json:"total_renewal,omitempty"`
+	TotalSub             uint      `json:"total_sub,omitempty"`
+	TotalUnsub           uint      `json:"total_unsub,omitempty"`
 	TotalAmountFirstpush float64   `json:"total_amount_firstpush,omitempty"`
 	TotalAmountRenewal   float64   `json:"total_amount_renewal,omitempty"`
 	ChargingCount        uint      `json:"charging_count,omitempty"`

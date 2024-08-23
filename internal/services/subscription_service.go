@@ -16,6 +16,7 @@ type ISubscriptionService interface {
 	GetSubscription(int, string) bool
 	GetPinSubscription(int) bool
 	GetPinActiveSub(string, string) bool
+	IsFirstSuccess(int, string) bool
 	SelectSubscription(int, string) (*entity.Subscription, error)
 	SaveSubscription(*entity.Subscription) error
 	UpdateSuccess(*entity.Subscription) error
@@ -29,6 +30,8 @@ type ISubscriptionService interface {
 	UpdatePin(*entity.Subscription) error
 	UpdateCampByToken(sub *entity.Subscription) error
 	UpdateSuccessRetry(*entity.Subscription) error
+	UpdateTotalSub(*entity.Subscription) error
+	UpdateTotalUnSub(*entity.Subscription) error
 	ReminderSubscription() *[]entity.Subscription
 	RenewalSubscription() *[]entity.Subscription
 	RetryFpSubscription() *[]entity.Subscription
@@ -67,6 +70,14 @@ func (s *SubscriptionService) GetPinSubscription(pin int) bool {
 
 func (s *SubscriptionService) GetPinActiveSub(category, pin string) bool {
 	count, err := s.subscriptionRepo.CountPinActive(category, pin)
+	if err != nil {
+		log.Println(err)
+	}
+	return count > 0
+}
+
+func (s *SubscriptionService) IsFirstSuccess(serviceId int, msisdn string) bool {
+	count, err := s.subscriptionRepo.CountFirstSuccess(serviceId, msisdn)
 	if err != nil {
 		log.Println(err)
 	}
@@ -171,6 +182,22 @@ func (s *SubscriptionService) UpdateCampByToken(sub *entity.Subscription) error 
 
 func (s *SubscriptionService) UpdateSuccessRetry(sub *entity.Subscription) error {
 	err := s.subscriptionRepo.UpdateSuccessRetry(sub)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s *SubscriptionService) UpdateTotalSub(sub *entity.Subscription) error {
+	err := s.subscriptionRepo.UpdateTotalSub(sub)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s *SubscriptionService) UpdateTotalUnSub(sub *entity.Subscription) error {
+	err := s.subscriptionRepo.UpdateTotalUnSub(sub)
 	if err != nil {
 		return err
 	}

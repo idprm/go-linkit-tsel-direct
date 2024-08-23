@@ -256,6 +256,15 @@ func (h *RenewalHandler) purge(trxId, resp string) {
 			},
 		)
 
+		// count total unsub
+		h.subscriptionService.UpdateTotalUnSub(
+			&entity.Subscription{
+				ServiceID:  h.sub.GetServiceId(),
+				Msisdn:     h.sub.GetMsisdn(),
+				TotalUnsub: 1,
+			},
+		)
+
 		h.transactionService.SaveTransaction(
 			&entity.Transaction{
 				TxID:           trxId,
