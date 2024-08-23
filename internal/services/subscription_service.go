@@ -30,6 +30,7 @@ type ISubscriptionService interface {
 	UpdatePin(*entity.Subscription) error
 	UpdateCampByToken(sub *entity.Subscription) error
 	UpdateSuccessRetry(*entity.Subscription) error
+	UpdateFirstSuccess(*entity.Subscription) error
 	UpdateTotalSub(*entity.Subscription) error
 	UpdateTotalUnSub(*entity.Subscription) error
 	ReminderSubscription() *[]entity.Subscription
@@ -182,6 +183,14 @@ func (s *SubscriptionService) UpdateCampByToken(sub *entity.Subscription) error 
 
 func (s *SubscriptionService) UpdateSuccessRetry(sub *entity.Subscription) error {
 	err := s.subscriptionRepo.UpdateSuccessRetry(sub)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s *SubscriptionService) UpdateFirstSuccess(sub *entity.Subscription) error {
+	err := s.subscriptionRepo.UpdateFirstSuccess(sub)
 	if err != nil {
 		return err
 	}

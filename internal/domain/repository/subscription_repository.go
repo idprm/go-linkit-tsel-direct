@@ -61,6 +61,7 @@ type ISubscriptionRepository interface {
 	UpdatePin(*entity.Subscription) error
 	UpdateCampByToken(*entity.Subscription) error
 	UpdateSuccessRetry(*entity.Subscription) error
+	UpdateFirstSuccess(*entity.Subscription) error
 	UpdateTotalSub(*entity.Subscription) error
 	UpdateTotalUnSub(*entity.Subscription) error
 	Count(int, string) (int, error)

@@ -97,6 +97,17 @@ func (h *RetryHandler) Firstpush() {
 
 			h.subscriptionService.UpdateSuccessRetry(subSuccess)
 
+			// if first_success_at is null
+			// if !h.subscriptionService.IsFirstSuccess(h.sub.GetServiceId(), h.sub.GetMsisdn()) {
+			// 	h.subscriptionService.UpdateFirstSuccess(
+			// 		&entity.Subscription{
+			// 			ServiceID:      h.sub.GetServiceId(),
+			// 			Msisdn:         h.sub.GetMsisdn(),
+			// 			FirstSuccessAt: time.Now(),
+			// 		},
+			// 	)
+			// }
+
 			transSuccess := &entity.Transaction{
 				TxID:           trxId,
 				ServiceID:      h.sub.GetServiceId(),
@@ -223,6 +234,17 @@ func (h *RetryHandler) Dailypush() {
 			}
 
 			h.subscriptionService.UpdateSuccessRetry(subSuccess)
+
+			// if first_success_at is null
+			// if !h.subscriptionService.IsFirstSuccess(h.sub.GetServiceId(), h.sub.GetMsisdn()) {
+			// 	h.subscriptionService.UpdateFirstSuccess(
+			// 		&entity.Subscription{
+			// 			ServiceID:      h.sub.GetServiceId(),
+			// 			Msisdn:         h.sub.GetMsisdn(),
+			// 			FirstSuccessAt: time.Now(),
+			// 		},
+			// 	)
+			// }
 
 			transSuccess := &entity.Transaction{
 				TxID:           trxId,
