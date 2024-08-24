@@ -94,7 +94,7 @@ func (h *RenewalHandler) Dailypush() {
 			h.subscriptionService.UpdateSuccess(subSuccess)
 
 			// if first_success_at is null
-			if !h.subscriptionService.IsFirstSuccess(h.sub.GetServiceId(), h.sub.GetMsisdn()) {
+			if h.subscriptionService.IsFirstSuccess(h.sub.GetServiceId(), h.sub.GetMsisdn()) {
 				h.subscriptionService.UpdateFirstSuccess(
 					&entity.Subscription{
 						ServiceID:      h.sub.GetServiceId(),
