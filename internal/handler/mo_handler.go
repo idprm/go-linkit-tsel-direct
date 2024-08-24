@@ -192,7 +192,7 @@ func (h *MOHandler) Firstpush() {
 		subscription.SetLatestPayload(string(resp))
 
 		// if first_success_at is null
-		if !h.subscriptionService.IsFirstSuccess(service.GetID(), h.req.GetMsisdn()) {
+		if h.subscriptionService.IsFirstSuccess(service.GetID(), h.req.GetMsisdn()) {
 			h.subscriptionService.UpdateFirstSuccess(
 				&entity.Subscription{
 					ServiceID:      service.GetID(),
