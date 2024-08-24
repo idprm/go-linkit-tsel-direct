@@ -235,7 +235,7 @@ func (h *RenewalHandler) Dailypush() {
 				CampSubKeyword: h.sub.GetCampSubKeyword(),
 				Adnet:          h.sub.GetAdnet(),
 				PubID:          h.sub.GetPubId(),
-				AffSub:         h.sub.GetPubId(),
+				AffSub:         h.sub.GetAffSub(),
 				Subject:        subject,
 				StatusCode:     string(resp),
 				StatusDetail:   response_utils.ParseStatusCode(string(resp)),

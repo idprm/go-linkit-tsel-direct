@@ -324,7 +324,7 @@ func (h *RetryHandler) Dailypush() {
 					CampSubKeyword: h.sub.GetCampSubKeyword(),
 					Adnet:          h.sub.GetAdnet(),
 					PubID:          h.sub.GetPubId(),
-					AffSub:         h.sub.GetPubId(),
+					AffSub:         h.sub.GetAffSub(),
 					Subject:        SUBJECT_DAILYPUSH,
 					StatusCode:     string(resp),
 					StatusDetail:   response_utils.ParseStatusCode(string(resp)),
