@@ -42,7 +42,7 @@ var publisherRenewalCmd = &cobra.Command{
 		/**
 		 * SETUP CHANNEL
 		 */
-		rmq.SetUpChannel(RMQ_EXCHANGETYPE, true, RMQ_RENEWALEXCHANGE, true, RMQ_RENEWALQUEUE)
+		rmq.SetUpChannel(RMQ_EXCHANGE_TYPE, true, RMQ_RENEWAL_EXCHANGE, true, RMQ_RENEWAL_QUEUE)
 
 		/**
 		 * Looping schedule
@@ -71,7 +71,7 @@ var publisherRenewalCmd = &cobra.Command{
 				** Purge queue retry if populate renewal start
 				**/
 				p := rabbit.NewRabbitMQ()
-				p.Purge(RMQ_RETRYINSUFFQUEUE)
+				p.Purge(RMQ_RETRY_INSUFF_QUEUE)
 			}
 
 			time.Sleep(timeDuration * time.Minute)
@@ -101,7 +101,7 @@ var publisherRetryFpCmd = &cobra.Command{
 		/**
 		 * SETUP CHANNEL
 		 */
-		rmq.SetUpChannel(RMQ_EXCHANGETYPE, true, RMQ_RETRYFPEXCHANGE, true, RMQ_RETRYFPQUEUE)
+		rmq.SetUpChannel(RMQ_EXCHANGE_TYPE, true, RMQ_RETRY_FP_EXCHANGE, true, RMQ_RETRY_FP_QUEUE)
 
 		/**
 		 * Looping schedule
@@ -115,7 +115,7 @@ var publisherRetryFpCmd = &cobra.Command{
 			**/
 			p := rabbit.NewRabbitMQ()
 
-			q, err := p.Queue(RMQ_RETRYFPQUEUE)
+			q, err := p.Queue(RMQ_RETRY_FP_QUEUE)
 			if err != nil {
 				log.Println(err)
 			}
@@ -158,7 +158,7 @@ var publisherRetryDpCmd = &cobra.Command{
 		/**
 		 * SETUP CHANNEL
 		 */
-		rmq.SetUpChannel(RMQ_EXCHANGETYPE, true, RMQ_RETRYDPEXCHANGE, true, RMQ_RETRYDPQUEUE)
+		rmq.SetUpChannel(RMQ_EXCHANGE_TYPE, true, RMQ_RETRY_DP_EXCHANGE, true, RMQ_RETRY_DP_QUEUE)
 
 		/**
 		 * Looping schedule
@@ -172,7 +172,7 @@ var publisherRetryDpCmd = &cobra.Command{
 			**/
 			p := rabbit.NewRabbitMQ()
 
-			q, err := p.Queue(RMQ_RETRYDPQUEUE)
+			q, err := p.Queue(RMQ_RETRY_DP_QUEUE)
 			if err != nil {
 				log.Println(err)
 			}
@@ -215,7 +215,7 @@ var publisherRetryInsuffCmd = &cobra.Command{
 		/**
 		 * SETUP CHANNEL
 		 */
-		rmq.SetUpChannel(RMQ_EXCHANGETYPE, true, RMQ_RETRYINSUFFEXCHANGE, true, RMQ_RETRYINSUFFQUEUE)
+		rmq.SetUpChannel(RMQ_EXCHANGE_TYPE, true, RMQ_RETRY_INSUFF_EXCHANGE, true, RMQ_RETRY_INSUFF_QUEUE)
 
 		/**
 		 * Looping schedule
@@ -359,7 +359,7 @@ func populateRenewal(db *sql.DB, queue rmqp.AMQP) {
 
 		json, _ := json.Marshal(sub)
 
-		queue.IntegratePublish(RMQ_RENEWALEXCHANGE, RMQ_RENEWALQUEUE, RMQ_DATATYPE, "", string(json))
+		queue.IntegratePublish(RMQ_RENEWAL_EXCHANGE, RMQ_RENEWAL_QUEUE, RMQ_DATA_TYPE, "", string(json))
 
 		time.Sleep(100 * time.Microsecond)
 	}
@@ -391,7 +391,7 @@ func populateRetryFp(db *sql.DB, queue rmqp.AMQP) {
 		sub.CreatedAt = s.CreatedAt
 
 		json, _ := json.Marshal(sub)
-		queue.IntegratePublish(RMQ_RETRYFPEXCHANGE, RMQ_RETRYFPQUEUE, RMQ_DATATYPE, "", string(json))
+		queue.IntegratePublish(RMQ_RETRY_FP_EXCHANGE, RMQ_RETRY_FP_QUEUE, RMQ_DATA_TYPE, "", string(json))
 
 		time.Sleep(100 * time.Microsecond)
 	}
@@ -423,7 +423,7 @@ func populateRetryDp(db *sql.DB, queue rmqp.AMQP) {
 		sub.CreatedAt = s.CreatedAt
 
 		json, _ := json.Marshal(sub)
-		queue.IntegratePublish(RMQ_RETRYDPEXCHANGE, RMQ_RETRYDPQUEUE, RMQ_DATATYPE, "", string(json))
+		queue.IntegratePublish(RMQ_RETRY_DP_EXCHANGE, RMQ_RETRY_DP_QUEUE, RMQ_DATA_TYPE, "", string(json))
 
 		time.Sleep(100 * time.Microsecond)
 	}
@@ -455,7 +455,7 @@ func populateRetryInsuff(db *sql.DB, queue rmqp.AMQP) {
 		sub.CreatedAt = s.CreatedAt
 
 		json, _ := json.Marshal(sub)
-		queue.IntegratePublish(RMQ_RETRYINSUFFEXCHANGE, RMQ_RETRYINSUFFQUEUE, RMQ_DATATYPE, "", string(json))
+		queue.IntegratePublish(RMQ_RETRY_INSUFF_EXCHANGE, RMQ_RETRY_INSUFF_QUEUE, RMQ_DATA_TYPE, "", string(json))
 
 		time.Sleep(100 * time.Microsecond)
 	}

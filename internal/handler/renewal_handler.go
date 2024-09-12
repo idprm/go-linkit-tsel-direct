@@ -138,9 +138,9 @@ func (h *RenewalHandler) Dailypush() {
 				},
 			)
 			h.rmq.IntegratePublish(
-				RMQ_NOTIFEXCHANGE,
-				RMQ_NOTIFQUEUE,
-				RMQ_DATATYPE,
+				RMQ_NOTIF_EXCHANGE,
+				RMQ_NOTIF_QUEUE,
+				RMQ_DATA_TYPE,
 				"",
 				string(jsonData),
 			)
@@ -191,30 +191,40 @@ func (h *RenewalHandler) Dailypush() {
 			h.purge(trxId, string(resp))
 		}
 
-		// insert to rabbitmq
-		jsonData, _ := json.Marshal(
-			&entity.ReqPostbackParams{
-				Subscription: &entity.Subscription{
-					LatestTrxId:    trxId,
-					ServiceID:      h.sub.GetServiceId(),
-					Msisdn:         h.sub.GetMsisdn(),
-					LatestKeyword:  h.sub.GetLatestKeyword(),
-					LatestSubject:  SUBJECT_RENEWAL,
-					LatestPayload:  string(resp),
-					CampKeyword:    h.sub.GetCampKeyword(),
-					CampSubKeyword: h.sub.GetCampSubKeyword(),
-				},
-				Service:   service,
-				Action:    "MT_DAILYPUSH",
-				Status:    status,
-				AffSub:    h.sub.GetAffSub(),
-				IsSuccess: isSuccess,
+		pb := &entity.ReqPostbackParams{
+			Subscription: &entity.Subscription{
+				LatestTrxId:    trxId,
+				ServiceID:      h.sub.GetServiceId(),
+				Msisdn:         h.sub.GetMsisdn(),
+				LatestKeyword:  h.sub.GetLatestKeyword(),
+				LatestSubject:  SUBJECT_RENEWAL,
+				LatestPayload:  string(resp),
+				CampKeyword:    h.sub.GetCampKeyword(),
+				CampSubKeyword: h.sub.GetCampSubKeyword(),
 			},
-		)
+			Service:   service,
+			Postback:  &entity.Postback{},
+			Action:    "MT_DAILYPUSH",
+			Status:    status,
+			AffSub:    h.sub.GetAffSub(),
+			IsSuccess: isSuccess,
+		}
+
+		if h.postbackService.IsPostback(h.sub.GetCampSubKeyword()) {
+			postback, err := h.postbackService.Get(h.sub.GetCampSubKeyword())
+			if err != nil {
+				log.Println(err.Error())
+			}
+			pb.Postback = postback
+		}
+
+		// insert to rabbitmq
+		jsonData, _ := json.Marshal(pb)
+
 		h.rmq.IntegratePublish(
-			RMQ_POSTBACKMTEXCHANGE,
-			RMQ_POSTBACKMTQUEUE,
-			RMQ_DATATYPE,
+			RMQ_POSTBACK_MT_EXCHANGE,
+			RMQ_POSTBACK_MT_QUEUE,
+			RMQ_DATA_TYPE,
 			"",
 			string(jsonData),
 		)
@@ -249,9 +259,9 @@ func (h *RenewalHandler) Dailypush() {
 		)
 
 		h.rmq.IntegratePublish(
-			RMQ_DAILYPUSHEXCHANGE,
-			RMQ_DAILYPUSHQUEUE,
-			RMQ_DATATYPE,
+			RMQ_DAILYPUSH_EXCHANGE,
+			RMQ_DAILYPUSH_QUEUE,
+			RMQ_DATA_TYPE,
 			"",
 			string(jsonDataDP),
 		)

@@ -40,7 +40,6 @@ func NewRetryHandler(
 	trafficService services.ITrafficService,
 	dailypushService services.IDailypushService,
 ) *RetryHandler {
-
 	return &RetryHandler{
 		rmq:                 rmq,
 		logger:              logger,
@@ -150,36 +149,45 @@ func (h *RetryHandler) Firstpush() {
 				},
 			)
 			h.rmq.IntegratePublish(
-				RMQ_NOTIFEXCHANGE,
-				RMQ_NOTIFQUEUE,
-				RMQ_DATATYPE,
+				RMQ_NOTIF_EXCHANGE,
+				RMQ_NOTIF_QUEUE,
+				RMQ_DATA_TYPE,
 				"",
 				string(jsonDataNotif),
 			)
 
-			jsonDataPostback, _ := json.Marshal(
-				&entity.ReqPostbackParams{
-					Subscription: &entity.Subscription{
-						LatestTrxId:    trxId,
-						ServiceID:      h.sub.GetServiceId(),
-						Msisdn:         h.sub.GetMsisdn(),
-						LatestKeyword:  h.sub.GetLatestKeyword(),
-						LatestSubject:  SUBJECT_FIRSTPUSH,
-						LatestPayload:  string(resp),
-						CampKeyword:    h.sub.GetCampKeyword(),
-						CampSubKeyword: h.sub.GetCampSubKeyword(),
-					},
-					Service:   service,
-					Action:    "MT_FIRSTPUSH",
-					Status:    STATUS_SUCCESS,
-					AffSub:    h.sub.GetAffSub(),
-					IsSuccess: true,
+			pb := &entity.ReqPostbackParams{
+				Subscription: &entity.Subscription{
+					LatestTrxId:    trxId,
+					ServiceID:      h.sub.GetServiceId(),
+					Msisdn:         h.sub.GetMsisdn(),
+					LatestKeyword:  h.sub.GetLatestKeyword(),
+					LatestSubject:  SUBJECT_FIRSTPUSH,
+					LatestPayload:  string(resp),
+					CampKeyword:    h.sub.GetCampKeyword(),
+					CampSubKeyword: h.sub.GetCampSubKeyword(),
 				},
-			)
+				Service:   service,
+				Postback:  &entity.Postback{},
+				Action:    "MT_FIRSTPUSH",
+				Status:    STATUS_SUCCESS,
+				AffSub:    h.sub.GetAffSub(),
+				IsSuccess: true,
+			}
+
+			if h.postbackService.IsPostback(h.sub.GetCampSubKeyword()) {
+				postback, err := h.postbackService.Get(h.sub.GetCampSubKeyword())
+				if err != nil {
+					log.Println(err.Error())
+				}
+				pb.Postback = postback
+			}
+
+			jsonDataPostback, _ := json.Marshal(pb)
 			h.rmq.IntegratePublish(
-				RMQ_POSTBACKMTEXCHANGE,
-				RMQ_POSTBACKMTQUEUE,
-				RMQ_DATATYPE,
+				RMQ_POSTBACK_MT_EXCHANGE,
+				RMQ_POSTBACK_MT_QUEUE,
+				RMQ_DATA_TYPE,
 				"",
 				string(jsonDataPostback),
 			)
@@ -280,37 +288,47 @@ func (h *RetryHandler) Dailypush() {
 				},
 			)
 			h.rmq.IntegratePublish(
-				RMQ_NOTIFEXCHANGE,
-				RMQ_NOTIFQUEUE,
-				RMQ_DATATYPE,
+				RMQ_NOTIF_EXCHANGE,
+				RMQ_NOTIF_QUEUE,
+				RMQ_DATA_TYPE,
 				"",
 				string(jsonDataNotif),
 			)
 
-			// insert to rabbitmq
-			jsonDataPostback, _ := json.Marshal(
-				&entity.ReqPostbackParams{
-					Subscription: &entity.Subscription{
-						LatestTrxId:    trxId,
-						ServiceID:      h.sub.GetServiceId(),
-						Msisdn:         h.sub.GetMsisdn(),
-						LatestKeyword:  h.sub.GetLatestKeyword(),
-						LatestSubject:  SUBJECT_RETRY,
-						LatestPayload:  string(resp),
-						CampKeyword:    h.sub.GetCampKeyword(),
-						CampSubKeyword: h.sub.GetCampSubKeyword(),
-					},
-					Service:   service,
-					Action:    "MT_DAILYPUSH",
-					Status:    STATUS_SUCCESS,
-					AffSub:    h.sub.GetAffSub(),
-					IsSuccess: true,
+			pb := &entity.ReqPostbackParams{
+				Subscription: &entity.Subscription{
+					LatestTrxId:    trxId,
+					ServiceID:      h.sub.GetServiceId(),
+					Msisdn:         h.sub.GetMsisdn(),
+					LatestKeyword:  h.sub.GetLatestKeyword(),
+					LatestSubject:  SUBJECT_RETRY,
+					LatestPayload:  string(resp),
+					CampKeyword:    h.sub.GetCampKeyword(),
+					CampSubKeyword: h.sub.GetCampSubKeyword(),
 				},
-			)
+				Service:   service,
+				Postback:  &entity.Postback{},
+				Action:    "MT_DAILYPUSH",
+				Status:    STATUS_SUCCESS,
+				AffSub:    h.sub.GetAffSub(),
+				IsSuccess: true,
+			}
+
+			if h.postbackService.IsPostback(h.sub.GetCampSubKeyword()) {
+				postback, err := h.postbackService.Get(h.sub.GetCampSubKeyword())
+				if err != nil {
+					log.Println(err.Error())
+				}
+				pb.Postback = postback
+			}
+
+			// insert to rabbitmq
+			jsonDataPostback, _ := json.Marshal(pb)
+
 			h.rmq.IntegratePublish(
-				RMQ_POSTBACKMTEXCHANGE,
-				RMQ_POSTBACKMTQUEUE,
-				RMQ_DATATYPE,
+				RMQ_POSTBACK_MT_EXCHANGE,
+				RMQ_POSTBACK_MT_QUEUE,
+				RMQ_DATA_TYPE,
 				"",
 				string(jsonDataPostback),
 			)
@@ -338,9 +356,9 @@ func (h *RetryHandler) Dailypush() {
 			)
 
 			h.rmq.IntegratePublish(
-				RMQ_DAILYPUSHEXCHANGE,
-				RMQ_DAILYPUSHQUEUE,
-				RMQ_DATATYPE,
+				RMQ_DAILYPUSH_EXCHANGE,
+				RMQ_DAILYPUSH_QUEUE,
+				RMQ_DATA_TYPE,
 				"",
 				string(jsonDataDP),
 			)

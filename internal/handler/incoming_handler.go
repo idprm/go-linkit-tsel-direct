@@ -53,30 +53,30 @@ func NewIncomingHandler(
 }
 
 const (
-	RMQ_DATATYPE           string = "application/json"
-	RMQ_MOEXCHANGE         string = "E_MO"
-	RMQ_MOQUEUE            string = "Q_MO"
-	RMQ_NOTIFEXCHANGE      string = "E_NOTIF"
-	RMQ_NOTIFQUEUE         string = "Q_NOTIF"
-	RMQ_POSTBACKMOEXCHANGE string = "E_POSTBACK_MO"
-	RMQ_POSTBACKMOQUEUE    string = "Q_POSTBACK_MO"
-	RMQ_POSTBACKMTEXCHANGE string = "E_POSTBACK_MT"
-	RMQ_POSTBACKMTQUEUE    string = "Q_POSTBACK_MT"
-	RMQ_TRAFFICEXCHANGE    string = "E_TRAFFIC"
-	RMQ_TRAFFICQUEUE       string = "Q_TRAFFIC"
-	RMQ_DAILYPUSHEXCHANGE  string = "E_BQ_DAILYPUSH"
-	RMQ_DAILYPUSHQUEUE     string = "Q_BQ_DAILYPUSH"
-	MT_FIRSTPUSH           string = "FIRSTPUSH"
-	MT_RENEWAL             string = "RENEWAL"
-	MT_UNSUB               string = "UNSUB"
-	STATUS_SUCCESS         string = "SUCCESS"
-	STATUS_FAILED          string = "FAILED"
-	SUBJECT_FIRSTPUSH      string = "FIRSTPUSH"
-	SUBJECT_DAILYPUSH      string = "DAILYPUSH"
-	SUBJECT_RENEWAL        string = "RENEWAL"
-	SUBJECT_UNSUB          string = "UNSUB"
-	SUBJECT_RETRY          string = "RETRY"
-	SUBJECT_PURGE          string = "PURGE"
+	RMQ_DATA_TYPE            string = "application/json"
+	RMQ_MO_EXCHANGE          string = "E_MO"
+	RMQ_MO_QUEUE             string = "Q_MO"
+	RMQ_NOTIF_EXCHANGE       string = "E_NOTIF"
+	RMQ_NOTIF_QUEUE          string = "Q_NOTIF"
+	RMQ_POSTBACK_MO_EXCHANGE string = "E_POSTBACK_MO"
+	RMQ_POSTBACK_MO_QUEUE    string = "Q_POSTBACK_MO"
+	RMQ_POSTBACK_MT_EXCHANGE string = "E_POSTBACK_MT"
+	RMQ_POSTBACK_MT_QUEUE    string = "Q_POSTBACK_MT"
+	RMQ_TRAFFIC_EXCHANGE     string = "E_TRAFFIC"
+	RMQ_TRAFFIC_QUEUE        string = "Q_TRAFFIC"
+	RMQ_DAILYPUSH_EXCHANGE   string = "E_BQ_DAILYPUSH"
+	RMQ_DAILYPUSH_QUEUE      string = "Q_BQ_DAILYPUSH"
+	MT_FIRSTPUSH             string = "FIRSTPUSH"
+	MT_RENEWAL               string = "RENEWAL"
+	MT_UNSUB                 string = "UNSUB"
+	STATUS_SUCCESS           string = "SUCCESS"
+	STATUS_FAILED            string = "FAILED"
+	SUBJECT_FIRSTPUSH        string = "FIRSTPUSH"
+	SUBJECT_DAILYPUSH        string = "DAILYPUSH"
+	SUBJECT_RENEWAL          string = "RENEWAL"
+	SUBJECT_UNSUB            string = "UNSUB"
+	SUBJECT_RETRY            string = "RETRY"
+	SUBJECT_PURGE            string = "PURGE"
 )
 
 var validate = validator.New()
@@ -259,9 +259,9 @@ func (h *IncomingHandler) CloudPlayCampaign(c *fiber.Ctx) error {
 		},
 	)
 	h.message.IntegratePublish(
-		RMQ_TRAFFICEXCHANGE,
-		RMQ_TRAFFICQUEUE,
-		RMQ_DATATYPE,
+		RMQ_TRAFFIC_EXCHANGE,
+		RMQ_TRAFFIC_QUEUE,
+		RMQ_DATA_TYPE,
 		"",
 		string(jsonData),
 	)
@@ -387,9 +387,9 @@ func (h *IncomingHandler) GalaysCampaign(c *fiber.Ctx) error {
 		},
 	)
 	h.message.IntegratePublish(
-		RMQ_TRAFFICEXCHANGE,
-		RMQ_TRAFFICQUEUE,
-		RMQ_DATATYPE,
+		RMQ_TRAFFIC_EXCHANGE,
+		RMQ_TRAFFIC_QUEUE,
+		RMQ_DATA_TYPE,
 		"",
 		string(jsonData),
 	)
@@ -519,9 +519,9 @@ func (h *IncomingHandler) CloudPlayCampaignBillable(c *fiber.Ctx) error {
 		},
 	)
 	h.message.IntegratePublish(
-		RMQ_TRAFFICEXCHANGE,
-		RMQ_TRAFFICQUEUE,
-		RMQ_DATATYPE,
+		RMQ_TRAFFIC_EXCHANGE,
+		RMQ_TRAFFIC_QUEUE,
+		RMQ_DATA_TYPE,
 		"",
 		string(jsonData),
 	)
@@ -646,9 +646,9 @@ func (h *IncomingHandler) GalaysCampaignBillable(c *fiber.Ctx) error {
 		},
 	)
 	h.message.IntegratePublish(
-		RMQ_TRAFFICEXCHANGE,
-		RMQ_TRAFFICQUEUE,
-		RMQ_DATATYPE,
+		RMQ_TRAFFIC_EXCHANGE,
+		RMQ_TRAFFIC_QUEUE,
+		RMQ_DATA_TYPE,
 		"",
 		string(jsonData),
 	)
@@ -765,9 +765,9 @@ func (h *IncomingHandler) CampaignTool(c *fiber.Ctx) error {
 		},
 	)
 	h.message.IntegratePublish(
-		RMQ_TRAFFICEXCHANGE,
-		RMQ_TRAFFICQUEUE,
-		RMQ_DATATYPE,
+		RMQ_TRAFFIC_EXCHANGE,
+		RMQ_TRAFFIC_QUEUE,
+		RMQ_DATA_TYPE,
 		"",
 		string(jsonData),
 	)
@@ -902,9 +902,9 @@ func (h *IncomingHandler) CloudPlaySub1CampaignPage(c *fiber.Ctx) error {
 		},
 	)
 	h.message.IntegratePublish(
-		RMQ_TRAFFICEXCHANGE,
-		RMQ_TRAFFICQUEUE,
-		RMQ_DATATYPE,
+		RMQ_TRAFFIC_EXCHANGE,
+		RMQ_TRAFFIC_QUEUE,
+		RMQ_DATA_TYPE,
 		"",
 		string(jsonData),
 	)
@@ -1029,9 +1029,9 @@ func (h *IncomingHandler) GalaysSub1CampaignPage(c *fiber.Ctx) error {
 		},
 	)
 	h.message.IntegratePublish(
-		RMQ_TRAFFICEXCHANGE,
-		RMQ_TRAFFICQUEUE,
-		RMQ_DATATYPE,
+		RMQ_TRAFFIC_EXCHANGE,
+		RMQ_TRAFFIC_QUEUE,
+		RMQ_DATA_TYPE,
 		"",
 		string(jsonData),
 	)
@@ -1158,9 +1158,9 @@ func (h *IncomingHandler) CloudPlaySub2CampaignPage(c *fiber.Ctx) error {
 		},
 	)
 	h.message.IntegratePublish(
-		RMQ_TRAFFICEXCHANGE,
-		RMQ_TRAFFICQUEUE,
-		RMQ_DATATYPE,
+		RMQ_TRAFFIC_EXCHANGE,
+		RMQ_TRAFFIC_QUEUE,
+		RMQ_DATA_TYPE,
 		"",
 		string(jsonData),
 	)
@@ -1288,9 +1288,9 @@ func (h *IncomingHandler) CloudPlaySub3CampaignPage(c *fiber.Ctx) error {
 		},
 	)
 	h.message.IntegratePublish(
-		RMQ_TRAFFICEXCHANGE,
-		RMQ_TRAFFICQUEUE,
-		RMQ_DATATYPE,
+		RMQ_TRAFFIC_EXCHANGE,
+		RMQ_TRAFFIC_QUEUE,
+		RMQ_DATA_TYPE,
 		"",
 		string(jsonData),
 	)
@@ -1417,9 +1417,9 @@ func (h *IncomingHandler) CloudPlaySub4CampaignPage(c *fiber.Ctx) error {
 		},
 	)
 	h.message.IntegratePublish(
-		RMQ_TRAFFICEXCHANGE,
-		RMQ_TRAFFICQUEUE,
-		RMQ_DATATYPE,
+		RMQ_TRAFFIC_EXCHANGE,
+		RMQ_TRAFFIC_QUEUE,
+		RMQ_DATA_TYPE,
 		"",
 		string(jsonData),
 	)
@@ -1540,9 +1540,9 @@ func (h *IncomingHandler) CampaignToolDynamic(c *fiber.Ctx) error {
 		},
 	)
 	h.message.IntegratePublish(
-		RMQ_TRAFFICEXCHANGE,
-		RMQ_TRAFFICQUEUE,
-		RMQ_DATATYPE,
+		RMQ_TRAFFIC_EXCHANGE,
+		RMQ_TRAFFIC_QUEUE,
+		RMQ_DATA_TYPE,
 		"",
 		string(jsonData),
 	)
@@ -1676,9 +1676,9 @@ func (h *IncomingHandler) CampaignDirect(c *fiber.Ctx) error {
 		},
 	)
 	h.message.IntegratePublish(
-		RMQ_TRAFFICEXCHANGE,
-		RMQ_TRAFFICQUEUE,
-		RMQ_DATATYPE,
+		RMQ_TRAFFIC_EXCHANGE,
+		RMQ_TRAFFIC_QUEUE,
+		RMQ_DATA_TYPE,
 		"",
 		string(jsonData),
 	)
@@ -1884,7 +1884,7 @@ func (h *IncomingHandler) MessageOriginated(c *fiber.Ctx) error {
 
 	json, _ := json.Marshal(req)
 
-	h.message.IntegratePublish(RMQ_MOEXCHANGE, RMQ_MOQUEUE, RMQ_DATATYPE, "", string(json))
+	h.message.IntegratePublish(RMQ_MO_EXCHANGE, RMQ_MO_QUEUE, RMQ_DATA_TYPE, "", string(json))
 
 	l.WithFields(logrus.Fields{"request": req}).Info("MO")
 

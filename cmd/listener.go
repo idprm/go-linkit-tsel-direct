@@ -42,8 +42,8 @@ var listenerCmd = &cobra.Command{
 		/**
 		 * SETUP CHANNEL
 		 */
-		rmq.SetUpChannel(RMQ_EXCHANGETYPE, true, RMQ_MOEXCHANGE, true, RMQ_MOQUEUE)
-		rmq.SetUpChannel(RMQ_EXCHANGETYPE, true, RMQ_TRAFFICEXCHANGE, true, RMQ_TRAFFICQUEUE)
+		rmq.SetUpChannel(RMQ_EXCHANGE_TYPE, true, RMQ_MO_EXCHANGE, true, RMQ_MO_QUEUE)
+		rmq.SetUpChannel(RMQ_EXCHANGE_TYPE, true, RMQ_TRAFFIC_EXCHANGE, true, RMQ_TRAFFIC_QUEUE)
 
 		router := app.StartApplication(db, rmq, rds, logger)
 		log.Fatal(router.Listen(":" + APP_PORT))

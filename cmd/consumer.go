@@ -44,11 +44,11 @@ var consumerMOCmd = &cobra.Command{
 		/**
 		 * SETUP CHANNEL
 		 */
-		rmq.SetUpChannel(RMQ_EXCHANGETYPE, true, RMQ_MOEXCHANGE, true, RMQ_MOQUEUE)
-		rmq.SetUpChannel(RMQ_EXCHANGETYPE, true, RMQ_NOTIFEXCHANGE, true, RMQ_NOTIFQUEUE)
-		rmq.SetUpChannel(RMQ_EXCHANGETYPE, true, RMQ_POSTBACKMOEXCHANGE, true, RMQ_POSTBACKMOQUEUE)
+		rmq.SetUpChannel(RMQ_EXCHANGE_TYPE, true, RMQ_MO_EXCHANGE, true, RMQ_MO_QUEUE)
+		rmq.SetUpChannel(RMQ_EXCHANGE_TYPE, true, RMQ_NOTIF_EXCHANGE, true, RMQ_NOTIF_QUEUE)
+		rmq.SetUpChannel(RMQ_EXCHANGE_TYPE, true, RMQ_POSTBACK_MO_EXCHANGE, true, RMQ_POSTBACK_MO_QUEUE)
 
-		messagesData := rmq.Subscribe(1, false, RMQ_MOQUEUE, RMQ_MOEXCHANGE, RMQ_MOQUEUE)
+		messagesData := rmq.Subscribe(1, false, RMQ_MO_QUEUE, RMQ_MO_EXCHANGE, RMQ_MO_QUEUE)
 
 		// Initial sync waiting group
 		var wg sync.WaitGroup
@@ -116,11 +116,11 @@ var consumerRenewalCmd = &cobra.Command{
 		/**
 		 * SETUP CHANNEL
 		 */
-		rmq.SetUpChannel(RMQ_EXCHANGETYPE, true, RMQ_RENEWALEXCHANGE, true, RMQ_RENEWALQUEUE)
-		rmq.SetUpChannel(RMQ_EXCHANGETYPE, true, RMQ_NOTIFEXCHANGE, true, RMQ_NOTIFQUEUE)
-		rmq.SetUpChannel(RMQ_EXCHANGETYPE, true, RMQ_POSTBACKMTEXCHANGE, true, RMQ_POSTBACKMTQUEUE)
+		rmq.SetUpChannel(RMQ_EXCHANGE_TYPE, true, RMQ_RENEWAL_EXCHANGE, true, RMQ_RENEWAL_QUEUE)
+		rmq.SetUpChannel(RMQ_EXCHANGE_TYPE, true, RMQ_NOTIF_EXCHANGE, true, RMQ_NOTIF_QUEUE)
+		rmq.SetUpChannel(RMQ_EXCHANGE_TYPE, true, RMQ_POSTBACK_MT_EXCHANGE, true, RMQ_POSTBACK_MT_QUEUE)
 
-		messagesData := rmq.Subscribe(1, false, RMQ_RENEWALQUEUE, RMQ_RENEWALEXCHANGE, RMQ_RENEWALQUEUE)
+		messagesData := rmq.Subscribe(1, false, RMQ_RENEWAL_QUEUE, RMQ_RENEWAL_EXCHANGE, RMQ_RENEWAL_QUEUE)
 
 		// Initial sync waiting group
 		var wg sync.WaitGroup
@@ -188,11 +188,11 @@ var consumerRetryFpCmd = &cobra.Command{
 		/**
 		 * SETUP CHANNEL
 		 */
-		rmq.SetUpChannel(RMQ_EXCHANGETYPE, true, RMQ_RETRYFPEXCHANGE, true, RMQ_RETRYFPQUEUE)
-		rmq.SetUpChannel(RMQ_EXCHANGETYPE, true, RMQ_NOTIFEXCHANGE, true, RMQ_NOTIFQUEUE)
-		rmq.SetUpChannel(RMQ_EXCHANGETYPE, true, RMQ_POSTBACKMTEXCHANGE, true, RMQ_POSTBACKMTQUEUE)
+		rmq.SetUpChannel(RMQ_EXCHANGE_TYPE, true, RMQ_RETRY_FP_EXCHANGE, true, RMQ_RETRY_FP_QUEUE)
+		rmq.SetUpChannel(RMQ_EXCHANGE_TYPE, true, RMQ_NOTIF_EXCHANGE, true, RMQ_NOTIF_QUEUE)
+		rmq.SetUpChannel(RMQ_EXCHANGE_TYPE, true, RMQ_POSTBACK_MT_EXCHANGE, true, RMQ_POSTBACK_MT_QUEUE)
 
-		messagesData := rmq.Subscribe(1, false, RMQ_RETRYFPQUEUE, RMQ_RETRYFPEXCHANGE, RMQ_RETRYFPQUEUE)
+		messagesData := rmq.Subscribe(1, false, RMQ_RETRY_FP_QUEUE, RMQ_RETRY_FP_EXCHANGE, RMQ_RETRY_FP_QUEUE)
 
 		// Initial sync waiting group
 		var wg sync.WaitGroup
@@ -260,11 +260,11 @@ var consumerRetryDpCmd = &cobra.Command{
 		/**
 		 * SETUP CHANNEL
 		 */
-		rmq.SetUpChannel(RMQ_EXCHANGETYPE, true, RMQ_RETRYDPEXCHANGE, true, RMQ_RETRYDPQUEUE)
-		rmq.SetUpChannel(RMQ_EXCHANGETYPE, true, RMQ_NOTIFEXCHANGE, true, RMQ_NOTIFQUEUE)
-		rmq.SetUpChannel(RMQ_EXCHANGETYPE, true, RMQ_POSTBACKMTEXCHANGE, true, RMQ_POSTBACKMTQUEUE)
+		rmq.SetUpChannel(RMQ_EXCHANGE_TYPE, true, RMQ_RETRY_DP_EXCHANGE, true, RMQ_RETRY_DP_QUEUE)
+		rmq.SetUpChannel(RMQ_EXCHANGE_TYPE, true, RMQ_NOTIF_EXCHANGE, true, RMQ_NOTIF_QUEUE)
+		rmq.SetUpChannel(RMQ_EXCHANGE_TYPE, true, RMQ_POSTBACK_MT_EXCHANGE, true, RMQ_POSTBACK_MT_QUEUE)
 
-		messagesData := rmq.Subscribe(1, false, RMQ_RETRYDPQUEUE, RMQ_RETRYDPEXCHANGE, RMQ_RETRYDPQUEUE)
+		messagesData := rmq.Subscribe(1, false, RMQ_RETRY_DP_QUEUE, RMQ_RETRY_DP_EXCHANGE, RMQ_RETRY_DP_QUEUE)
 
 		// Initial sync waiting group
 		var wg sync.WaitGroup
@@ -332,11 +332,11 @@ var consumerRetryInsuffCmd = &cobra.Command{
 		/**
 		 * SETUP CHANNEL
 		 */
-		rmq.SetUpChannel(RMQ_EXCHANGETYPE, true, RMQ_RETRYINSUFFEXCHANGE, true, RMQ_RETRYINSUFFQUEUE)
-		rmq.SetUpChannel(RMQ_EXCHANGETYPE, true, RMQ_NOTIFEXCHANGE, true, RMQ_NOTIFQUEUE)
-		rmq.SetUpChannel(RMQ_EXCHANGETYPE, true, RMQ_POSTBACKMTEXCHANGE, true, RMQ_POSTBACKMTQUEUE)
+		rmq.SetUpChannel(RMQ_EXCHANGE_TYPE, true, RMQ_RETRY_INSUFF_EXCHANGE, true, RMQ_RETRY_INSUFF_QUEUE)
+		rmq.SetUpChannel(RMQ_EXCHANGE_TYPE, true, RMQ_NOTIF_EXCHANGE, true, RMQ_NOTIF_QUEUE)
+		rmq.SetUpChannel(RMQ_EXCHANGE_TYPE, true, RMQ_POSTBACK_MT_EXCHANGE, true, RMQ_POSTBACK_MT_QUEUE)
 
-		messagesData := rmq.Subscribe(1, false, RMQ_RETRYINSUFFQUEUE, RMQ_RETRYINSUFFEXCHANGE, RMQ_RETRYINSUFFQUEUE)
+		messagesData := rmq.Subscribe(1, false, RMQ_RETRY_INSUFF_QUEUE, RMQ_RETRY_INSUFF_EXCHANGE, RMQ_RETRY_INSUFF_QUEUE)
 
 		// Initial sync waiting group
 		var wg sync.WaitGroup
@@ -396,9 +396,9 @@ var consumerNotifCmd = &cobra.Command{
 		/**
 		 * SETUP CHANNEL
 		 */
-		rmq.SetUpChannel(RMQ_EXCHANGETYPE, true, RMQ_NOTIFEXCHANGE, true, RMQ_NOTIFQUEUE)
+		rmq.SetUpChannel(RMQ_EXCHANGE_TYPE, true, RMQ_NOTIF_EXCHANGE, true, RMQ_NOTIF_QUEUE)
 
-		messagesData := rmq.Subscribe(1, false, RMQ_NOTIFQUEUE, RMQ_NOTIFEXCHANGE, RMQ_NOTIFQUEUE)
+		messagesData := rmq.Subscribe(1, false, RMQ_NOTIF_QUEUE, RMQ_NOTIF_EXCHANGE, RMQ_NOTIF_QUEUE)
 
 		// Initial sync waiting group
 		var wg sync.WaitGroup
@@ -457,9 +457,9 @@ var consumerPostbackMOCmd = &cobra.Command{
 		/**
 		 * SETUP CHANNEL
 		 */
-		rmq.SetUpChannel(RMQ_EXCHANGETYPE, true, RMQ_POSTBACKMOEXCHANGE, true, RMQ_POSTBACKMOQUEUE)
+		rmq.SetUpChannel(RMQ_EXCHANGE_TYPE, true, RMQ_POSTBACK_MO_EXCHANGE, true, RMQ_POSTBACK_MO_QUEUE)
 
-		messagesData := rmq.Subscribe(1, false, RMQ_POSTBACKMOQUEUE, RMQ_POSTBACKMOEXCHANGE, RMQ_POSTBACKMOQUEUE)
+		messagesData := rmq.Subscribe(1, false, RMQ_POSTBACK_MO_QUEUE, RMQ_POSTBACK_MO_EXCHANGE, RMQ_POSTBACK_MO_QUEUE)
 
 		// Initial sync waiting group
 		var wg sync.WaitGroup
@@ -518,9 +518,9 @@ var consumerPostbackMTCmd = &cobra.Command{
 		/**
 		 * SETUP CHANNEL
 		 */
-		rmq.SetUpChannel(RMQ_EXCHANGETYPE, true, RMQ_POSTBACKMTEXCHANGE, true, RMQ_POSTBACKMTQUEUE)
+		rmq.SetUpChannel(RMQ_EXCHANGE_TYPE, true, RMQ_POSTBACK_MT_EXCHANGE, true, RMQ_POSTBACK_MT_QUEUE)
 
-		messagesData := rmq.Subscribe(1, false, RMQ_POSTBACKMTQUEUE, RMQ_POSTBACKMTEXCHANGE, RMQ_POSTBACKMTQUEUE)
+		messagesData := rmq.Subscribe(1, false, RMQ_POSTBACK_MT_QUEUE, RMQ_POSTBACK_MT_EXCHANGE, RMQ_POSTBACK_MT_QUEUE)
 
 		// Initial sync waiting group
 		var wg sync.WaitGroup
@@ -579,9 +579,9 @@ var consumerTrafficCmd = &cobra.Command{
 		/**
 		 * SETUP CHANNEL
 		 */
-		rmq.SetUpChannel(RMQ_EXCHANGETYPE, true, RMQ_TRAFFICEXCHANGE, true, RMQ_TRAFFICQUEUE)
+		rmq.SetUpChannel(RMQ_EXCHANGE_TYPE, true, RMQ_TRAFFIC_EXCHANGE, true, RMQ_TRAFFIC_QUEUE)
 
-		messagesData := rmq.Subscribe(1, false, RMQ_TRAFFICQUEUE, RMQ_TRAFFICEXCHANGE, RMQ_TRAFFICQUEUE)
+		messagesData := rmq.Subscribe(1, false, RMQ_TRAFFIC_QUEUE, RMQ_TRAFFIC_EXCHANGE, RMQ_TRAFFIC_QUEUE)
 
 		// Initial sync waiting group
 		var wg sync.WaitGroup
@@ -640,9 +640,9 @@ var consumerDailypushCmd = &cobra.Command{
 		/**
 		 * SETUP CHANNEL
 		 */
-		rmq.SetUpChannel(RMQ_EXCHANGETYPE, true, RMQ_DAILYPUSHEXCHANGE, true, RMQ_DAILYPUSHQUEUE)
+		rmq.SetUpChannel(RMQ_EXCHANGE_TYPE, true, RMQ_DAILYPUSH_EXCHANGE, true, RMQ_DAILYPUSH_QUEUE)
 
-		messagesData := rmq.Subscribe(1, false, RMQ_DAILYPUSHQUEUE, RMQ_DAILYPUSHEXCHANGE, RMQ_DAILYPUSHQUEUE)
+		messagesData := rmq.Subscribe(1, false, RMQ_DAILYPUSH_QUEUE, RMQ_DAILYPUSH_EXCHANGE, RMQ_DAILYPUSH_QUEUE)
 
 		// Initial sync waiting group
 		var wg sync.WaitGroup

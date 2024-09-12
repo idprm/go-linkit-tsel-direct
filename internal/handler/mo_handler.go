@@ -132,9 +132,9 @@ func (h *MOHandler) Firstpush() {
 			},
 		)
 		h.rmq.IntegratePublish(
-			RMQ_POSTBACKMOEXCHANGE,
-			RMQ_POSTBACKMOQUEUE,
-			RMQ_DATATYPE,
+			RMQ_POSTBACK_MO_EXCHANGE,
+			RMQ_POSTBACK_MO_QUEUE,
+			RMQ_DATA_TYPE,
 			"",
 			string(jsonDataPostback),
 		)
@@ -266,9 +266,9 @@ func (h *MOHandler) Firstpush() {
 			},
 		)
 		h.rmq.IntegratePublish(
-			RMQ_NOTIFEXCHANGE,
-			RMQ_NOTIFQUEUE,
-			RMQ_DATATYPE,
+			RMQ_NOTIF_EXCHANGE,
+			RMQ_NOTIF_QUEUE,
+			RMQ_DATA_TYPE,
 			"",
 			string(jsonDataNotif),
 		)
@@ -366,9 +366,9 @@ func (h *MOHandler) Firstpush() {
 		// insert to rabbitmq
 		jsonDataPostback, _ := json.Marshal(pb)
 		h.rmq.IntegratePublish(
-			RMQ_POSTBACKMOEXCHANGE,
-			RMQ_POSTBACKMOQUEUE,
-			RMQ_DATATYPE,
+			RMQ_POSTBACK_MO_EXCHANGE,
+			RMQ_POSTBACK_MO_QUEUE,
+			RMQ_DATA_TYPE,
 			"",
 			string(jsonDataPostback),
 		)
@@ -460,15 +460,6 @@ func (h *MOHandler) Unsub() {
 	}
 	h.historyService.SaveHistory(history)
 
-	// insert to rabbitmq
-	jsonDataNotif, _ := json.Marshal(
-		&entity.ReqNotifParams{
-			Service:      service,
-			Subscription: subscription,
-			Action:       "UNSUB",
-		},
-	)
-
 	pb := &entity.ReqPostbackParams{
 		Verify:       &entity.Verify{},
 		Subscription: sub,
@@ -485,24 +476,34 @@ func (h *MOHandler) Unsub() {
 		pb.Postback = postback
 	}
 
+	// insert to rabbitmq
+	jsonDataPostback, _ := json.Marshal(pb)
+
+	// insert to rabbitmq
+	jsonDataNotif, _ := json.Marshal(
+		&entity.ReqNotifParams{
+			Service:      service,
+			Subscription: subscription,
+			Action:       "UNSUB",
+		},
+	)
+
 	h.rmq.IntegratePublish(
-		RMQ_NOTIFEXCHANGE,
-		RMQ_NOTIFQUEUE,
-		RMQ_DATATYPE,
+		RMQ_POSTBACK_MO_EXCHANGE,
+		RMQ_POSTBACK_MO_QUEUE,
+		RMQ_DATA_TYPE,
+		"",
+		string(jsonDataPostback),
+	)
+
+	h.rmq.IntegratePublish(
+		RMQ_NOTIF_EXCHANGE,
+		RMQ_NOTIF_QUEUE,
+		RMQ_DATA_TYPE,
 		"",
 		string(jsonDataNotif),
 	)
 
-	// insert to rabbitmq
-	jsonDataPostback, _ := json.Marshal(pb)
-
-	h.rmq.IntegratePublish(
-		RMQ_POSTBACKMOEXCHANGE,
-		RMQ_POSTBACKMOQUEUE,
-		RMQ_DATATYPE,
-		"",
-		string(jsonDataPostback),
-	)
 }
 
 func (h *MOHandler) Confirm() {
