@@ -369,8 +369,7 @@ func (p *Processor) PostbackMO(wg *sync.WaitGroup, message []byte) {
 				!req.Verify.IsMxo() &&
 				!req.Verify.IsStars() &&
 				!req.Verify.IsUnt() &&
-				!req.Verify.IsV2Test() &&
-				!req.Postback.IsSubKeyword(req.Verify.GetCampSubKeyword()) {
+				!req.Verify.IsV2Test() {
 				h.Postback()
 			}
 		}
