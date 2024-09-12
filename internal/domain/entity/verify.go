@@ -44,11 +44,11 @@ func (v *Verify) GetAffSub() string {
 }
 
 func (v *Verify) GetCampKeyword() string {
-	return v.CampKeyword
+	return strings.ToUpper(v.CampKeyword)
 }
 
 func (v *Verify) GetCampSubKeyword() string {
-	return v.CampSubKeyword
+	return strings.ToUpper(v.CampSubKeyword)
 }
 
 func (v *Verify) GetBrowser() string {
