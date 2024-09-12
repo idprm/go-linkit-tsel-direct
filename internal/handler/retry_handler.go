@@ -23,6 +23,7 @@ type RetryHandler struct {
 	contentService      services.IContentService
 	subscriptionService services.ISubscriptionService
 	transactionService  services.ITransactionService
+	postbackService     services.IPostbackService
 	trafficService      services.ITrafficService
 	dailypushService    services.IDailypushService
 }
@@ -35,6 +36,7 @@ func NewRetryHandler(
 	contentService services.IContentService,
 	subscriptionService services.ISubscriptionService,
 	transactionService services.ITransactionService,
+	postbackService services.IPostbackService,
 	trafficService services.ITrafficService,
 	dailypushService services.IDailypushService,
 ) *RetryHandler {
@@ -47,6 +49,7 @@ func NewRetryHandler(
 		contentService:      contentService,
 		subscriptionService: subscriptionService,
 		transactionService:  transactionService,
+		postbackService:     postbackService,
 		trafficService:      trafficService,
 		dailypushService:    dailypushService,
 	}

@@ -230,6 +230,15 @@ CREATE TABLE IF NOT EXISTS "dailypushes" (
   FOREIGN KEY ("service_id") REFERENCES "services" ("id")
 );
 
+CREATE TABLE IF NOT EXISTS "postbacks" (
+  "id" SERIAL PRIMARY KEY,
+  "sub_keyword" varchar(15) NOT NULL,
+  "url_mo" varchar(280),
+  "url_dn" varchar(280),
+  "is_active" bool DEFAULT false
+);
+
+
 CREATE UNIQUE INDEX IF NOT EXISTS "uidx_msisdn" ON "blacklists" ("msisdn");
 CREATE UNIQUE INDEX IF NOT EXISTS "uidx_service_msisdn" ON "subscriptions" ("service_id", "msisdn");
 CREATE INDEX IF NOT EXISTS "idx_latest_pin" ON "subscriptions" ("latest_pin");

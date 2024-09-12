@@ -175,6 +175,7 @@ type ReqPostbackParams struct {
 	Verify       *Verify
 	Subscription *Subscription
 	Service      *Service
+	Postback     *Postback
 	Action       string `json:"action"`
 	Status       string `json:"status"`
 	AffSub       string `json:"aff_sub"`
@@ -595,6 +596,10 @@ func (e *ReqPostbackParams) IsMTDailypush() bool {
 
 func (e *ReqPostbackParams) GetIsSuccess() bool {
 	return e.Status == "SUCCESS"
+}
+
+func (e *ReqPostbackParams) IsPostbackNotNull() bool {
+	return e.Postback != nil
 }
 
 var formatDate = "2006-01-02T15:04:05Z07:00"

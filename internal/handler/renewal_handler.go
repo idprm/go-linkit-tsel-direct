@@ -23,6 +23,7 @@ type RenewalHandler struct {
 	contentService      services.IContentService
 	subscriptionService services.ISubscriptionService
 	transactionService  services.ITransactionService
+	postbackService     services.IPostbackService
 }
 
 func NewRenewalHandler(
@@ -33,6 +34,7 @@ func NewRenewalHandler(
 	contentService services.IContentService,
 	subscriptionService services.ISubscriptionService,
 	transactionService services.ITransactionService,
+	postbackService services.IPostbackService,
 ) *RenewalHandler {
 
 	return &RenewalHandler{
@@ -43,6 +45,7 @@ func NewRenewalHandler(
 		contentService:      contentService,
 		subscriptionService: subscriptionService,
 		transactionService:  transactionService,
+		postbackService:     postbackService,
 	}
 }
 

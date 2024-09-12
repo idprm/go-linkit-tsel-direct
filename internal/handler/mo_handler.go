@@ -27,6 +27,7 @@ type MOHandler struct {
 	transactionService  services.ITransactionService
 	historyService      services.IHistoryService
 	trafficService      services.ITrafficService
+	postbackService     services.IPostbackService
 	req                 *entity.ReqMOParams
 }
 
@@ -41,6 +42,7 @@ func NewMOHandler(
 	transactionService services.ITransactionService,
 	historyService services.IHistoryService,
 	trafficService services.ITrafficService,
+	postbackService services.IPostbackService,
 	req *entity.ReqMOParams,
 ) *MOHandler {
 	return &MOHandler{
@@ -54,6 +56,7 @@ func NewMOHandler(
 		transactionService:  transactionService,
 		historyService:      historyService,
 		trafficService:      trafficService,
+		postbackService:     postbackService,
 		req:                 req,
 	}
 }
@@ -342,17 +345,26 @@ func (h *MOHandler) Firstpush() {
 
 	// postback queue
 	if verify != nil {
+		pb := &entity.ReqPostbackParams{
+			Verify:       verify,
+			Subscription: subscription,
+			Service:      service,
+			Postback:     &entity.Postback{},
+			Action:       "MT",
+			Status:       status,
+			IsSuccess:    isSuccess,
+		}
+
+		if h.postbackService.IsPostback(verify.GetCampSubKeyword()) {
+			postback, err := h.postbackService.Get(verify.GetCampSubKeyword())
+			if err != nil {
+				log.Println(err.Error())
+			}
+			pb.Postback = postback
+		}
+
 		// insert to rabbitmq
-		jsonDataPostback, _ := json.Marshal(
-			&entity.ReqPostbackParams{
-				Verify:       verify,
-				Subscription: subscription,
-				Service:      service,
-				Action:       "MT",
-				Status:       status,
-				IsSuccess:    isSuccess,
-			},
-		)
+		jsonDataPostback, _ := json.Marshal(pb)
 		h.rmq.IntegratePublish(
 			RMQ_POSTBACKMOEXCHANGE,
 			RMQ_POSTBACKMOQUEUE,
@@ -457,15 +469,21 @@ func (h *MOHandler) Unsub() {
 		},
 	)
 
-	// insert to rabbitmq
-	jsonDataPostback, _ := json.Marshal(
-		&entity.ReqPostbackParams{
-			Verify:       &entity.Verify{},
-			Subscription: sub,
-			Service:      service,
-			Action:       "MO_UNSUB",
-		},
-	)
+	pb := &entity.ReqPostbackParams{
+		Verify:       &entity.Verify{},
+		Subscription: sub,
+		Service:      service,
+		Action:       "MO_UNSUB",
+		Postback:     &entity.Postback{},
+	}
+
+	if h.postbackService.IsPostback(sub.GetCampSubKeyword()) {
+		postback, err := h.postbackService.Get(sub.GetCampSubKeyword())
+		if err != nil {
+			log.Println(err.Error())
+		}
+		pb.Postback = postback
+	}
 
 	h.rmq.IntegratePublish(
 		RMQ_NOTIFEXCHANGE,
@@ -474,6 +492,9 @@ func (h *MOHandler) Unsub() {
 		"",
 		string(jsonDataNotif),
 	)
+
+	// insert to rabbitmq
+	jsonDataPostback, _ := json.Marshal(pb)
 
 	h.rmq.IntegratePublish(
 		RMQ_POSTBACKMOEXCHANGE,

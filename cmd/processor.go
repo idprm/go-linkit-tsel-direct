@@ -61,6 +61,8 @@ func (p *Processor) MO(wg *sync.WaitGroup, message []byte) {
 	historyService := services.NewHistoryService(historyRepo)
 	trafficRepo := repository.NewTrafficRepository(p.db)
 	trafficService := services.NewTrafficService(trafficRepo)
+	postbackRepo := repository.NewPostbackRepository(p.db)
+	postbackService := services.NewPostbackService(postbackRepo)
 
 	var req *entity.ReqMOParams
 	json.Unmarshal([]byte(message), &req)
@@ -77,6 +79,7 @@ func (p *Processor) MO(wg *sync.WaitGroup, message []byte) {
 		transactionService,
 		historyService,
 		trafficService,
+		postbackService,
 		reqMO,
 	)
 
@@ -127,6 +130,8 @@ func (p *Processor) Renewal(wg *sync.WaitGroup, message []byte) {
 	subscriptionService := services.NewSubscriptionService(subscriptionRepo)
 	transactionRepo := repository.NewTransactionRepository(p.db)
 	transactionService := services.NewTransactionService(transactionRepo)
+	postbackRepo := repository.NewPostbackRepository(p.db)
+	postbackService := services.NewPostbackService(postbackRepo)
 
 	// parsing json to string
 	var sub *entity.Subscription
@@ -140,6 +145,7 @@ func (p *Processor) Renewal(wg *sync.WaitGroup, message []byte) {
 		contentService,
 		subscriptionService,
 		transactionService,
+		postbackService,
 	)
 
 	// Dailypush MT API
@@ -160,6 +166,8 @@ func (p *Processor) RetryFp(wg *sync.WaitGroup, message []byte) {
 	subscriptionService := services.NewSubscriptionService(subscriptionRepo)
 	transactionRepo := repository.NewTransactionRepository(p.db)
 	transactionService := services.NewTransactionService(transactionRepo)
+	postbackRepo := repository.NewPostbackRepository(p.db)
+	postbackService := services.NewPostbackService(postbackRepo)
 	trafficRepo := repository.NewTrafficRepository(p.db)
 	trafficService := services.NewTrafficService(trafficRepo)
 	dailypushRepo := repository.NewDailypushRepository(p.db)
@@ -177,6 +185,7 @@ func (p *Processor) RetryFp(wg *sync.WaitGroup, message []byte) {
 		contentService,
 		subscriptionService,
 		transactionService,
+		postbackService,
 		trafficService,
 		dailypushService,
 	)
@@ -198,6 +207,8 @@ func (p *Processor) RetryDp(wg *sync.WaitGroup, message []byte) {
 	subscriptionService := services.NewSubscriptionService(subscriptionRepo)
 	transactionRepo := repository.NewTransactionRepository(p.db)
 	transactionService := services.NewTransactionService(transactionRepo)
+	postbackRepo := repository.NewPostbackRepository(p.db)
+	postbackService := services.NewPostbackService(postbackRepo)
 	trafficRepo := repository.NewTrafficRepository(p.db)
 	trafficService := services.NewTrafficService(trafficRepo)
 	dailypushRepo := repository.NewDailypushRepository(p.db)
@@ -215,6 +226,7 @@ func (p *Processor) RetryDp(wg *sync.WaitGroup, message []byte) {
 		contentService,
 		subscriptionService,
 		transactionService,
+		postbackService,
 		trafficService,
 		dailypushService,
 	)
@@ -236,6 +248,8 @@ func (p *Processor) RetryInsuff(wg *sync.WaitGroup, message []byte) {
 	subscriptionService := services.NewSubscriptionService(subscriptionRepo)
 	transactionRepo := repository.NewTransactionRepository(p.db)
 	transactionService := services.NewTransactionService(transactionRepo)
+	postbackRepo := repository.NewPostbackRepository(p.db)
+	postbackService := services.NewPostbackService(postbackRepo)
 	trafficRepo := repository.NewTrafficRepository(p.db)
 	trafficService := services.NewTrafficService(trafficRepo)
 	dailypushRepo := repository.NewDailypushRepository(p.db)
@@ -253,6 +267,7 @@ func (p *Processor) RetryInsuff(wg *sync.WaitGroup, message []byte) {
 		contentService,
 		subscriptionService,
 		transactionService,
+		postbackService,
 		trafficService,
 		dailypushService,
 	)
@@ -336,6 +351,12 @@ func (p *Processor) PostbackMO(wg *sync.WaitGroup, message []byte) {
 			h.UntMO()
 		}
 
+		if req.IsPostbackNotNull() {
+			if req.Postback.IsSubKeyword(req.Verify.GetCampSubKeyword()) {
+				h.ExternalTrackerMO()
+			}
+		}
+
 		// non billable
 		if !req.Verify.GetIsBillable() {
 			if !req.Verify.IsSam() &&
@@ -348,8 +369,8 @@ func (p *Processor) PostbackMO(wg *sync.WaitGroup, message []byte) {
 				!req.Verify.IsMxo() &&
 				!req.Verify.IsStars() &&
 				!req.Verify.IsUnt() &&
-				!req.Verify.IsV2Test() {
-
+				!req.Verify.IsV2Test() &&
+				!req.Postback.IsSubKeyword(req.Verify.GetCampSubKeyword()) {
 				h.Postback()
 			}
 		}
@@ -374,6 +395,12 @@ func (p *Processor) PostbackMO(wg *sync.WaitGroup, message []byte) {
 
 		if req.Subscription.IsUnt() {
 			h.UntMOUnsub()
+		}
+
+		if req.IsPostbackNotNull() {
+			if req.Postback.IsSubKeyword(req.Verify.GetCampSubKeyword()) {
+				h.ExternalTrackerMO()
+			}
 		}
 
 	}
@@ -409,6 +436,12 @@ func (p *Processor) PostbackMO(wg *sync.WaitGroup, message []byte) {
 		if req.Verify.IsUnt() {
 			h.UntDN(req.Status)
 		}
+
+		if req.IsPostbackNotNull() {
+			if req.Postback.IsSubKeyword(req.Verify.GetCampSubKeyword()) {
+				h.ExternalTrackerDN()
+			}
+		}
 	}
 
 	wg.Done()
@@ -439,6 +472,12 @@ func (p *Processor) PostbackMT(wg *sync.WaitGroup, message []byte) {
 		if req.Subscription.IsUnt() {
 			h.UntDN(req.Status)
 		}
+
+		if req.IsPostbackNotNull() {
+			if req.Postback.IsSubKeyword(req.Subscription.GetCampSubKeyword()) {
+				h.ExternalTrackerDN()
+			}
+		}
 	}
 
 	/**
@@ -464,6 +503,11 @@ func (p *Processor) PostbackMT(wg *sync.WaitGroup, message []byte) {
 		}
 		if req.Subscription.IsUnt() {
 			h.UntDN(req.Status)
+		}
+		if req.IsPostbackNotNull() {
+			if req.Postback.IsSubKeyword(req.Subscription.GetCampSubKeyword()) {
+				h.ExternalTrackerDN()
+			}
 		}
 	}
 
