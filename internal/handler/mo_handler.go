@@ -122,15 +122,25 @@ func (h *MOHandler) Firstpush() {
 			},
 		)
 
+		pb := &entity.ReqPostbackParams{
+			Verify:       verify,
+			Subscription: subscription,
+			Service:      service,
+			Postback:     &entity.Postback{},
+			Action:       "MO",
+		}
+
+		if h.postbackService.IsPostback(verify.GetCampSubKeyword()) {
+			postback, err := h.postbackService.Get(verify.GetCampSubKeyword())
+			if err != nil {
+				log.Println(err.Error())
+			}
+			pb.Postback = postback
+		}
+
 		// insert to rabbitmq
-		jsonDataPostback, _ := json.Marshal(
-			&entity.ReqPostbackParams{
-				Verify:       verify,
-				Subscription: subscription,
-				Service:      service,
-				Action:       "MO",
-			},
-		)
+		jsonDataPostback, _ := json.Marshal(pb)
+
 		h.rmq.IntegratePublish(
 			RMQ_POSTBACK_MO_EXCHANGE,
 			RMQ_POSTBACK_MO_QUEUE,
