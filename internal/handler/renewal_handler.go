@@ -76,7 +76,7 @@ func (h *RenewalHandler) Dailypush() {
 		var status string
 		var isSuccess bool
 
-		if response_utils.ParseStatus(string(resp)) {
+		if response_utils.IsSuccess(string(resp)) {
 			subSuccess := &entity.Subscription{
 				ServiceID:          h.sub.GetServiceId(),
 				Msisdn:             h.sub.GetMsisdn(),

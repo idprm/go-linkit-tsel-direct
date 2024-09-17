@@ -132,6 +132,27 @@ func (s *Subscription) GetAffSub() string {
 	return s.AffSub
 }
 
+func (s *Subscription) GetPubIdIfNull() string {
+	if !s.IsPubId() {
+		return "NA"
+	}
+	return s.GetPubId()
+}
+
+func (s *Subscription) GetAdnetIfNull() string {
+	if !s.IsAdnet() {
+		return "NA"
+	}
+	return s.GetAdnet()
+}
+
+func (s *Subscription) GetCampSubKeywordNull() string {
+	if !s.IsCampSubKeyword() {
+		return "NA"
+	}
+	return s.GetCampSubKeyword()
+}
+
 func (s *Subscription) GetLatestTrxId() string {
 	return s.LatestTrxId
 }
@@ -246,4 +267,16 @@ func (s *Subscription) IsRenewal() bool {
 
 func (s *Subscription) IsSuccess() bool {
 	return s.LatestPayload == "1"
+}
+
+func (s *Subscription) IsPubId() bool {
+	return s.PubID != ""
+}
+
+func (s *Subscription) IsAdnet() bool {
+	return s.Adnet != ""
+}
+
+func (s *Subscription) IsCampSubKeyword() bool {
+	return s.CampSubKeyword != ""
 }

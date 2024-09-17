@@ -22,7 +22,8 @@ import (
 )
 
 var (
-	APP_URL string = utils.GetEnv("APP_URL")
+	APP_URL      string = utils.GetEnv("APP_URL")
+	TELCO_SENDER string = utils.GetEnv("TELCO_SENDER")
 )
 
 type IncomingHandler struct {
@@ -62,6 +63,8 @@ const (
 	RMQ_POSTBACK_MO_QUEUE    string = "Q_POSTBACK_MO"
 	RMQ_POSTBACK_MT_EXCHANGE string = "E_POSTBACK_MT"
 	RMQ_POSTBACK_MT_QUEUE    string = "Q_POSTBACK_MT"
+	RMQ_POSTBACK_FP_EXCHANGE string = "E_POSTBACK_FP"
+	RMQ_POSTBACK_FP_QUEUE    string = "Q_POSTBACK_FP"
 	RMQ_TRAFFIC_EXCHANGE     string = "E_TRAFFIC"
 	RMQ_TRAFFIC_QUEUE        string = "Q_TRAFFIC"
 	RMQ_DAILYPUSH_EXCHANGE   string = "E_BQ_DAILYPUSH"
@@ -246,7 +249,7 @@ func (h *IncomingHandler) CloudPlayCampaign(c *fiber.Ctx) error {
 	jsonData, _ := json.Marshal(
 		&entity.ReqTrafficParams{
 			TxId:           trxId,
-			ServiceId:      service.GetID(),
+			ServiceId:      service.GetId(),
 			CampKeyword:    req.GetCampKeyword(),
 			CampSubKeyword: req.GetCampSubKeyword(),
 			Adnet:          req.GetAdnet(),
@@ -374,7 +377,7 @@ func (h *IncomingHandler) GalaysCampaign(c *fiber.Ctx) error {
 	jsonData, _ := json.Marshal(
 		&entity.ReqTrafficParams{
 			TxId:           trxId,
-			ServiceId:      service.GetID(),
+			ServiceId:      service.GetId(),
 			CampKeyword:    req.GetCampKeyword(),
 			CampSubKeyword: req.GetCampSubKeyword(),
 			Adnet:          req.GetAdnet(),
@@ -506,7 +509,7 @@ func (h *IncomingHandler) CloudPlayCampaignBillable(c *fiber.Ctx) error {
 	jsonData, _ := json.Marshal(
 		&entity.ReqTrafficParams{
 			TxId:           trxId,
-			ServiceId:      service.GetID(),
+			ServiceId:      service.GetId(),
 			CampKeyword:    req.GetCampKeyword(),
 			CampSubKeyword: req.GetCampSubKeyword(),
 			Adnet:          req.GetAdnet(),
@@ -633,7 +636,7 @@ func (h *IncomingHandler) GalaysCampaignBillable(c *fiber.Ctx) error {
 	jsonData, _ := json.Marshal(
 		&entity.ReqTrafficParams{
 			TxId:           trxId,
-			ServiceId:      service.GetID(),
+			ServiceId:      service.GetId(),
 			CampKeyword:    req.GetCampKeyword(),
 			CampSubKeyword: req.GetCampSubKeyword(),
 			Adnet:          req.GetAdnet(),
@@ -751,7 +754,7 @@ func (h *IncomingHandler) CampaignTool(c *fiber.Ctx) error {
 	jsonData, _ := json.Marshal(
 		&entity.ReqTrafficParams{
 			TxId:           trxId,
-			ServiceId:      service.GetID(),
+			ServiceId:      service.GetId(),
 			CampKeyword:    "REG " + req.GetService(),
 			CampSubKeyword: req.GetSubKeyword(),
 			Adnet:          req.GetAdnet(),
@@ -889,7 +892,7 @@ func (h *IncomingHandler) CloudPlaySub1CampaignPage(c *fiber.Ctx) error {
 	jsonData, _ := json.Marshal(
 		&entity.ReqTrafficParams{
 			TxId:           trxId,
-			ServiceId:      service.GetID(),
+			ServiceId:      service.GetId(),
 			CampKeyword:    req.GetCampKeyword(),
 			CampSubKeyword: req.GetCampSubKeyword(),
 			Adnet:          req.GetAdnet(),
@@ -1016,7 +1019,7 @@ func (h *IncomingHandler) GalaysSub1CampaignPage(c *fiber.Ctx) error {
 	jsonData, _ := json.Marshal(
 		&entity.ReqTrafficParams{
 			TxId:           trxId,
-			ServiceId:      service.GetID(),
+			ServiceId:      service.GetId(),
 			CampKeyword:    req.GetCampKeyword(),
 			CampSubKeyword: req.GetCampSubKeyword(),
 			Adnet:          req.GetAdnet(),
@@ -1145,7 +1148,7 @@ func (h *IncomingHandler) CloudPlaySub2CampaignPage(c *fiber.Ctx) error {
 	jsonData, _ := json.Marshal(
 		&entity.ReqTrafficParams{
 			TxId:           trxId,
-			ServiceId:      service.GetID(),
+			ServiceId:      service.GetId(),
 			CampKeyword:    req.GetCampKeyword(),
 			CampSubKeyword: req.GetCampSubKeyword(),
 			Adnet:          req.GetAdnet(),
@@ -1275,7 +1278,7 @@ func (h *IncomingHandler) CloudPlaySub3CampaignPage(c *fiber.Ctx) error {
 	jsonData, _ := json.Marshal(
 		&entity.ReqTrafficParams{
 			TxId:           trxId,
-			ServiceId:      service.GetID(),
+			ServiceId:      service.GetId(),
 			CampKeyword:    req.GetCampKeyword(),
 			CampSubKeyword: req.GetCampSubKeyword(),
 			Adnet:          req.GetAdnet(),
@@ -1404,7 +1407,7 @@ func (h *IncomingHandler) CloudPlaySub4CampaignPage(c *fiber.Ctx) error {
 	jsonData, _ := json.Marshal(
 		&entity.ReqTrafficParams{
 			TxId:           trxId,
-			ServiceId:      service.GetID(),
+			ServiceId:      service.GetId(),
 			CampKeyword:    req.GetCampKeyword(),
 			CampSubKeyword: req.GetCampSubKeyword(),
 			Adnet:          req.GetAdnet(),
@@ -1526,7 +1529,7 @@ func (h *IncomingHandler) CampaignToolDynamic(c *fiber.Ctx) error {
 	jsonData, _ := json.Marshal(
 		&entity.ReqTrafficParams{
 			TxId:           trxId,
-			ServiceId:      service.GetID(),
+			ServiceId:      service.GetId(),
 			CampKeyword:    "REG " + req.GetDynamic(),
 			CampSubKeyword: req.GetSubDynamic(),
 			Adnet:          req.GetAdnet(),
@@ -1663,7 +1666,7 @@ func (h *IncomingHandler) CampaignDirect(c *fiber.Ctx) error {
 	jsonData, _ := json.Marshal(
 		&entity.ReqTrafficParams{
 			TxId:           trxId,
-			ServiceId:      service.GetID(),
+			ServiceId:      service.GetId(),
 			CampKeyword:    req.GetCampKeyword(),
 			CampSubKeyword: req.GetCampSubKeyword(),
 			Adnet:          req.GetAdnet(),
@@ -1697,6 +1700,82 @@ func (h *IncomingHandler) CampaignDirect(c *fiber.Ctx) error {
 	}
 
 	return c.Redirect(redirect, 303)
+}
+
+func (h *IncomingHandler) SubPage(c *fiber.Ctx) error {
+	srv := strings.ToUpper(c.Params("service"))
+
+	if !h.serviceService.CheckService(srv) {
+		return c.Status(fiber.StatusBadGateway).JSON(
+			fiber.Map{
+				"error":   true,
+				"message": "Service Unavailable",
+			},
+		)
+	}
+
+	service, err := h.serviceService.GetServiceByCode(srv)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(
+			fiber.Map{
+				"error":   true,
+				"message": "error_internal_server",
+			},
+		)
+	}
+
+	if service.IsCloudplay() {
+		return c.Render("cloudplay/sub", fiber.Map{
+			"app_url":      APP_URL,
+			"telco_sender": TELCO_SENDER,
+			"service_code": srv,
+		})
+	}
+
+	if service.IsGalays() {
+		return c.Render("galays/sub", fiber.Map{
+			"app_url":      APP_URL,
+			"telco_sender": TELCO_SENDER,
+			"service_code": srv,
+		})
+	}
+
+	return c.Render("cloudplay/term", fiber.Map{
+		"host": APP_URL,
+	})
+}
+
+func (h *IncomingHandler) FaqPage(c *fiber.Ctx) error {
+	srv := strings.ToUpper(c.Params("service"))
+
+	if !h.serviceService.CheckService(srv) {
+		return c.Status(fiber.StatusBadGateway).JSON(
+			fiber.Map{
+				"error":   true,
+				"message": "Service Unavailable",
+			},
+		)
+	}
+
+	service, err := h.serviceService.GetServiceByCode(srv)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(
+			fiber.Map{
+				"error":   true,
+				"message": "error_internal_server",
+			},
+		)
+	}
+
+	if service.IsMplus() {
+		return c.Render("mplus/faq", fiber.Map{
+			"app_url":      APP_URL,
+			"telco_sender": TELCO_SENDER,
+			"service_code": srv,
+		})
+	}
+
+	return c.Redirect(APP_URL)
 }
 
 func (h *IncomingHandler) OptIn(c *fiber.Ctx) error {

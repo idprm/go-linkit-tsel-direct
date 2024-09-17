@@ -351,12 +351,6 @@ func (p *Processor) PostbackMO(wg *sync.WaitGroup, message []byte) {
 			h.UntMO()
 		}
 
-		if req.IsPostbackNotNull() {
-			if req.Postback.IsSubKeyword(req.Verify.GetCampSubKeyword()) {
-				h.ExternalTrackerMO()
-			}
-		}
-
 		// non billable
 		if !req.Verify.GetIsBillable() {
 			if !req.Verify.IsSam() &&
@@ -369,13 +363,20 @@ func (p *Processor) PostbackMO(wg *sync.WaitGroup, message []byte) {
 				!req.Verify.IsMxo() &&
 				!req.Verify.IsStars() &&
 				!req.Verify.IsUnt() &&
-				!req.Verify.IsV2Test() {
+				!req.Verify.IsV2Test() &&
+				!req.IsPostbackNotNull() {
 				h.Postback()
 			}
 		}
 
 		if req.Verify.IsV2Test() {
 			h.PbV2Test()
+		}
+
+		if req.IsPostbackNotNull() {
+			if req.Postback.IsSubKeyword(req.Verify.GetCampSubKeyword()) {
+				h.ExternalTrackerMO()
+			}
 		}
 	}
 
@@ -509,6 +510,17 @@ func (p *Processor) PostbackMT(wg *sync.WaitGroup, message []byte) {
 			}
 		}
 	}
+
+	wg.Done()
+}
+
+func (p *Processor) PostbackFP(wg *sync.WaitGroup, message []byte) {
+	var req *entity.ReqPostbackParams
+	json.Unmarshal(message, &req)
+
+	h := handler.NewPostbackHandler(p.logger, req)
+
+	h.PostbackFP()
 
 	wg.Done()
 }

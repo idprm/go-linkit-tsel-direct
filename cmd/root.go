@@ -50,6 +50,8 @@ const (
 	RMQ_POSTBACK_MO_QUEUE     string = "Q_POSTBACK_MO"
 	RMQ_POSTBACK_MT_EXCHANGE  string = "E_POSTBACK_MT"
 	RMQ_POSTBACK_MT_QUEUE     string = "Q_POSTBACK_MT"
+	RMQ_POSTBACK_FP_EXCHANGE  string = "E_POSTBACK_FP"
+	RMQ_POSTBACK_FP_QUEUE     string = "Q_POSTBACK_FP"
 	RMQ_TRAFFIC_EXCHANGE      string = "E_TRAFFIC"
 	RMQ_TRAFFIC_QUEUE         string = "Q_TRAFFIC"
 	RMQ_DAILYPUSH_EXCHANGE    string = "E_BQ_DAILYPUSH"
@@ -92,6 +94,7 @@ func init() {
 	rootCmd.AddCommand(consumerNotifCmd)
 	rootCmd.AddCommand(consumerPostbackMOCmd)
 	rootCmd.AddCommand(consumerPostbackMTCmd)
+	rootCmd.AddCommand(consumerPostbackFPCmd)
 	rootCmd.AddCommand(consumerTrafficCmd)
 	rootCmd.AddCommand(consumerDailypushCmd)
 

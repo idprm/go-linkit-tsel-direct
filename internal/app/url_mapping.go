@@ -33,19 +33,19 @@ func mapUrls(db *sql.DB, rmpq rmqp.AMQP, rdb *redis.Client, logger *logger.Logge
 	/**
 	 * Init Fiber
 	 */
-	router := fiber.New(fiber.Config{
+	r := fiber.New(fiber.Config{
 		Views: engine,
 	})
 
 	/**
 	 * Initialize default config
 	 */
-	router.Use(cors.New())
+	r.Use(cors.New())
 
 	/**
 	 * Access log on browser
 	 */
-	router.Use(LOG_PATH, filesystem.New(
+	r.Use(LOG_PATH, filesystem.New(
 		filesystem.Config{
 			Root:         http.Dir(LOG_PATH),
 			Browse:       true,
@@ -54,7 +54,7 @@ func mapUrls(db *sql.DB, rmpq rmqp.AMQP, rdb *redis.Client, logger *logger.Logge
 		},
 	))
 
-	router.Static("/static", path+"/"+PUBLIC_PATH)
+	r.Static("/static", path+"/"+PUBLIC_PATH)
 
 	serviceRepo := repository.NewServiceRepository(db)
 	serviceService := services.NewServiceService(serviceRepo)
@@ -68,77 +68,80 @@ func mapUrls(db *sql.DB, rmpq rmqp.AMQP, rdb *redis.Client, logger *logger.Logge
 	transactionRepo := repository.NewTransactionRepository(db)
 	transactionService := services.NewTransactionService(transactionRepo)
 
-	incomingHandler := handler.NewIncomingHandler(logger, rmpq, serviceService, verifyService, subscriptionService, transactionService)
+	h := handler.NewIncomingHandler(logger, rmpq, serviceService, verifyService, subscriptionService, transactionService)
 
 	/**
 	 * Routes Landing Page SUB & UNSUB
 	 */
-	router.Get("camp/:service", incomingHandler.CampaignDirect)
-	router.Get("camptool", incomingHandler.CampaignTool)
+	r.Get("camp/:service", h.CampaignDirect)
+	r.Get("camptool", h.CampaignTool)
+	r.Get("p/:service", h.SubPage)
+	r.Get("p/:service/faq", h.FaqPage)
 
-	router.Post("cloudplay", incomingHandler.OptIn)
-	router.Post("galays", incomingHandler.OptIn)
+	r.Post("cloudplay", h.OptIn)
+	r.Post("galays", h.OptIn)
 
-	router.Get("cloudplay/term", incomingHandler.CloudPlayTermPage)
+	r.Get("cloudplay/term", h.CloudPlayTermPage)
 
-	router.Get("cloudplay", incomingHandler.CloudPlaySubPage)
-	router.Get("cloudplay/camp", incomingHandler.CloudPlayCampaign)
-	router.Get("cloudplay/campbill", incomingHandler.CloudPlayCampaignBillable)
+	r.Get("cloudplay", h.CloudPlaySubPage)
+	r.Get("cloudplay/camp", h.CloudPlayCampaign)
+	r.Get("cloudplay/campbill", h.CloudPlayCampaignBillable)
 
-	router.Get("cloudplay1", incomingHandler.CloudPlaySub1Page)
-	router.Get("cloudplay1/camp", incomingHandler.CloudPlaySub1CampaignPage)
+	r.Get("cloudplay1", h.CloudPlaySub1Page)
+	r.Get("cloudplay1/camp", h.CloudPlaySub1CampaignPage)
 
-	router.Get("cloudplay2", incomingHandler.CloudPlaySub2Page)
-	router.Get("cloudplay2/camp", incomingHandler.CloudPlaySub2CampaignPage)
+	r.Get("cloudplay2", h.CloudPlaySub2Page)
+	r.Get("cloudplay2/camp", h.CloudPlaySub2CampaignPage)
 
-	router.Get("cloudplay3", incomingHandler.CloudPlaySub3Page)
-	router.Get("cloudplay3/camp", incomingHandler.CloudPlaySub3CampaignPage)
+	r.Get("cloudplay3", h.CloudPlaySub3Page)
+	r.Get("cloudplay3/camp", h.CloudPlaySub3CampaignPage)
 
-	router.Get("cloudplay4", incomingHandler.CloudPlaySub4Page)
-	router.Get("cloudplay4/camp", incomingHandler.CloudPlaySub4CampaignPage)
+	r.Get("cloudplay4", h.CloudPlaySub4Page)
+	r.Get("cloudplay4/camp", h.CloudPlaySub4CampaignPage)
 
-	router.Get("cloudplay/unsub", incomingHandler.CloudPlayUnsubPage)
+	r.Get("cloudplay/unsub", h.CloudPlayUnsubPage)
 
-	router.Get("cbtsel", incomingHandler.CallbackUrl)
+	r.Get("cbtsel", h.CallbackUrl)
 
-	router.Get("cloudplay/camptool", incomingHandler.CampaignTool)
-	router.Get("cloudplay/camptooldynamic", incomingHandler.CampaignToolDynamic)
+	r.Get("cloudplay/camptool", h.CampaignTool)
+	r.Get("cloudplay/camptooldynamic", h.CampaignToolDynamic)
 
-	router.Get("galays", incomingHandler.GalaysSubPage)
-	router.Get("galays/camp", incomingHandler.GalaysCampaign)
-	router.Get("galays/campbill", incomingHandler.GalaysCampaignBillable)
+	r.Get("galays", h.GalaysSubPage)
+	r.Get("galays/camp", h.GalaysCampaign)
+	r.Get("galays/campbill", h.GalaysCampaignBillable)
 
-	router.Get("galays1", incomingHandler.GalaysSub1Page)
-	router.Get("galays1/camp", incomingHandler.GalaysSub1CampaignPage)
+	r.Get("galays1", h.GalaysSub1Page)
+	r.Get("galays1/camp", h.GalaysSub1CampaignPage)
 
-	router.Get("galays/camptool", incomingHandler.CampaignTool)
-	router.Get("galays/camptooldynamic", incomingHandler.CampaignToolDynamic)
+	r.Get("galays/camptool", h.CampaignTool)
+	r.Get("galays/camptooldynamic", h.CampaignToolDynamic)
 
-	router.Get("success", incomingHandler.CallbackUrl)
-	router.Get("cancel", incomingHandler.CallbackUrl)
+	r.Get("success", h.CallbackUrl)
+	r.Get("cancel", h.CallbackUrl)
 
-	router.Post("auth/:category", incomingHandler.Auth)
+	r.Post("auth/:category", h.Auth)
 
 	/**``
 	 * Routes Another CP
 	 */
-	router.Get("cpsam", incomingHandler.CloudPlaySub1Page)
-	router.Get("cpsam/camp", incomingHandler.CloudPlaySub1CampaignPage)
+	r.Get("cpsam", h.CloudPlaySub1Page)
+	r.Get("cpsam/camp", h.CloudPlaySub1CampaignPage)
 
 	/**
 	 * Routes MO & DR
 	 */
-	router.Get("notif/mo", incomingHandler.MessageOriginated)
-	router.Get("mo", incomingHandler.MessageOriginated)
+	r.Get("notif/mo", h.MessageOriginated)
+	r.Get("mo", h.MessageOriginated)
 
 	/**
 	 * Routes Report
 	 */
-	router.Get("report/status", incomingHandler.SelectStatus)
-	router.Get("report/statusdetail", incomingHandler.SelectStatusDetail)
-	router.Get("report/adnet", incomingHandler.SelectAdnet)
-	router.Get("report/daily", incomingHandler.ReportDaily)
-	router.Post("report/arpu", incomingHandler.AveragePerUser)
+	report := r.Group("report")
+	report.Get("status", h.SelectStatus)
+	report.Get("statusdetail", h.SelectStatusDetail)
+	report.Get("adnet", h.SelectAdnet)
+	report.Get("daily", h.ReportDaily)
+	report.Post("arpu", h.AveragePerUser)
 
-	return router
+	return r
 }

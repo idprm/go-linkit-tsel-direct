@@ -1,0 +1,110 @@
+body {
+  background: #000;
+}
+
+.content {
+  background: url('../img/background.jpg');
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: top center;
+  height: 100dvh;
+  max-width: 480px;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 0;
+  margin-bottom: 0;
+  position: relative;
+}
+
+.top {
+  position: absolute;
+  top: 20px;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.top .logo {
+  width: 60%;
+  height: auto;
+}
+
+.bottom {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+}
+
+.bottom a {
+  display: flex;
+  justify-content: center;
+}
+
+.bottom .button {
+  width: 70%;
+  margin-bottom: 50px;
+  animation: zoom-in-zoom-out 2s ease-out infinite;
+}
+
+.button-faq {
+  position: absolute;
+  bottom: 30px;
+  left: 0;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.button-faq .btn-faq {
+  width: 30%;
+  margin-bottom: 50px;
+}
+
+.bottom .img-read {
+  width: 100%;
+}
+
+.detail-bottom {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: #1f1f1f;
+  border-radius: 30px 30px 0 0;
+  height: 85vh;
+  overflow-y: auto;
+  padding: 24px;
+}
+
+.title-pages {
+  font-size: 20px;
+  font-weight: bold;
+  color: #fff;
+}
+
+.faq-text {
+  color: #fff;
+}
+
+ol, ul, li {
+  color: #fff;
+  margin-bottom: 8px;
+  font-size: 16px;
+}
+
+ol {
+  padding-inline-start: 20px;
+}
+
+@keyframes zoom-in-zoom-out {
+  0% {
+    transform: scale(1, 1);
+  }
+  50% {
+    transform: scale(1.1, 1.1);
+  }
+  100% {
+    transform: scale(1, 1);
+  }
+}

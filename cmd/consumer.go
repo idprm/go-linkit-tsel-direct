@@ -47,6 +47,7 @@ var consumerMOCmd = &cobra.Command{
 		rmq.SetUpChannel(RMQ_EXCHANGE_TYPE, true, RMQ_MO_EXCHANGE, true, RMQ_MO_QUEUE)
 		rmq.SetUpChannel(RMQ_EXCHANGE_TYPE, true, RMQ_NOTIF_EXCHANGE, true, RMQ_NOTIF_QUEUE)
 		rmq.SetUpChannel(RMQ_EXCHANGE_TYPE, true, RMQ_POSTBACK_MO_EXCHANGE, true, RMQ_POSTBACK_MO_QUEUE)
+		rmq.SetUpChannel(RMQ_EXCHANGE_TYPE, true, RMQ_POSTBACK_FP_EXCHANGE, true, RMQ_POSTBACK_FP_QUEUE)
 
 		messagesData := rmq.Subscribe(1, false, RMQ_MO_QUEUE, RMQ_MO_EXCHANGE, RMQ_MO_QUEUE)
 
@@ -552,6 +553,59 @@ var consumerPostbackMTCmd = &cobra.Command{
 	},
 }
 
+var consumerPostbackFPCmd = &cobra.Command{
+	Use:   "postback_fp",
+	Short: "Consumer Postback FP Service CLI",
+	Long:  ``,
+	Run: func(cmd *cobra.Command, args []string) {
+		/**
+		 * connect rabbitmq
+		 */
+		rmq := connectRabbitMq()
+
+		/**
+		 * SETUP LOG
+		 */
+		logger := logger.NewLogger()
+
+		/**
+		 * SETUP CHANNEL
+		 */
+		rmq.SetUpChannel(RMQ_EXCHANGE_TYPE, true, RMQ_POSTBACK_FP_EXCHANGE, true, RMQ_POSTBACK_FP_QUEUE)
+
+		messagesData := rmq.Subscribe(1, false, RMQ_POSTBACK_FP_QUEUE, RMQ_POSTBACK_FP_EXCHANGE, RMQ_POSTBACK_FP_QUEUE)
+
+		// Initial sync waiting group
+		var wg sync.WaitGroup
+
+		// Loop forever listening incoming data
+		forever := make(chan bool)
+
+		p := NewProcessor(&sql.DB{}, rmq, &redis.Client{}, logger)
+
+		// Set into goroutine this listener
+		go func() {
+
+			// Loop every incoming data
+			for d := range messagesData {
+
+				wg.Add(1)
+				p.PostbackFP(&wg, d.Body)
+				wg.Wait()
+
+				// Manual consume queue
+				d.Ack(false)
+			}
+
+		}()
+
+		fmt.Println("[*] Waiting for data...")
+
+		<-forever
+
+	},
+}
+
 var consumerTrafficCmd = &cobra.Command{
 	Use:   "traffic",
 	Short: "Consumer Traffic Service CLI",
@@ -589,7 +643,7 @@ var consumerTrafficCmd = &cobra.Command{
 		// Loop forever listening incoming data
 		forever := make(chan bool)
 
-		processor := NewProcessor(db, rmq, &redis.Client{}, logger)
+		p := NewProcessor(db, rmq, &redis.Client{}, logger)
 
 		// Set into goroutine this listener
 		go func() {
@@ -598,7 +652,7 @@ var consumerTrafficCmd = &cobra.Command{
 			for d := range messagesData {
 
 				wg.Add(1)
-				processor.Traffic(&wg, d.Body)
+				p.Traffic(&wg, d.Body)
 				wg.Wait()
 
 				// Manual consume queue
@@ -650,7 +704,7 @@ var consumerDailypushCmd = &cobra.Command{
 		// Loop forever listening incoming data
 		forever := make(chan bool)
 
-		processor := NewProcessor(db, rmq, &redis.Client{}, logger)
+		p := NewProcessor(db, rmq, &redis.Client{}, logger)
 
 		// Set into goroutine this listener
 		go func() {
@@ -659,7 +713,7 @@ var consumerDailypushCmd = &cobra.Command{
 			for d := range messagesData {
 
 				wg.Add(1)
-				processor.Dailypush(&wg, d.Body)
+				p.Dailypush(&wg, d.Body)
 				wg.Wait()
 
 				// Manual consume queue

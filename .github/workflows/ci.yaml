@@ -20,6 +20,8 @@ jobs:
             image: idprm/linkit-tsel-direct-postback-mo-service
           - dockerfile: ./Dockerfile.pback_mt
             image: idprm/linkit-tsel-direct-postback-mt-service
+          - dockerfile: ./Dockerfile.pback_fp
+            image: idprm/linkit-tsel-direct-postback-fp-service
           - dockerfile: ./Dockerfile.pub_csv
             image: idprm/linkit-tsel-direct-pub-csv-service
           - dockerfile: ./Dockerfile.pub_renewal

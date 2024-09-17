@@ -5,6 +5,7 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"strconv"
 	"strings"
 	"time"
 
@@ -1702,6 +1703,84 @@ func (p *Postback) DN() ([]byte, error) {
 		"status_code": resp.StatusCode,
 		"status_text": http.StatusText(resp.StatusCode),
 	}).Info("POSTBACK_" + p.postback.GetSubKeyword() + "_DN")
+
+	return body, nil
+}
+
+func (p *Postback) FP() ([]byte, error) {
+	l := p.logger.Init("pb", true)
+
+	start := time.Now()
+	trxId := utils.GenerateTrxId()
+
+	// event={event}&msisdn={msisdn}
+	// &transactionid={trxid}&datetime={datetime}&adnet={adn}
+	// &serviceid={serviceid}&servicename={servicename}&cycle={cycle}
+	// &price={price}&keyword={keyword}&subkeyword={subkey}
+	// &publisherid={pubid}&adn={adn}&channel={channel}
+	// &status={status}&statusdesc={statusdesc}
+	p.service.SetUrlWakicampFP(
+		"Add",
+		p.subscription.GetMsisdn(),
+		p.subscription.GetLatestTrxId(),
+		time.Now().String(),
+		p.subscription.GetAdnetIfNull(),
+		strconv.Itoa(p.service.GetId()),
+		p.service.GetName(),
+		strconv.Itoa(p.service.GetRenewalDay()),
+		strconv.FormatFloat(p.service.GetPrice(), 'f', -1, 64),
+		p.subscription.GetCampKeyword(),
+		p.subscription.GetCampSubKeywordNull(),
+		p.subscription.GetPubIdIfNull(),
+		p.subscription.GetChannel(),
+		p.subscription.LatestPayload,
+		response_utils.ParseStatusCode(p.subscription.LatestPayload),
+	)
+
+	req, err := http.NewRequest("GET", p.service.GetUrlWakicampFP(), nil)
+	if err != nil {
+		return nil, errors.New(err.Error())
+	}
+
+	tr := &http.Transport{
+		MaxIdleConns:       30,
+		IdleConnTimeout:    10 * time.Second,
+		DisableCompression: true,
+	}
+
+	client := &http.Client{
+		Timeout:   10 * time.Second,
+		Transport: tr,
+	}
+
+	p.logger.Writer(req)
+	l.WithFields(logrus.Fields{
+		"msisdn":  p.subscription.GetMsisdn(),
+		"request": p.service.GetUrlWakicampFP(),
+		"trx_id":  trxId,
+	}).Info("POSTBACK_FP")
+
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, errors.New(err.Error())
+	}
+
+	defer resp.Body.Close()
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, errors.New(err.Error())
+	}
+
+	duration := time.Since(start).Milliseconds()
+	p.logger.Writer(string(body))
+	l.WithFields(logrus.Fields{
+		"msisdn":      p.subscription.GetMsisdn(),
+		"response":    string(body),
+		"trx_id":      trxId,
+		"duration":    duration,
+		"status_code": resp.StatusCode,
+		"status_text": http.StatusText(resp.StatusCode),
+	}).Info("POSTBACK_FP")
 
 	return body, nil
 }

@@ -53,7 +53,7 @@ func ParseStatusCode(code string) string {
 	}
 }
 
-func ParseStatus(code string) bool {
+func IsSuccess(code string) bool {
 	return strings.HasPrefix(code, "1")
 }
 

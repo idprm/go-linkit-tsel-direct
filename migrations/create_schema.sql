@@ -241,6 +241,7 @@ CREATE TABLE IF NOT EXISTS "postbacks" (
 
 CREATE UNIQUE INDEX IF NOT EXISTS "uidx_msisdn" ON "blacklists" ("msisdn");
 CREATE UNIQUE INDEX IF NOT EXISTS "uidx_service_msisdn" ON "subscriptions" ("service_id", "msisdn");
+CREATE UNIQUE INDEX IF NOT EXISTS "uidx_sub_keyword" ON "postbacks" ("sub_keyword");
 CREATE INDEX IF NOT EXISTS "idx_latest_pin" ON "subscriptions" ("latest_pin");
 CREATE INDEX IF NOT EXISTS "idx_category_msisdn" ON "subscriptions" ("category", "msisdn");
 CREATE INDEX IF NOT EXISTS "idx_service_msisdn" ON "transactions" ("service_id", "msisdn");
@@ -287,6 +288,7 @@ ALTER TABLE "services" ADD "url_postback_mxo_dn" varchar(85);
 ALTER TABLE "services" ADD "url_postback_stars_mo" varchar(85);
 ALTER TABLE "services" ADD "url_postback_unt_mo" varchar(85);
 ALTER TABLE "services" ADD "url_postback_unt_dn" varchar(85);
+ALTER TABLE "services" ADD "url_wakicamp_fp" varchar(350);
 
 ALTER TABLE "subscriptions" ALTER COLUMN "latest_pin" TYPE varchar(10);
 ALTER TABLE "transactions" ALTER COLUMN "pin" TYPE varchar(10);

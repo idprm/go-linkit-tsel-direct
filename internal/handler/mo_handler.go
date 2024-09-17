@@ -72,7 +72,7 @@ func (h *MOHandler) Firstpush() {
 	 */
 	pin := h.getLatestMsisdn()
 
-	content, err := h.getContentFirstpush(service.GetID(), pin)
+	content, err := h.getContentFirstpush(service.GetId(), pin)
 	if err != nil {
 		log.Println(err)
 	}
@@ -87,7 +87,7 @@ func (h *MOHandler) Firstpush() {
 	}
 
 	subscription := &entity.Subscription{
-		ServiceID:     service.GetID(),
+		ServiceID:     service.GetId(),
 		Category:      service.GetCategory(),
 		Msisdn:        h.req.GetMsisdn(),
 		LatestTrxId:   trxId,
@@ -109,7 +109,7 @@ func (h *MOHandler) Firstpush() {
 		h.trafficService.SaveMO(
 			&entity.TrafficMO{
 				TxId:           verify.GetTxId(),
-				ServiceID:      service.GetID(),
+				ServiceID:      service.GetId(),
 				Msisdn:         h.req.GetMsisdn(),
 				Channel:        channel,
 				CampKeyword:    verify.GetCampKeyword(),
@@ -149,6 +149,14 @@ func (h *MOHandler) Firstpush() {
 			string(jsonDataPostback),
 		)
 
+		h.rmq.IntegratePublish(
+			RMQ_POSTBACK_FP_EXCHANGE,
+			RMQ_POSTBACK_FP_QUEUE,
+			RMQ_DATA_TYPE,
+			"",
+			string(jsonDataPostback),
+		)
+
 	} else {
 		subscription.Adnet = ""
 		subscription.PubID = ""
@@ -168,7 +176,7 @@ func (h *MOHandler) Firstpush() {
 	// count total sub
 	h.subscriptionService.UpdateTotalSub(
 		&entity.Subscription{
-			ServiceID: service.GetID(),
+			ServiceID: service.GetId(),
 			Msisdn:    h.req.GetMsisdn(),
 			TotalSub:  1,
 		},
@@ -183,9 +191,9 @@ func (h *MOHandler) Firstpush() {
 	var status string
 	var isSuccess bool
 
-	if response_utils.ParseStatus(string(resp)) {
+	if response_utils.IsSuccess(string(resp)) {
 		subSuccess := &entity.Subscription{
-			ServiceID:            service.GetID(),
+			ServiceID:            service.GetId(),
 			Msisdn:               h.req.GetMsisdn(),
 			LatestTrxId:          trxId,
 			LatestSubject:        SUBJECT_FIRSTPUSH,
@@ -205,10 +213,10 @@ func (h *MOHandler) Firstpush() {
 		subscription.SetLatestPayload(string(resp))
 
 		// if first_success_at is null
-		if h.subscriptionService.IsFirstSuccess(service.GetID(), h.req.GetMsisdn()) {
+		if h.subscriptionService.IsFirstSuccess(service.GetId(), h.req.GetMsisdn()) {
 			h.subscriptionService.UpdateFirstSuccess(
 				&entity.Subscription{
-					ServiceID:      service.GetID(),
+					ServiceID:      service.GetId(),
 					Msisdn:         h.req.GetMsisdn(),
 					FirstSuccessAt: time.Now(),
 				},
@@ -217,7 +225,7 @@ func (h *MOHandler) Firstpush() {
 
 		transSuccess := &entity.Transaction{
 			TxID:         trxId,
-			ServiceID:    service.GetID(),
+			ServiceID:    service.GetId(),
 			Msisdn:       h.req.GetMsisdn(),
 			Channel:      channel,
 			Keyword:      h.req.GetKeyword(),
@@ -242,7 +250,7 @@ func (h *MOHandler) Firstpush() {
 		h.transactionService.SaveTransaction(transSuccess)
 
 		historySuccess := &entity.History{
-			ServiceID: service.GetID(),
+			ServiceID: service.GetId(),
 			Msisdn:    h.req.GetMsisdn(),
 			Channel:   channel,
 			Keyword:   h.req.GetKeyword(),
@@ -260,7 +268,7 @@ func (h *MOHandler) Firstpush() {
 		// update traffics_mo if success charge
 		h.trafficService.UpdateMOCharge(
 			&entity.TrafficMO{
-				ServiceID: service.GetID(),
+				ServiceID: service.GetId(),
 				Msisdn:    h.req.GetMsisdn(),
 				IsCharge:  true,
 			},
@@ -289,7 +297,7 @@ func (h *MOHandler) Firstpush() {
 	} else {
 
 		subFailed := &entity.Subscription{
-			ServiceID:     service.GetID(),
+			ServiceID:     service.GetId(),
 			Msisdn:        h.req.GetMsisdn(),
 			LatestTrxId:   trxId,
 			LatestSubject: SUBJECT_FIRSTPUSH,
@@ -306,7 +314,7 @@ func (h *MOHandler) Firstpush() {
 		// keep update PIN if failed
 		h.subscriptionService.UpdatePin(
 			&entity.Subscription{
-				ServiceID: service.GetID(),
+				ServiceID: service.GetId(),
 				Msisdn:    h.req.GetMsisdn(),
 				LatestPIN: pin,
 			},
@@ -314,7 +322,7 @@ func (h *MOHandler) Firstpush() {
 
 		transFailed := &entity.Transaction{
 			TxID:         trxId,
-			ServiceID:    service.GetID(),
+			ServiceID:    service.GetId(),
 			Msisdn:       h.req.GetMsisdn(),
 			Channel:      channel,
 			Keyword:      h.req.GetKeyword(),
@@ -336,7 +344,7 @@ func (h *MOHandler) Firstpush() {
 		h.transactionService.SaveTransaction(transFailed)
 
 		historyFailed := &entity.History{
-			ServiceID: service.GetID(),
+			ServiceID: service.GetId(),
 			Msisdn:    h.req.GetMsisdn(),
 			Channel:   channel,
 			Keyword:   h.req.GetKeyword(),
@@ -382,6 +390,14 @@ func (h *MOHandler) Firstpush() {
 			"",
 			string(jsonDataPostback),
 		)
+
+		h.rmq.IntegratePublish(
+			RMQ_POSTBACK_FP_EXCHANGE,
+			RMQ_POSTBACK_FP_QUEUE,
+			RMQ_DATA_TYPE,
+			"",
+			string(jsonDataPostback),
+		)
 	}
 }
 
@@ -394,7 +410,7 @@ func (h *MOHandler) Unsub() {
 	trxId := uuid_utils.GenerateTrxId()
 
 	subscription := &entity.Subscription{
-		ServiceID:     service.GetID(),
+		ServiceID:     service.GetId(),
 		Msisdn:        h.req.GetMsisdn(),
 		Channel:       channel,
 		LatestTrxId:   trxId,
@@ -411,7 +427,7 @@ func (h *MOHandler) Unsub() {
 	// if unsub, set PIN to 0
 	h.subscriptionService.UpdatePin(
 		&entity.Subscription{
-			ServiceID: service.GetID(),
+			ServiceID: service.GetId(),
 			Msisdn:    h.req.GetMsisdn(),
 			LatestPIN: "",
 		},
@@ -420,7 +436,7 @@ func (h *MOHandler) Unsub() {
 	// count total unsub
 	h.subscriptionService.UpdateTotalUnSub(
 		&entity.Subscription{
-			ServiceID:  service.GetID(),
+			ServiceID:  service.GetId(),
 			Msisdn:     h.req.GetMsisdn(),
 			TotalUnsub: 1,
 		},
@@ -428,18 +444,18 @@ func (h *MOHandler) Unsub() {
 
 	h.subscriptionService.UpdateConfirm(
 		&entity.Subscription{
-			ServiceID: service.GetID(),
+			ServiceID: service.GetId(),
 			Msisdn:    h.req.GetMsisdn(),
 			IsConfirm: false,
 		},
 	)
 
 	// select data by service_id & msisdn
-	sub, _ := h.subscriptionService.SelectSubscription(service.GetID(), h.req.GetMsisdn())
+	sub, _ := h.subscriptionService.SelectSubscription(service.GetId(), h.req.GetMsisdn())
 
 	transaction := &entity.Transaction{
 		TxID:         trxId,
-		ServiceID:    service.GetID(),
+		ServiceID:    service.GetId(),
 		Msisdn:       h.req.GetMsisdn(),
 		Channel:      channel,
 		Adnet:        sub.GetAdnet(),
@@ -459,7 +475,7 @@ func (h *MOHandler) Unsub() {
 	h.transactionService.SaveTransaction(transaction)
 
 	history := &entity.History{
-		ServiceID: service.GetID(),
+		ServiceID: service.GetId(),
 		Msisdn:    h.req.GetMsisdn(),
 		Channel:   channel,
 		Adnet:     sub.GetAdnet(),
@@ -522,7 +538,7 @@ func (h *MOHandler) Confirm() {
 		log.Println(err)
 	}
 	subscription := &entity.Subscription{
-		ServiceID: service.GetID(),
+		ServiceID: service.GetId(),
 		Msisdn:    h.req.GetMsisdn(),
 		IsConfirm: true,
 	}
@@ -539,7 +555,7 @@ func (h *MOHandler) IsActiveSub() bool {
 	if err != nil {
 		log.Println(err)
 	}
-	return h.subscriptionService.GetActiveSubscription(service.GetID(), h.req.GetMsisdn())
+	return h.subscriptionService.GetActiveSubscription(service.GetId(), h.req.GetMsisdn())
 }
 
 func (h *MOHandler) IsSub() bool {
@@ -547,7 +563,7 @@ func (h *MOHandler) IsSub() bool {
 	if err != nil {
 		log.Println(err)
 	}
-	return h.subscriptionService.GetSubscription(service.GetID(), h.req.GetMsisdn())
+	return h.subscriptionService.GetSubscription(service.GetId(), h.req.GetMsisdn())
 }
 
 func (h *MOHandler) IsBlacklist() bool {

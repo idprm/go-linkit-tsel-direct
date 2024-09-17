@@ -1,6 +1,10 @@
 package entity
 
-import "strconv"
+import (
+	"net/url"
+	"strconv"
+	"strings"
+)
 
 type Service struct {
 	ID                  int     `json:"id"`
@@ -36,9 +40,10 @@ type Service struct {
 	UrlPostbackStarsMO  string  `json:"url_postback_stars_mo"`
 	UrlPostbackUntMO    string  `json:"url_postback_unt_mo"`
 	UrlPostbackUntDN    string  `json:"url_postback_unt_dn"`
+	UrlWakicampFP       string  `json:"url_wakicamp_fp"`
 }
 
-func (s *Service) GetID() int {
+func (s *Service) GetId() int {
 	return s.ID
 }
 
@@ -168,6 +173,40 @@ func (s *Service) GetUrlPostbackUntMO() string {
 
 func (s *Service) GetUrlPostbackUntDN() string {
 	return s.UrlPostbackUntDN
+}
+
+func (s *Service) GetUrlWakicampFP() string {
+	return s.UrlWakicampFP
+}
+
+func (s *Service) SetUrlWakicampFP(
+	event, msisdn, trxid, datetime, adn, serviceid, servicename,
+	cycle, price, keyword, subkey, pubid, channel,
+	status, statusdesc string,
+) {
+	replacer := strings.NewReplacer(
+		"{event}", url.QueryEscape(event),
+		"{msisdn}", url.QueryEscape(msisdn),
+		"{trxid}", url.QueryEscape(trxid),
+		"{datetime}", url.QueryEscape(datetime),
+		"{adnet}", adn,
+		"{country}", "ID",
+		"{operator}", "Telkomsel",
+		"{serviceid}", serviceid,
+		"{servicename}", url.QueryEscape(servicename),
+		"{cycle}", url.QueryEscape(cycle),
+		"{price}", url.QueryEscape(price),
+		"{currency}", "IDR",
+		"{keyword}", url.QueryEscape(keyword),
+		"{subkey}", url.QueryEscape(subkey),
+		"{pubid}", url.QueryEscape(pubid),
+		"{adn}", url.QueryEscape(adn),
+		"{channel}", url.QueryEscape(channel),
+		"{status}", url.QueryEscape(status),
+		"{statusdesc}", url.QueryEscape(statusdesc),
+		"{type}", "sync",
+	)
+	s.UrlWakicampFP = replacer.Replace(s.UrlWakicampFP)
 }
 
 func (s *Service) IsCloudplay() bool {

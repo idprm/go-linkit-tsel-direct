@@ -77,7 +77,7 @@ func (h *RetryHandler) Firstpush() {
 		}
 		trxId := uuid_utils.GenerateTrxId()
 
-		if response_utils.ParseStatus(string(resp)) {
+		if response_utils.IsSuccess(string(resp)) {
 
 			subSuccess := &entity.Subscription{
 				ServiceID:            h.sub.GetServiceId(),
@@ -224,7 +224,7 @@ func (h *RetryHandler) Dailypush() {
 		}
 		trxId := uuid_utils.GenerateTrxId()
 
-		if response_utils.ParseStatus(string(resp)) {
+		if response_utils.IsSuccess(string(resp)) {
 
 			subSuccess := &entity.Subscription{
 				ServiceID:          h.sub.GetServiceId(),

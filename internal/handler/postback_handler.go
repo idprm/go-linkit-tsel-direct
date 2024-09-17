@@ -138,3 +138,8 @@ func (h *PostbackHandler) ExternalTrackerDN() {
 	p := postback.NewPostback(h.logger, h.req.Subscription, h.req.Service, h.req.Postback, false)
 	p.DN()
 }
+
+func (h *PostbackHandler) PostbackFP() {
+	p := postback.NewPostback(h.logger, h.req.Subscription, h.req.Service, h.req.Postback, false)
+	p.FP()
+}
