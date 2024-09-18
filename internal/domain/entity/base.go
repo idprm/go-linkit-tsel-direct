@@ -602,6 +602,10 @@ func (e *ReqPostbackParams) IsPostbackNotNull() bool {
 	return e.Postback != nil
 }
 
+func (e *ReqPostbackParams) IsPostbackNull() bool {
+	return e.Postback == nil
+}
+
 var formatDate = "2006-01-02T15:04:05Z07:00"
 
 type SubscriptionToCSV struct {
