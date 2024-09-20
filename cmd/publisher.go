@@ -12,9 +12,11 @@ import (
 	"time"
 
 	"github.com/idprm/go-linkit-tsel/internal/domain/entity"
+	"github.com/idprm/go-linkit-tsel/internal/domain/model"
 	"github.com/idprm/go-linkit-tsel/internal/domain/repository"
 	"github.com/idprm/go-linkit-tsel/internal/logger"
 	"github.com/idprm/go-linkit-tsel/internal/providers/arpu"
+	"github.com/idprm/go-linkit-tsel/internal/providers/mo"
 	"github.com/idprm/go-linkit-tsel/internal/providers/rabbit"
 	"github.com/idprm/go-linkit-tsel/internal/services"
 	"github.com/spf13/cobra"
@@ -334,6 +336,15 @@ var publisherUploadCSVCmd = &cobra.Command{
 	},
 }
 
+var publisherTestCmd = &cobra.Command{
+	Use:   "pub_test",
+	Short: "Test Postback CLI",
+	Long:  ``,
+	Run: func(cmd *cobra.Command, args []string) {
+		rePostbackInFile()
+	},
+}
+
 func populateRenewal(db *sql.DB, queue rmqp.AMQP) {
 	subscriptionRepo := repository.NewSubscriptionRepository(db)
 	subscriptionService := services.NewSubscriptionService(subscriptionRepo)
@@ -640,4 +651,33 @@ func uploadCSV() {
 	time.Sleep(10 * time.Second)
 	// upload file csv
 	arp.UploadCSV(ARPU_URL_TRANS, fileNameTransCompress)
+}
+
+func rePostbackInFile() {
+	// Open our jsonFile
+	jsonFile, err := os.Open("./logs/mo-2024-09-17.json")
+	// if we os.Open returns an error then handle it
+	if err != nil {
+		fmt.Println(err)
+	}
+	// defer the closing of our jsonFile so that we can parse it later on
+	defer jsonFile.Close()
+
+	// read our opened jsonFile as a byte array.
+	byteValue, _ := io.ReadAll(jsonFile)
+
+	// we initialize our Users array
+	var resp []model.RePostBackResponse
+
+	// we unmarshal our byteArray which contains our
+	// jsonFile's content into 'users' which we defined above
+	json.Unmarshal(byteValue, &resp)
+	log.Println(resp)
+
+	for _, r := range resp {
+		if r.Verify.CampSubKeyword != "SAM" {
+			mo.HitPostback(r)
+		}
+
+	}
 }

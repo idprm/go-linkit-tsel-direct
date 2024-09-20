@@ -104,6 +104,7 @@ func init() {
 	rootCmd.AddCommand(publisherRetryInsuffCmd)
 	rootCmd.AddCommand(publisherCSVCmd)
 	rootCmd.AddCommand(publisherUploadCSVCmd)
+	rootCmd.AddCommand(publisherTestCmd)
 }
 
 func Execute() error {

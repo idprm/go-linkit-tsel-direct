@@ -1584,11 +1584,12 @@ func (p *Postback) MO() ([]byte, error) {
 	start := time.Now()
 	trxId := utils.GenerateTrxId()
 
-	// SetUrlMO(sdc, msisdn, sms, trxid, trxdate string)
+	// SetUrlMO(sdc, msisdn, sms, clickid, trxid, trxdate string)
 	p.postback.SetUrlMO(
 		TELCO_SENDER,
 		p.subscription.GetMsisdn(),
-		p.subscription.GetCampKeyword()+" "+p.subscription.GetCampSubKeyword()+" "+p.subscription.GetAffSub(),
+		p.subscription.GetCampKeyword()+" "+p.subscription.GetCampSubKeyword(),
+		p.subscription.GetAffSub(),
 		p.subscription.GetLatestTrxId(),
 		time.Now().Format("20060102150405"),
 	)

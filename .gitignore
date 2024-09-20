@@ -1,3 +1,4 @@
 .env
 go-linkit-tsel
 go-linkit-tsel-direct
+/logs/*

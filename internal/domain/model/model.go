@@ -18,3 +18,18 @@ type WebResponse struct {
 func (m *WebResponse) SetIpAddress(data string) {
 	m.IpAddress = data
 }
+
+type RePostBackResponse struct {
+	Request struct {
+		Msisdn string `json:"msisdn"`
+	} `json:"request"`
+	Verify struct {
+		TrxId          string `json:"tx_id"`
+		Token          string `json:"token"`
+		Service        string `json:"service"`
+		Adnet          string `json:"adnet"`
+		PubId          string `json:"pub_id"`
+		AffSub         string `json:"aff_sub"`
+		CampSubKeyword string `json:"camp_sub_keyword"`
+	} `json:"verify"`
+}

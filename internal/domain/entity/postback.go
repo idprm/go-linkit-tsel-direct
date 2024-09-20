@@ -29,12 +29,13 @@ func (e *Postback) GetUrlDN() string {
 	return e.UrlDN
 }
 
-func (e *Postback) SetUrlMO(sdc, msisdn, sms, trxid, trxdate string) {
+func (e *Postback) SetUrlMO(sdc, msisdn, sms, clickid, trxid, trxdate string) {
 	// mo?sdc={sdc}&msisdn={msisdn}&sms={sms}&trx_id={trxid}&trx_date={trxdate}
 	replacer := strings.NewReplacer(
 		"{sdc}", sdc,
 		"{msisdn}", url.QueryEscape(msisdn),
 		"{sms}", url.QueryEscape(sms),
+		"{clickid}", url.QueryEscape(clickid),
 		"{trxid}", trxid,
 		"{trxdate}", trxdate)
 	e.UrlMO = replacer.Replace(e.UrlMO)
