@@ -134,6 +134,11 @@ func (h *PostbackHandler) ExternalTrackerMO() {
 	p.MO()
 }
 
+func (h *PostbackHandler) ExternalTrackerMOUnsub() {
+	p := postback.NewPostback(h.logger, h.req.Subscription, h.req.Service, h.req.Postback, false)
+	p.MOUnsub()
+}
+
 func (h *PostbackHandler) ExternalTrackerDN() {
 	p := postback.NewPostback(h.logger, h.req.Subscription, h.req.Service, h.req.Postback, false)
 	p.DN()

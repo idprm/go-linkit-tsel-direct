@@ -399,7 +399,7 @@ func (p *Processor) PostbackMO(wg *sync.WaitGroup, message []byte) {
 
 		if req.IsPostbackNotNull() {
 			if req.Postback.IsSubKeyword(req.Postback.GetSubKeyword()) {
-				h.ExternalTrackerMO()
+				h.ExternalTrackerMOUnsub()
 			}
 		}
 

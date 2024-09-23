@@ -1588,7 +1588,71 @@ func (p *Postback) MO() ([]byte, error) {
 	p.postback.SetUrlMO(
 		TELCO_SENDER,
 		p.subscription.GetMsisdn(),
-		p.subscription.GetCampKeyword()+" "+p.subscription.GetCampSubKeyword(),
+		p.subscription.GetCampKeyword()+" "+p.subscription.GetCampSubKeyword()+" "+p.subscription.GetAffSub(),
+		p.subscription.GetAffSub(),
+		p.subscription.GetLatestTrxId(),
+		time.Now().Format("20060102150405"),
+	)
+
+	req, err := http.NewRequest("GET", p.postback.GetUrlMO(), nil)
+	if err != nil {
+		return nil, errors.New(err.Error())
+	}
+
+	tr := &http.Transport{
+		MaxIdleConns:       30,
+		IdleConnTimeout:    10 * time.Second,
+		DisableCompression: true,
+	}
+
+	client := &http.Client{
+		Timeout:   10 * time.Second,
+		Transport: tr,
+	}
+
+	p.logger.Writer(req)
+	l.WithFields(logrus.Fields{
+		"msisdn":  p.subscription.Msisdn,
+		"request": p.postback.GetUrlMO(),
+		"trx_id":  trxId,
+	}).Info("POSTBACK_" + p.postback.GetSubKeyword() + "_MO")
+
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, errors.New(err.Error())
+	}
+
+	defer resp.Body.Close()
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, errors.New(err.Error())
+	}
+
+	duration := time.Since(start).Milliseconds()
+	p.logger.Writer(string(body))
+	l.WithFields(logrus.Fields{
+		"msisdn":      p.subscription.GetMsisdn(),
+		"response":    string(body),
+		"trx_id":      trxId,
+		"duration":    duration,
+		"status_code": resp.StatusCode,
+		"status_text": http.StatusText(resp.StatusCode),
+	}).Info("POSTBACK_" + p.postback.GetSubKeyword() + "_MO")
+
+	return body, nil
+}
+
+func (p *Postback) MOUnsub() ([]byte, error) {
+	l := p.logger.Init("pb", true)
+
+	start := time.Now()
+	trxId := utils.GenerateTrxId()
+
+	// SetUrlMO(sdc, msisdn, sms, clickid, trxid, trxdate string)
+	p.postback.SetUrlMO(
+		TELCO_SENDER,
+		p.subscription.GetMsisdn(),
+		p.subscription.GetLatestKeyword(),
 		p.subscription.GetAffSub(),
 		p.subscription.GetLatestTrxId(),
 		time.Now().Format("20060102150405"),
