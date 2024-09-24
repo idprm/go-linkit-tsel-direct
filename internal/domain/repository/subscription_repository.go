@@ -31,6 +31,7 @@ const (
 	queryCountSubActivePin            = "SELECT COUNT(*) as count FROM subscriptions WHERE category = $1 AND latest_pin = $2 AND is_active = true AND is_retry = false"
 	queryCountFirstSuccess            = "SELECT COUNT(*) as count FROM subscriptions WHERE service_id = $1 AND msisdn = $2 AND first_success_at IS NULL AND success = 1"
 	querySelectSubscription           = "SELECT id, service_id, msisdn, channel, camp_keyword, camp_sub_keyword, adnet, pub_id, aff_sub, latest_trxid, latest_keyword, latest_subject, latest_status, latest_payload, amount, renewal_at, success, ip_address, total_firstpush, total_renewal, total_amount_firstpush, total_amount_renewal, is_retry, is_active FROM subscriptions WHERE service_id = $1 AND msisdn = $2"
+	querySelectAgeDay                 = "SELECT DATE(NOW()) - DATE(created_at) + 1 as count FROM subscriptions WHERE service_id = $1 AND msisdn = $2"
 	querySelectPopulateRenewal        = "SELECT id, service_id, msisdn, channel, adnet, latest_keyword, latest_subject, latest_pin, latest_payload, ip_address, aff_sub, camp_keyword, camp_sub_keyword, created_at FROM subscriptions WHERE renewal_at IS NOT NULL AND DATE(renewal_at) <= DATE(NOW()) AND is_active = true ORDER BY success DESC, DATE(created_at) DESC"
 	querySelectPopulateRetryFirstpush = "SELECT id, service_id, msisdn, channel, adnet, latest_keyword, latest_subject, latest_pin, latest_payload, ip_address, aff_sub, camp_keyword, camp_sub_keyword, retry_at, created_at FROM subscriptions WHERE latest_payload <> '3:3:21' AND latest_subject = 'FIRSTPUSH' AND renewal_at IS NOT NULL AND DATE(renewal_at) = DATE(NOW() + interval '1 day') AND is_retry = true AND is_active = true ORDER BY success DESC, DATE(created_at) DESC"
 	querySelectPopulateRetryDailypush = "SELECT id, service_id, msisdn, channel, adnet, latest_keyword, latest_subject, latest_pin, latest_payload, ip_address, aff_sub, camp_keyword, camp_sub_keyword, retry_at, created_at FROM subscriptions WHERE latest_payload <> '3:3:21' AND latest_subject = 'RENEWAL' AND renewal_at IS NOT NULL AND DATE(renewal_at) = DATE(NOW() + interval '1 day') AND is_retry = true AND is_active = true ORDER BY success DESC, DATE(created_at) DESC"
@@ -70,6 +71,7 @@ type ISubscriptionRepository interface {
 	CountPinActive(string, string) (int, error)
 	CountFirstSuccess(int, string) (int, error)
 	Get(int, string) (*entity.Subscription, error)
+	GetAgeDay(int, string) (int, error)
 	Renewal() (*[]entity.Subscription, error)
 	RetryFp() (*[]entity.Subscription, error)
 	RetryDp() (*[]entity.Subscription, error)
@@ -492,6 +494,15 @@ func (r *SubscriptionRepository) CountFirstSuccess(serviceId int, msisdn string)
 	return count, nil
 }
 
+func (r *SubscriptionRepository) CountFirstActive179(serviceId int, msisdn string) (int, error) {
+	var count int
+	err := r.db.QueryRow(queryCountFirstSuccess, serviceId, msisdn).Scan(&count)
+	if err != nil {
+		return count, err
+	}
+	return count, nil
+}
+
 func (r *SubscriptionRepository) Get(serviceId int, msisdn string) (*entity.Subscription, error) {
 	var s entity.Subscription
 	err := r.db.QueryRow(querySelectSubscription, serviceId, msisdn).Scan(&s.ID, &s.ServiceID, &s.Msisdn, &s.Channel, &s.CampKeyword, &s.CampSubKeyword, &s.Adnet, &s.PubID, &s.AffSub, &s.LatestTrxId, &s.LatestKeyword, &s.LatestSubject, &s.LatestStatus, &s.LatestPayload, &s.Amount, &s.RenewalAt, &s.Success, &s.IpAddress, &s.TotalFirstpush, &s.TotalRenewal, &s.TotalAmountFirstpush, &s.TotalAmountRenewal, &s.IsRetry, &s.IsActive)
@@ -499,6 +510,15 @@ func (r *SubscriptionRepository) Get(serviceId int, msisdn string) (*entity.Subs
 		return &s, err
 	}
 	return &s, nil
+}
+
+func (r *SubscriptionRepository) GetAgeDay(serviceId int, msisdn string) (int, error) {
+	var count int
+	err := r.db.QueryRow(querySelectAgeDay, serviceId, msisdn).Scan(&count)
+	if err != nil {
+		return count, err
+	}
+	return count, nil
 }
 
 func (r *SubscriptionRepository) Renewal() (*[]entity.Subscription, error) {

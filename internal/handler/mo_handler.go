@@ -402,6 +402,8 @@ func (h *MOHandler) Firstpush() {
 }
 
 func (h *MOHandler) Unsub() {
+	l := h.logger.Init("off", true)
+
 	service, err := h.getService()
 	if err != nil {
 		log.Println(err)
@@ -529,6 +531,27 @@ func (h *MOHandler) Unsub() {
 		"",
 		string(jsonDataNotif),
 	)
+
+	if h.req.IsOFF() {
+		ageDay, err := h.subscriptionService.SelectAgeDay(service.GetId(), h.req.GetMsisdn())
+		if err != nil {
+			log.Println(err.Error())
+		}
+
+		var subkey string
+		if sub != nil {
+			subkey = sub.GetCampSubKeyword()
+		}
+
+		l.WithFields(logrus.Fields{
+			"trx_id":  trxId,
+			"msisdn":  h.req.GetMsisdn(),
+			"keyword": h.req.GetKeyword(),
+			"subkey":  subkey,
+			"off_at":  time.Now(),
+			"age_day": ageDay,
+		}).Info("OFF")
+	}
 
 }
 

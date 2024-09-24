@@ -18,6 +18,7 @@ type ISubscriptionService interface {
 	GetPinActiveSub(string, string) bool
 	IsFirstSuccess(int, string) bool
 	SelectSubscription(int, string) (*entity.Subscription, error)
+	SelectAgeDay(int, string) (int, error)
 	SaveSubscription(*entity.Subscription) error
 	UpdateSuccess(*entity.Subscription) error
 	UpdateFailed(*entity.Subscription) error
@@ -91,6 +92,14 @@ func (s *SubscriptionService) SelectSubscription(serviceId int, msisdn string) (
 		return nil, err
 	}
 	return sub, nil
+}
+
+func (s *SubscriptionService) SelectAgeDay(serviceId int, msisdn string) (int, error) {
+	count, err := s.subscriptionRepo.GetAgeDay(serviceId, msisdn)
+	if err != nil {
+		return 0, err
+	}
+	return count, nil
 }
 
 func (s *SubscriptionService) SaveSubscription(sub *entity.Subscription) error {

@@ -531,6 +531,15 @@ func (s *ReqMOParams) IsUNREG() bool {
 	return false
 }
 
+func (s *ReqMOParams) IsOFF() bool {
+	message := strings.ToUpper(s.SMS)
+	index := strings.Split(message, " ")
+	if index[0] == MO_OFF && (strings.Contains(message, MO_OFF)) {
+		return true
+	}
+	return false
+}
+
 func (s *ReqMOParams) IsConfirm() bool {
 	message := strings.ToUpper(s.SMS)
 	index := strings.Split(message, " ")

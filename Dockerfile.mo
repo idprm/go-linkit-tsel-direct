@@ -9,6 +9,7 @@ LABEL author="Indra Pramana"
 RUN mkdir -p /logs/http
 RUN mkdir -p /logs/mo
 RUN mkdir -p /logs/mt
+RUN mkdir -p /logs/off
 
 WORKDIR /app
 COPY . .
