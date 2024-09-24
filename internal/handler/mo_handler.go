@@ -538,6 +538,7 @@ func (h *MOHandler) Unsub() {
 			log.Println(err.Error())
 		}
 
+		// check
 		var subkey string
 		if sub != nil {
 			subkey = sub.GetCampSubKeyword()
