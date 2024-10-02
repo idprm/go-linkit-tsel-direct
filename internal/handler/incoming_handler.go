@@ -1703,6 +1703,14 @@ func (h *IncomingHandler) CampaignDirect(c *fiber.Ctx) error {
 }
 
 func (h *IncomingHandler) SubPage(c *fiber.Ctx) error {
+
+	req := new(entity.CampaignToolsRequest)
+
+	err := c.QueryParser(req)
+	if err != nil {
+		log.Println(err)
+	}
+
 	srv := strings.ToUpper(c.Params("service"))
 
 	if !h.serviceService.CheckService(srv) {
@@ -1726,17 +1734,28 @@ func (h *IncomingHandler) SubPage(c *fiber.Ctx) error {
 
 	if service.IsCloudplay() {
 		return c.Render("cloudplay/sub", fiber.Map{
-			"app_url":      APP_URL,
+			"host":         APP_URL,
 			"telco_sender": TELCO_SENDER,
 			"service_code": srv,
+			"gtag":         req.GetGTag(),
 		})
 	}
 
 	if service.IsGalays() {
 		return c.Render("galays/sub", fiber.Map{
-			"app_url":      APP_URL,
+			"host":         APP_URL,
 			"telco_sender": TELCO_SENDER,
 			"service_code": srv,
+			"gtag":         req.GetGTag(),
+		})
+	}
+
+	if service.IsMplus() {
+		return c.Render("mplus/sub", fiber.Map{
+			"host":         APP_URL,
+			"telco_sender": TELCO_SENDER,
+			"service_code": srv,
+			"gtag":         req.GetGTag(),
 		})
 	}
 
@@ -1769,7 +1788,7 @@ func (h *IncomingHandler) FaqPage(c *fiber.Ctx) error {
 
 	if service.IsMplus() {
 		return c.Render("mplus/faq", fiber.Map{
-			"app_url":      APP_URL,
+			"host":         APP_URL,
 			"telco_sender": TELCO_SENDER,
 			"service_code": srv,
 		})
