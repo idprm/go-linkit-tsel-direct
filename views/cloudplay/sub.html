@@ -20,22 +20,6 @@
     j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
     })(window,document,'script','dataLayer','{{ .gtag }}');</script>
-  <script> 
-  function gtag_report_conversion(url) {
-    var callback = function() {
-      if (typeof(url) != 'undefined') {
-          window.location = url;
-      }
-    };
-    gtag('event', 'conversion', {
-        'send_to': '{{ .gtag }}',
-        'value': 1.0,
-        'currency': 'IDR',
-        'event_callback': callback
-    });
-    return false;
-  }
-  </script> 
 </head>
 
 <body>
@@ -70,6 +54,22 @@
       $.getJSON("https://api.ipify.org/?format=json", function (e) {
         ip = e.ip;
       });
+
+      function gtag_report_conversion(url) {
+        var callback = function() {
+          if (typeof(url) != 'undefined') {
+              window.location = url;
+          }
+        };
+        gtag('event', 'conversion', {
+            'send_to': '{{ .gtag }}',
+            'value': 1.0,
+            'currency': 'IDR',
+            'event_callback': callback
+        });
+        console.log("conversion")
+        return false;
+      }
 
       var getUrlParameter = function getUrlParameter(sParam) {
         var sPageURL = window.location.search.substring(1),
@@ -122,8 +122,8 @@
           contentType: "application/json; charset=utf-8",
           success: function (json) {
             if (json.error == false) {
-              gtag_report_conversion(json.redirect)
               window.location.href = json.redirect;
+              gtag_report_conversion(json.redirect);
             }
             $('#loading').hide();
           },
