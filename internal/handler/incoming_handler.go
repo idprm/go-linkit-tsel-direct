@@ -1759,6 +1759,15 @@ func (h *IncomingHandler) SubPage(c *fiber.Ctx) error {
 		})
 	}
 
+	if service.IsGupi() {
+		return c.Render("gupi/sub", fiber.Map{
+			"host":         APP_URL,
+			"telco_sender": TELCO_SENDER,
+			"service_code": srv,
+			"gtag":         req.GetGTag(),
+		})
+	}
+
 	return c.Render("cloudplay/term", fiber.Map{
 		"host": APP_URL,
 	})

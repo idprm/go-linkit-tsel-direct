@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="{{ .host }}/static/gupi/css/mdb.min.css" />
+    <link rel="stylesheet" href="{{ .host }}/static/gupi/css/style.css" />
+    <link rel="stylesheet" href="{{ .host }}/static/gupi/css/bootstrap-icon.css" />
+    <title>GUPI</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <script async src="https://www.googletagmanager.com/gtag/js?id={{ .gtag }}"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments)};
+      gtag('js', new Date());
+      gtag('config', '{{ .gtag }}');
+    </script>
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+      new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+      j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+      'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+      })(window,document,'script','dataLayer','{{ .gtag }}');</script>
+  </head>
+  <body>
+    <div class="box mx-auto">
+      <div class="banner">
+        <img src="{{ .host }}/static/gupi/img/banner.png" class="img-fluid" alt="" />
+      </div>
+    </div>
+    <section class="section" style="background-position-y: 215px">
+      <div class="container-fluid box">
+        <div class="card card-custom text-dark mb-4">
+          <form class="card-body content">
+            <h3 class="title mb-4g">
+             Mainkan Game Terbaik Sekarang!
+            </h3>
+            <button id="subscribe" class="btn button btn-lg w-100 rounded-pill">
+                Mainkan Sekarang
+            </button>
+            <div id="loading" class="loading text-center" style="display: none">
+              <img src="{{ .host }}/static/gupi/img/loading.gif" alt="Loading" />
+            </div>
+          </form>
+        </div>
+        <div class="term">
+            <p class="mb-0">
+                Gupi adalah layanan berlangganan. Anda akan dikenakan biaya Rp 2,220/SMS, 1 SMS/2 hari pada tagihan ponsel Anda dan akan diperbarui secara otomatis.
+            </p>
+            <p>
+                Untuk membatalkankan, ketik UNREG GUPI kirim ke 97770.
+            </p>
+        </div>
+      </div>
+    </section>
+
+    <script
+      src="https://code.jquery.com/jquery-3.6.0.min.js"
+      integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
+      crossorigin="anonymous"></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+      crossorigin="anonymous"></script>
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+      $(document).ready(function () {
+        var ip = "";
+        $.getJSON("https://api.ipify.org/?format=json", function (e) {
+          ip = e.ip;
+        });
+
+        function gtag_report_conversion(url) {
+            var callback = function() {
+                if (typeof(url) != 'undefined') {
+                    window.location = url;
+                }
+            };
+            gtag('event', 'conversion', {
+                'send_to': '{{ .gtag }}',
+                'value': 1.0,
+                'currency': 'IDR',
+                'event_callback': callback
+            });
+            console.log("conversion")
+            return false;
+        }
+
+        var getUrlParameter = function getUrlParameter(sParam) {
+            var sPageURL = window.location.search.substring(1),
+                sURLVariables = sPageURL.split('&'),
+                sParameterName,
+                i;
+
+            for (i = 0; i < sURLVariables.length; i++) {
+                sParameterName = sURLVariables[i].split('=');
+
+                if (sParameterName[0] === sParam) {
+                    return sParameterName[1] === undefined ? true : decodeURIComponent(sParameterName[1]);
+                }
+            }
+            return "";
+        };
+
+       
+        $('#subscribe').click(function (event) {
+            event.preventDefault();
+
+            $('#loading').show();
+            // disable button
+            $("#subscribe").attr("disabled", true);
+
+
+            var keyword = "";
+            var sub_keyword = "";
+            var adnet = "";
+            var pubid = "";
+            var aff_sub = "";
+
+            keyword = getUrlParameter("keyword");
+            sub_keyword = getUrlParameter("sub_keyword");
+            adnet = getUrlParameter('ad');
+            pubid = getUrlParameter('pubid');
+            aff_sub = getUrlParameter('aff_sub');
+
+            $.ajax({
+                type: 'POST',
+                url: '/gupi',
+                data: JSON.stringify({
+                    service: "GUPI",
+                    keyword: keyword,
+                    sub_keyword: sub_keyword,
+                    adnet: adnet,
+                    pubid: pubid,
+                    aff_sub: aff_sub,
+                }),
+                dataType: 'json',
+                contentType: "application/json; charset=utf-8",
+                success: function (json) {
+                    if (json.error == false) {
+                        window.location.href = json.redirect;
+                        gtag_report_conversion(json.redirect);
+                    }
+                    $('#loading').hide();
+                },
+                error: function () {
+                    // enable button
+                    $("#subscribe").removeAttr("disabled");
+                    $('#loading').hide();
+                }
+            });
+        })
+      });
+    </script>
+  </body>
+</html>

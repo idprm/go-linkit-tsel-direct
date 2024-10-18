@@ -80,6 +80,8 @@ func mapUrls(db *sql.DB, rmpq rmqp.AMQP, rdb *redis.Client, logger *logger.Logge
 
 	r.Post("cloudplay", h.OptIn)
 	r.Post("galays", h.OptIn)
+	r.Post("mplus", h.OptIn)
+	r.Post("gupi", h.OptIn)
 
 	r.Get("cloudplay/term", h.CloudPlayTermPage)
 
