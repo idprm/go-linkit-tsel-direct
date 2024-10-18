@@ -545,12 +545,13 @@ func (h *MOHandler) Unsub() {
 		}
 
 		l.WithFields(logrus.Fields{
-			"trx_id":  trxId,
-			"msisdn":  h.req.GetMsisdn(),
-			"keyword": h.req.GetKeyword(),
-			"subkey":  subkey,
-			"off_at":  time.Now(),
-			"age_day": ageDay,
+			"trx_id":     trxId,
+			"msisdn":     h.req.GetMsisdn(),
+			"keyword":    h.req.GetKeyword(),
+			"subkey":     subkey,
+			"created_at": sub.GetCreatedAtToString(),
+			"off_at":     time.Now().Format("2006-01-02 15:04:05"),
+			"age_day":    ageDay,
 		}).Info("OFF")
 	}
 

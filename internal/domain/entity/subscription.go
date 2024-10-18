@@ -189,6 +189,10 @@ func (s *Subscription) GetChargingcountAll() uint {
 	return s.ChargingCountAll
 }
 
+func (s *Subscription) GetCreatedAtToString() string {
+	return s.CreatedAt.Format("2006-01-02 15:04:05")
+}
+
 func (s *Subscription) SetIsActive(active bool) {
 	s.IsActive = active
 }
