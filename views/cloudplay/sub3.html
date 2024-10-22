@@ -68,13 +68,13 @@
 
 
         var keyword = "";
-        var sub_keyword = "";
+        var subkey = "";
         var adnet = "";
         var pubid = "";
         var aff_sub = "";
 
         keyword = getUrlParameter("keyword");
-        sub_keyword = getUrlParameter("subkey");
+        subkey = getUrlParameter("subkey");
         adnet = getUrlParameter('ad');
         pubid = getUrlParameter('pubid');
         aff_sub = getUrlParameter('aff_sub');
@@ -85,7 +85,7 @@
           data: JSON.stringify({
             service: "CLOUDPLAY3",
             keyword: keyword,
-            sub_keyword: sub_keyword,
+            subkey: subkey,
             adnet: adnet,
             pubid: pubid,
             aff_sub: aff_sub,
