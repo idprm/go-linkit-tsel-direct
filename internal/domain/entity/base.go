@@ -2,6 +2,7 @@ package entity
 
 import (
 	"database/sql"
+	"net/url"
 	"strings"
 	"time"
 )
@@ -214,7 +215,8 @@ func (r *ReqOptInParam) GetAffSub() string {
 }
 
 func (r *ReqOptInParam) GetCampKeyword() string {
-	return strings.ToUpper(r.CampKeyword)
+	decodeUrl, _ := url.QueryUnescape(r.CampKeyword)
+	return strings.ToUpper(decodeUrl)
 }
 
 func (r *ReqOptInParam) GetCampSubKeyword() string {
