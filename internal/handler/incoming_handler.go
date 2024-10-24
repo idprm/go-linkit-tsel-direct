@@ -1773,6 +1773,39 @@ func (h *IncomingHandler) SubPage(c *fiber.Ctx) error {
 	})
 }
 
+func (h *IncomingHandler) TermPage(c *fiber.Ctx) error {
+	srv := strings.ToUpper(c.Params("service"))
+
+	if !h.serviceService.CheckService(srv) {
+		return c.Status(fiber.StatusBadGateway).JSON(
+			fiber.Map{
+				"error":   true,
+				"message": "Service Unavailable",
+			},
+		)
+	}
+
+	service, err := h.serviceService.GetServiceByCode(srv)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(
+			fiber.Map{
+				"error":   true,
+				"message": "error_internal_server",
+			},
+		)
+	}
+
+	if service.IsGupi() {
+		return c.Render("gupi/term", fiber.Map{
+			"host":         APP_URL,
+			"telco_sender": TELCO_SENDER,
+			"service_code": srv,
+		})
+	}
+
+	return c.Redirect(APP_URL)
+}
+
 func (h *IncomingHandler) FaqPage(c *fiber.Ctx) error {
 	srv := strings.ToUpper(c.Params("service"))
 

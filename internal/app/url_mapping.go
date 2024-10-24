@@ -77,6 +77,7 @@ func mapUrls(db *sql.DB, rmpq rmqp.AMQP, rdb *redis.Client, logger *logger.Logge
 	r.Get("camptool", h.CampaignTool)
 	r.Get("p/:service", h.SubPage)
 	r.Get("p/:service/faq", h.FaqPage)
+	r.Get("p/:service/term", h.TermPage)
 
 	r.Post("cloudplay", h.OptIn)
 	r.Post("galays", h.OptIn)
