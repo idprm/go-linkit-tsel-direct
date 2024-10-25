@@ -262,6 +262,7 @@ type CampaignToolsRequest struct {
 	UA             string `json:"useragent" query:"useragent"`
 	Referer        string `json:"referer" query:"referer"`
 	GTag           string `json:"gtag" query:"gtag"`
+	Tiktok         string `json:"tiktok" query:"tiktok"`
 }
 
 func (r *CampaignToolsRequest) GetService() string {
@@ -342,6 +343,10 @@ func (r *CampaignToolsRequest) GetUA() string {
 
 func (r *CampaignToolsRequest) GetGTag() string {
 	return strings.ToUpper(r.GTag)
+}
+
+func (r *CampaignToolsRequest) GetTiktok() string {
+	return strings.ToUpper(r.Tiktok)
 }
 
 func (r *CampaignToolsRequest) IsBillable() bool {

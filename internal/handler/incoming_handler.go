@@ -1734,42 +1734,46 @@ func (h *IncomingHandler) SubPage(c *fiber.Ctx) error {
 
 	if service.IsCloudplay() {
 		return c.Render("cloudplay/sub", fiber.Map{
-			"host":         APP_URL,
+			"host":         c.BaseURL(),
 			"telco_sender": TELCO_SENDER,
 			"service_code": srv,
 			"gtag":         req.GetGTag(),
+			"tiktok":       req.GetTiktok(),
 		})
 	}
 
 	if service.IsGalays() {
 		return c.Render("galays/sub", fiber.Map{
-			"host":         APP_URL,
+			"host":         c.BaseURL(),
 			"telco_sender": TELCO_SENDER,
 			"service_code": srv,
 			"gtag":         req.GetGTag(),
+			"tiktok":       req.GetTiktok(),
 		})
 	}
 
 	if service.IsMplus() {
 		return c.Render("mplus/sub", fiber.Map{
-			"host":         APP_URL,
+			"host":         c.BaseURL(),
 			"telco_sender": TELCO_SENDER,
 			"service_code": srv,
 			"gtag":         req.GetGTag(),
+			"tiktok":       req.GetTiktok(),
 		})
 	}
 
 	if service.IsGupi() {
 		return c.Render("gupi/sub", fiber.Map{
-			"host":         APP_URL,
+			"host":         c.BaseURL(),
 			"telco_sender": TELCO_SENDER,
 			"service_code": srv,
 			"gtag":         req.GetGTag(),
+			"tiktok":       req.GetTiktok(),
 		})
 	}
 
 	return c.Render("cloudplay/term", fiber.Map{
-		"host": APP_URL,
+		"host": c.BaseURL(),
 	})
 }
 
@@ -1797,7 +1801,7 @@ func (h *IncomingHandler) TermPage(c *fiber.Ctx) error {
 
 	if service.IsGupi() {
 		return c.Render("gupi/term", fiber.Map{
-			"host":         APP_URL,
+			"host":         c.BaseURL(),
 			"telco_sender": TELCO_SENDER,
 			"service_code": srv,
 		})
@@ -1830,7 +1834,7 @@ func (h *IncomingHandler) FaqPage(c *fiber.Ctx) error {
 
 	if service.IsMplus() {
 		return c.Render("mplus/faq", fiber.Map{
-			"host":         APP_URL,
+			"host":         c.BaseURL(),
 			"telco_sender": TELCO_SENDER,
 			"service_code": srv,
 		})
