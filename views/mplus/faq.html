@@ -28,7 +28,7 @@
                 <li style="font-weight: 400;"><span style="font-weight: 400; color: #ffffff;">Setiap main 1 kali main akan mendapatkan 2000 point</span></li>
                 <li style="font-weight: 400;"><span style="font-weight: 400; color: #ffffff;">Point bisa ditukarkan setiap senin-jumat di jam 10.00-17.00 WIB dengan mengirimkan whatsapp ke nomor CS: https://wa.me/088289320225 dengan format Redeem (spasi) MPLUSTAS (spasi) Pin Login</span></li>
                 <li style="font-weight: 400;"><span style="font-weight: 400; color: #ffffff;">Point yang ditukar akan mendapatkan pulsa berdasarkan point yang direedem</span></li>
-                <li style="font-weight: 400;"><span style="font-weight: 400; color: #ffffff;">Periode 16-31 September 2024</span></li>
+                <li style="font-weight: 400;"><span id="periode" style="font-weight: 400; color: #ffffff;"></span></li>
                 <li style="font-weight: 400;"><span style="font-weight: 400; color: #ffffff;">Apakah layanan ini bisa diikuti oleh pelanggan pascabayar dan prabayar?</span><br>Layanan ini bisa diikuti oleh pelanggan pascabayar dan prabayar.</li>
                 <li style="font-weight: 400;"><span style="font-weight: 400; color: #ffffff;">Bagaimana cara untuk berhenti berlangganan?</span></li>
                 <ol style="list-style-type: lower-alpha;">
@@ -43,5 +43,21 @@
         </div>
       </div>
     </div>
+    <script type="text/javascript">
+      function getMonthName(date) {
+        const months = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+        return months[date.getMonth()];
+      }
+
+      var lastday = function(y, m){
+        return new Date(y, m + 1, 0).getDate();
+      }
+
+      const currentDate = new Date();
+      const nextDate = new Date(new Date(currentDate).setMonth(currentDate.getMonth() + 1));
+      const currentMonthName = getMonthName(nextDate);
+      const year = nextDate.getFullYear();
+      document.getElementById("periode").innerHTML = "Periode " + lastday(year,nextDate.getMonth()) + " " + currentMonthName + " " + year;
+    </script>
   </body>
 </html>
